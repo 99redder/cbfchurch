@@ -311,6 +311,15 @@ p {
   color: var(--color-primary-light);
 }
 
+:root[data-theme="dark"] h1,
+:root[data-theme="dark"] h2,
+:root[data-theme="dark"] h3,
+:root[data-theme="dark"] .sidebar-section h3,
+:root[data-theme="dark"] .content-section h2,
+:root[data-theme="dark"] .post-full h1 {
+  color: var(--color-primary-light);
+}
+
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme]) .card,
   :root:not([data-theme]) .post-card,
@@ -321,6 +330,15 @@ p {
   }
 
   :root:not([data-theme]) .post-card h2 a {
+    color: var(--color-primary-light);
+  }
+
+  :root:not([data-theme]) h1,
+  :root:not([data-theme]) h2,
+  :root:not([data-theme]) h3,
+  :root:not([data-theme]) .sidebar-section h3,
+  :root:not([data-theme]) .content-section h2,
+  :root:not([data-theme]) .post-full h1 {
     color: var(--color-primary-light);
   }
 }
