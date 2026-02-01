@@ -1,5 +1,7 @@
 const express = require('express');
 const router = express.Router();
+const fs = require('fs');
+const path = require('path');
 const { get, all, run } = require('../utils/db');
 const { requireAuth, requireSuperAdmin } = require('../utils/auth');
 
@@ -145,6 +147,108 @@ router.delete('/users/:id', requireSuperAdmin, async (req, res) => {
     res.json({ message: 'User deleted' });
   } catch (err) {
     console.error('Delete user error:', err);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// POST /api/admin/gallery - upload a new gallery photo
+router.post('/gallery', async (req, res) => {
+  try {
+    const { imageData, alt } = req.body || {};
+    if (!imageData || typeof imageData !== 'string') {
+      return res.status(400).json({ error: 'Image data is required' });
+    }
+
+    const match = imageData.match(/^data:(image\/(png|jpeg|jpg|webp));base64,(.+)$/i);
+    if (!match) {
+      return res.status(400).json({ error: 'Invalid image format' });
+    }
+
+    const mime = match[1].toLowerCase();
+    const ext = mime.includes('jpeg') ? 'jpg' : mime.split('/')[1];
+    const base64Data = match[3];
+    const buffer = Buffer.from(base64Data, 'base64');
+
+    if (buffer.length > 4 * 1024 * 1024) {
+      return res.status(413).json({ error: 'Image too large (max 4MB)' });
+    }
+
+    const uploadDir = path.join(__dirname, '..', 'uploads', 'gallery');
+    fs.mkdirSync(uploadDir, { recursive: true });
+
+    const filename = `gallery-${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
+    const filepath = path.join(uploadDir, filename);
+    fs.writeFileSync(filepath, buffer);
+
+    const result = await run(
+      'INSERT INTO gallery_photos (filename, alt, position) VALUES ($1, $2, $3) RETURNING id',
+      [filename, (alt || '').trim(), Date.now()]
+    );
+
+    res.status(201).json({
+      message: 'Photo uploaded',
+      id: result.lastInsertId,
+      filename
+    });
+  } catch (err) {
+    console.error('Upload gallery photo error:', err);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// GET /api/admin/gallery - list gallery photos (admin/superadmin)
+router.get('/gallery', async (req, res) => {
+  try {
+    const photos = await all(
+      'SELECT id, filename, alt, position, created_at FROM gallery_photos ORDER BY position ASC, created_at DESC'
+    );
+    res.json(photos);
+  } catch (err) {
+    console.error('Admin get gallery photos error:', err);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// PUT /api/admin/gallery/reorder - reorder gallery photos
+router.put('/gallery/reorder', async (req, res) => {
+  try {
+    const { orderedIds } = req.body || {};
+    if (!Array.isArray(orderedIds) || orderedIds.length === 0) {
+      return res.status(400).json({ error: 'orderedIds is required' });
+    }
+
+    for (let i = 0; i < orderedIds.length; i++) {
+      const id = parseInt(orderedIds[i]);
+      if (Number.isNaN(id)) continue;
+      await run('UPDATE gallery_photos SET position = $1 WHERE id = $2', [i + 1, id]);
+    }
+
+    res.json({ message: 'Gallery order updated' });
+  } catch (err) {
+    console.error('Reorder gallery photos error:', err);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// DELETE /api/admin/gallery/:id - delete gallery photo
+router.delete('/gallery/:id', async (req, res) => {
+  try {
+    const id = parseInt(req.params.id);
+    const photo = await get('SELECT filename FROM gallery_photos WHERE id = $1', [id]);
+    if (!photo) {
+      return res.status(404).json({ error: 'Photo not found' });
+    }
+
+    await run('DELETE FROM gallery_photos WHERE id = $1', [id]);
+
+    const filepath = path.join(__dirname, '..', 'uploads', 'gallery', photo.filename);
+    if (fs.existsSync(filepath)) {
+      fs.unlinkSync(filepath);
+    }
+
+    res.json({ message: 'Photo deleted' });
+  } catch (err) {
+    console.error('Delete gallery photo error:', err);
     res.status(500).json({ error: 'Internal server error' });
   }
 });

@@ -19,6 +19,26 @@
   </div>
 
   <div class="admin-container">
+    <div class="card admin-section">
+      <h2 style="margin:0 0 1rem 0;">Photo Gallery</h2>
+      <form id="gallery-upload-form" class="admin-form">
+        <div class="form-group">
+          <label for="gallery-image">Upload photo</label>
+          <input type="file" id="gallery-image" accept="image/*" required>
+        </div>
+        <div class="form-group">
+          <label for="gallery-alt">Alt text (optional)</label>
+          <input type="text" id="gallery-alt" placeholder="Short description for accessibility">
+        </div>
+        <div id="gallery-upload-error" class="alert error" style="display:none;"></div>
+        <div id="gallery-upload-success" class="alert success" style="display:none;"></div>
+        <button type="submit" class="btn btn-primary">Upload to Gallery</button>
+      </form>
+      <div id="gallery-admin-list" class="gallery-admin-list">
+        <div class="loading">Loading gallery photos</div>
+      </div>
+    </div>
+
     <div class="admin-toolbar">
       <h2 style="margin:0;">Blog Posts</h2>
       <a href="editor.html" class="btn btn-primary">+ New Post</a>

@@ -23,6 +23,26 @@ async function initializeDatabase() {
     )
   `);
 
+  await exec(`
+    CREATE TABLE IF NOT EXISTS gallery_photos (
+      id SERIAL PRIMARY KEY,
+      filename TEXT NOT NULL,
+      position INTEGER DEFAULT 0,
+      alt TEXT,
+      created_at TIMESTAMP DEFAULT NOW()
+    )
+  `);
+
+  // Migration: add position column if it doesn't exist
+  try {
+    await exec(`ALTER TABLE gallery_photos ADD COLUMN position INTEGER DEFAULT 0`);
+  } catch {
+    // Column already exists — ignore
+  }
+
+  // Backfill any null positions for older rows
+  await exec(`UPDATE gallery_photos SET position = id WHERE position IS NULL`);
+
   // Migration: add role column if it doesn't exist (for existing databases)
   try {
     await exec(`ALTER TABLE users ADD COLUMN role TEXT NOT NULL DEFAULT 'admin'`);
