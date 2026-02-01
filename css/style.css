@@ -158,6 +158,16 @@ p {
   padding: 4px;
 }
 
+.header-logo-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 0;
+}
+
+.header-logo-link:hover {
+  opacity: 0.95;
+}
+
 .header-wordmark {
   height: 84px;
   width: auto;
