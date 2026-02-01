@@ -320,6 +320,10 @@ p {
   color: var(--color-primary-light);
 }
 
+:root[data-theme="dark"] .archive-year summary {
+  color: var(--color-primary-light);
+}
+
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme]) .card,
   :root:not([data-theme]) .post-card,
@@ -339,6 +343,10 @@ p {
   :root:not([data-theme]) .sidebar-section h3,
   :root:not([data-theme]) .content-section h2,
   :root:not([data-theme]) .post-full h1 {
+    color: var(--color-primary-light);
+  }
+
+  :root:not([data-theme]) .archive-year summary {
     color: var(--color-primary-light);
   }
 }
