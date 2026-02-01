@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 560 120" role="img" aria-labelledby="cbfWordmarkTitle cbfWordmarkDesc">
+  <title id="cbfWordmarkTitle">Christian Believers Fellowship</title>
+  <desc id="cbfWordmarkDesc">Wordmark with the church name and address.</desc>
+  <text x="0" y="52" fill="#ffffff" font-family="Georgia, 'Times New Roman', serif" font-size="40" letter-spacing="0.6">
+    Christian Believers Fellowship
+  </text>
+  <text x="2" y="90" fill="#dfe8f5" font-family="'Segoe UI', 'Helvetica Neue', Arial, sans-serif" font-size="18" letter-spacing="0.4">
+    32 Chapel Lane, Somersworth, New Hampshire
+  </text>
+</svg>

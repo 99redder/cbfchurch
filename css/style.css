@@ -122,6 +122,12 @@ p {
   padding: 4px;
 }
 
+.header-wordmark {
+  height: 64px;
+  width: auto;
+  max-width: min(560px, 100%);
+}
+
 .header-text h1 {
   font-size: 1.75rem;
   color: #fff;
@@ -926,6 +932,10 @@ p {
 }
 
 @media (max-width: 768px) {
+  .header-wordmark {
+    height: 54px;
+  }
+
   .page-wrapper {
     grid-template-columns: 1fr;
     margin: 1.25rem auto;
