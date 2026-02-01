@@ -3,7 +3,7 @@
   const gallery = document.querySelector('.gallery-grid');
   if (!gallery) return;
 
-  const items = gallery.querySelectorAll('.gallery-item img');
+  let items = Array.from(gallery.querySelectorAll('.gallery-item img'));
   if (items.length === 0) return;
 
   // Create lightbox elements
@@ -25,7 +25,12 @@
   const nextBtn = lightbox.querySelector('.lightbox-next');
   let currentIndex = 0;
 
+  function refreshItems() {
+    items = Array.from(gallery.querySelectorAll('.gallery-item img'));
+  }
+
   function open(index) {
+    refreshItems();
     currentIndex = index;
     const src = items[index].getAttribute('data-full') || items[index].src;
     lbImg.src = src;
@@ -40,18 +45,31 @@
   }
 
   function prev() {
+    if (items.length === 0) return;
     currentIndex = (currentIndex - 1 + items.length) % items.length;
     open(currentIndex);
   }
 
   function next() {
+    if (items.length === 0) return;
     currentIndex = (currentIndex + 1) % items.length;
     open(currentIndex);
   }
 
   // Event listeners
-  items.forEach((img, i) => {
-    img.parentElement.addEventListener('click', () => open(i));
+  gallery.addEventListener('click', (e) => {
+    const img = e.target.closest('.gallery-item img');
+    if (!img) return;
+    refreshItems();
+    const index = items.indexOf(img);
+    if (index >= 0) open(index);
+  });
+
+  items.forEach((img) => {
+    img.addEventListener('error', () => {
+      if (img.parentElement) img.parentElement.remove();
+      refreshItems();
+    });
   });
 
   closeBtn.addEventListener('click', close);
