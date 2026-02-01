@@ -1,0 +1,162 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Post Editor | CBF Admin</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <link href="https://cdn.quilljs.com/1.3.7/quill.snow.css" rel="stylesheet">
+</head>
+<body>
+  <div class="admin-header">
+    <h1 id="editor-title">New Blog Post</h1>
+    <div>
+      <a href="dashboard.html" style="margin-right:1rem;">&larr; Dashboard</a>
+      <a href="#" id="logout-btn">Logout</a>
+    </div>
+  </div>
+
+  <div class="editor-container">
+    <div class="card">
+      <div id="editor-error" class="alert alert-error" style="display:none;"></div>
+      <div id="editor-success" class="alert alert-success" style="display:none;"></div>
+
+      <form id="post-form">
+        <div class="form-group">
+          <label for="post-title">Title</label>
+          <input type="text" id="post-title" name="title" required placeholder="Enter post title">
+        </div>
+
+        <div class="form-group">
+          <label for="post-author">Author</label>
+          <input type="text" id="post-author" name="author" required placeholder="Enter author name">
+        </div>
+
+        <div class="form-group">
+          <label>Content</label>
+          <div id="editor-area"></div>
+          <input type="hidden" id="post-content" name="content">
+        </div>
+
+        <div class="editor-actions">
+          <button type="submit" class="btn btn-primary">Publish Post</button>
+          <a href="dashboard.html" class="btn btn-outline">Cancel</a>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script src="https://cdn.quilljs.com/1.3.7/quill.min.js"></script>
+  <script src="../js/admin.js"></script>
+  <script>
+    // Initialize Quill editor
+    const quill = new Quill('#editor-area', {
+      theme: 'snow',
+      placeholder: 'Write your blog post...',
+      modules: {
+        toolbar: [
+          [{ 'header': [1, 2, 3, false] }],
+          ['bold', 'italic', 'underline'],
+          [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+          ['blockquote'],
+          ['link'],
+          ['clean']
+        ]
+      }
+    });
+
+    // Restore last used author name
+    const savedAuthor = localStorage.getItem('cbf-admin-author');
+    if (savedAuthor) {
+      document.getElementById('post-author').value = savedAuthor;
+    }
+
+    // Check if editing existing post
+    const urlParams = new URLSearchParams(window.location.search);
+    const editId = urlParams.get('id');
+
+    if (editId) {
+      document.getElementById('editor-title').textContent = 'Edit Blog Post';
+      loadPost(editId);
+    }
+
+    async function loadPost(id) {
+      try {
+        const res = await fetch(`${API_BASE}/api/admin/posts/${id}`, { credentials: 'include' });
+        if (!res.ok) {
+          if (res.status === 401) { window.location.href = 'login.html'; return; }
+          throw new Error('Failed to load post');
+        }
+        const post = await res.json();
+        document.getElementById('post-title').value = post.title;
+        document.getElementById('post-author').value = post.author;
+        quill.root.innerHTML = post.content;
+      } catch (err) {
+        showError(err.message);
+      }
+    }
+
+    document.getElementById('post-form').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const errorEl = document.getElementById('editor-error');
+      const successEl = document.getElementById('editor-success');
+      errorEl.style.display = 'none';
+      successEl.style.display = 'none';
+
+      const title = document.getElementById('post-title').value.trim();
+      const author = document.getElementById('post-author').value.trim();
+      const content = quill.root.innerHTML;
+
+      if (!title || !author) {
+        showError('Title and author are required');
+        return;
+      }
+
+      if (quill.getText().trim().length === 0) {
+        showError('Post content cannot be empty');
+        return;
+      }
+
+      // Save author name for next time
+      localStorage.setItem('cbf-admin-author', author);
+
+      try {
+        const url = editId
+          ? `${API_BASE}/api/admin/posts/${editId}`
+          : `${API_BASE}/api/admin/posts`;
+        const method = editId ? 'PUT' : 'POST';
+
+        const res = await fetch(url, {
+          method,
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify({ title, author, content })
+        });
+
+        if (!res.ok) {
+          if (res.status === 401) { window.location.href = 'login.html'; return; }
+          const data = await res.json();
+          showError(data.error || 'Failed to save post');
+          return;
+        }
+
+        successEl.textContent = editId ? 'Post updated successfully!' : 'Post published successfully!';
+        successEl.style.display = 'block';
+
+        if (!editId) {
+          setTimeout(() => { window.location.href = 'dashboard.html'; }, 1000);
+        }
+      } catch (err) {
+        showError('Could not connect to server. Please try again.');
+      }
+    });
+
+    function showError(msg) {
+      const el = document.getElementById('editor-error');
+      el.textContent = msg;
+      el.style.display = 'block';
+    }
+  </script>
+</body>
+</html>
