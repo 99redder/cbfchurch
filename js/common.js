@@ -9,6 +9,7 @@ if (yearEl) yearEl.textContent = new Date().getFullYear();
 // Mobile nav toggle
 const navToggle = document.querySelector('.nav-toggle');
 const navLinks = document.querySelector('.nav-links');
+const themeToggle = document.querySelector('.theme-toggle');
 
 if (navToggle && navLinks) {
   navToggle.addEventListener('click', () => {
@@ -22,6 +23,30 @@ if (navToggle && navLinks) {
       navLinks.classList.remove('open');
       navToggle.setAttribute('aria-expanded', 'false');
     });
+  });
+}
+
+// Theme toggle (dark/light) with system default
+const storedTheme = localStorage.getItem('cbf-theme');
+if (storedTheme === 'dark' || storedTheme === 'light') {
+  document.documentElement.setAttribute('data-theme', storedTheme);
+}
+
+if (themeToggle) {
+  const updateToggleState = (theme) => {
+    themeToggle.setAttribute('aria-pressed', theme === 'dark');
+    themeToggle.querySelector('.theme-icon').textContent = theme === 'dark' ? '◐' : '◑';
+  };
+
+  const currentTheme = document.documentElement.getAttribute('data-theme');
+  updateToggleState(currentTheme || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'));
+
+  themeToggle.addEventListener('click', () => {
+    const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+    const nextTheme = isDark ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', nextTheme);
+    localStorage.setItem('cbf-theme', nextTheme);
+    updateToggleState(nextTheme);
   });
 }
 
