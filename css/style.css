@@ -298,6 +298,33 @@ p {
   line-height: 1;
 }
 
+/* Dark mode component surfaces */
+:root[data-theme="dark"] .card,
+:root[data-theme="dark"] .post-card,
+:root[data-theme="dark"] .sidebar-section,
+:root[data-theme="dark"] .pagination a {
+  background: var(--color-bg-light);
+  border: 1px solid var(--color-border);
+}
+
+:root[data-theme="dark"] .post-card h2 a {
+  color: var(--color-primary-light);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) .card,
+  :root:not([data-theme]) .post-card,
+  :root:not([data-theme]) .sidebar-section,
+  :root:not([data-theme]) .pagination a {
+    background: var(--color-bg-light);
+    border: 1px solid var(--color-border);
+  }
+
+  :root:not([data-theme]) .post-card h2 a {
+    color: var(--color-primary-light);
+  }
+}
+
 .nav-links a i {
   font-size: 0.9em;
   width: 1em;
@@ -452,7 +479,7 @@ p {
 }
 
 .pagination a {
-  background: #fff;
+  background: var(--color-bg);
   box-shadow: var(--shadow);
   color: var(--color-primary);
 }
@@ -1076,7 +1103,7 @@ p {
     display: none;
     flex-direction: column;
     width: 100%;
-    background: #fff;
+    background: var(--color-bg);
     border-top: 1px solid var(--color-border);
   }
 
