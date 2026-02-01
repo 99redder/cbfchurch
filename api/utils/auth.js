@@ -12,8 +12,8 @@ function verifyPassword(plaintext, hash) {
   return bcrypt.compareSync(plaintext, hash);
 }
 
-function createToken(userId, username) {
-  return jwt.sign({ userId, username }, SECRET, { expiresIn: TOKEN_EXPIRY });
+function createToken(userId, username, role) {
+  return jwt.sign({ userId, username, role }, SECRET, { expiresIn: TOKEN_EXPIRY });
 }
 
 function verifyToken(token) {
@@ -37,4 +37,11 @@ function requireAuth(req, res, next) {
   next();
 }
 
-module.exports = { hashPassword, verifyPassword, createToken, verifyToken, requireAuth };
+function requireSuperAdmin(req, res, next) {
+  if (req.user.role !== 'superadmin') {
+    return res.status(403).json({ error: 'Super admin access required' });
+  }
+  next();
+}
+
+module.exports = { hashPassword, verifyPassword, createToken, verifyToken, requireAuth, requireSuperAdmin };

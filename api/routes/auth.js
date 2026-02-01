@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { get, run } = require('../utils/db');
-const { hashPassword, verifyPassword, createToken, requireAuth } = require('../utils/auth');
+const { hashPassword, verifyPassword, createToken, requireAuth, requireSuperAdmin } = require('../utils/auth');
 
 // POST /api/auth/login
 router.post('/login', async (req, res) => {
@@ -16,7 +16,7 @@ router.post('/login', async (req, res) => {
       return res.status(401).json({ error: 'Invalid username or password' });
     }
 
-    const token = createToken(user.id, user.username);
+    const token = createToken(user.id, user.username, user.role);
     res.cookie('token', token, {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
@@ -41,16 +41,19 @@ router.post('/logout', (req, res) => {
   res.json({ message: 'Logged out' });
 });
 
-// POST /api/auth/register (protected - requires existing admin)
-router.post('/register', requireAuth, async (req, res) => {
+// POST /api/auth/register (protected - requires superadmin)
+router.post('/register', requireAuth, requireSuperAdmin, async (req, res) => {
   try {
-    const { username, password } = req.body;
+    const { username, password, role } = req.body;
     if (!username || !password) {
       return res.status(400).json({ error: 'Username and password are required' });
     }
     if (password.length < 6) {
       return res.status(400).json({ error: 'Password must be at least 6 characters' });
     }
+
+    const validRoles = ['admin', 'superadmin'];
+    const userRole = validRoles.includes(role) ? role : 'admin';
 
     const existing = await get('SELECT id FROM users WHERE username = $1', [username]);
     if (existing) {
@@ -59,8 +62,8 @@ router.post('/register', requireAuth, async (req, res) => {
 
     const hash = hashPassword(password);
     const result = await run(
-      'INSERT INTO users (username, password_hash) VALUES ($1, $2) RETURNING id',
-      [username, hash]
+      'INSERT INTO users (username, password_hash, role) VALUES ($1, $2, $3) RETURNING id',
+      [username, hash, userRole]
     );
 
     res.status(201).json({ message: 'Admin account created', id: result.lastInsertId });
@@ -72,7 +75,7 @@ router.post('/register', requireAuth, async (req, res) => {
 
 // GET /api/auth/me (check if logged in)
 router.get('/me', requireAuth, (req, res) => {
-  res.json({ username: req.user.username, userId: req.user.userId });
+  res.json({ username: req.user.username, userId: req.user.userId, role: req.user.role });
 });
 
 module.exports = router;

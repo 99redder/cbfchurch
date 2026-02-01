@@ -29,8 +29,8 @@ async function seed() {
   }
 
   const hash = hashPassword(password);
-  await run('INSERT INTO users (username, password_hash) VALUES ($1, $2)', [username, hash]);
-  console.log(`Admin account "${username}" created successfully`);
+  await run('INSERT INTO users (username, password_hash, role) VALUES ($1, $2, $3)', [username, hash, 'superadmin']);
+  console.log(`Super admin account "${username}" created successfully`);
   process.exit(0);
 }
 

@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 const { get, all, run } = require('../utils/db');
-const { requireAuth } = require('../utils/auth');
+const { requireAuth, requireSuperAdmin } = require('../utils/auth');
 
 // All admin routes require authentication
 router.use(requireAuth);
@@ -110,6 +110,41 @@ router.get('/posts/:id', async (req, res) => {
     res.json(post);
   } catch (err) {
     console.error('Admin get post error:', err);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// GET /api/admin/users - list all users (superadmin only)
+router.get('/users', requireSuperAdmin, async (req, res) => {
+  try {
+    const users = await all(
+      'SELECT id, username, role, created_at FROM users ORDER BY created_at ASC'
+    );
+    res.json(users);
+  } catch (err) {
+    console.error('Admin get users error:', err);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// DELETE /api/admin/users/:id - delete a user (superadmin only, cannot delete self)
+router.delete('/users/:id', requireSuperAdmin, async (req, res) => {
+  try {
+    const id = parseInt(req.params.id);
+
+    if (id === req.user.userId) {
+      return res.status(400).json({ error: 'You cannot delete your own account' });
+    }
+
+    const user = await get('SELECT id FROM users WHERE id = $1', [id]);
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+
+    await run('DELETE FROM users WHERE id = $1', [id]);
+    res.json({ message: 'User deleted' });
+  } catch (err) {
+    console.error('Delete user error:', err);
     res.status(500).json({ error: 'Internal server error' });
   }
 });

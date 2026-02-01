@@ -6,6 +6,7 @@ async function initializeDatabase() {
       id SERIAL PRIMARY KEY,
       username TEXT UNIQUE NOT NULL,
       password_hash TEXT NOT NULL,
+      role TEXT NOT NULL DEFAULT 'admin',
       created_at TIMESTAMP DEFAULT NOW()
     )
   `);
@@ -21,6 +22,16 @@ async function initializeDatabase() {
       updated_at TIMESTAMP DEFAULT NOW()
     )
   `);
+
+  // Migration: add role column if it doesn't exist (for existing databases)
+  try {
+    await exec(`ALTER TABLE users ADD COLUMN role TEXT NOT NULL DEFAULT 'admin'`);
+  } catch {
+    // Column already exists — ignore
+  }
+
+  // Ensure the first user (seeded admin) is a superadmin
+  await exec(`UPDATE users SET role = 'superadmin' WHERE id = 1 AND role = 'admin'`);
 }
 
 module.exports = initializeDatabase;

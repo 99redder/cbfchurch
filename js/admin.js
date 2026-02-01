@@ -1,20 +1,34 @@
 // Admin panel JavaScript
 const API_BASE = 'https://cbfchurch.onrender.com';
 
+// Global user info
+let currentUser = null;
+
 // Auth check - redirect to login if not authenticated
 (async function checkAuth() {
   try {
     const res = await fetch(`${API_BASE}/api/auth/me`, { credentials: 'include' });
     if (!res.ok) {
-      // Don't redirect if we're already on the login page
       if (!window.location.pathname.includes('login.html')) {
         window.location.href = 'login.html';
       }
       return;
     }
     const user = await res.json();
+    currentUser = user;
     const userEl = document.getElementById('admin-user');
     if (userEl) userEl.textContent = `Logged in as ${user.username}`;
+
+    // Show "Manage Users" link for superadmins
+    const manageUsersLink = document.getElementById('manage-users-link');
+    if (manageUsersLink) {
+      manageUsersLink.style.display = user.role === 'superadmin' ? '' : 'none';
+    }
+
+    // On the users page, redirect non-superadmins
+    if (window.location.pathname.includes('users.html') && user.role !== 'superadmin') {
+      window.location.href = 'dashboard.html';
+    }
   } catch {
     if (!window.location.pathname.includes('login.html')) {
       window.location.href = 'login.html';
@@ -87,7 +101,6 @@ async function loadDashboardPosts() {
         </tbody>
       </table>`;
 
-    // Attach delete handlers
     postsListEl.querySelectorAll('.delete-link').forEach(link => {
       link.addEventListener('click', async (e) => {
         e.preventDefault();
@@ -120,6 +133,135 @@ async function loadDashboardPosts() {
         <p>Could not load posts. Make sure the API server is running.</p>
       </div>`;
   }
+}
+
+// Users page: load users
+const usersListEl = document.getElementById('users-list');
+if (usersListEl) {
+  loadUsers();
+}
+
+async function loadUsers() {
+  try {
+    const res = await fetch(`${API_BASE}/api/admin/users`, { credentials: 'include' });
+    if (!res.ok) {
+      if (res.status === 401) { window.location.href = 'login.html'; return; }
+      if (res.status === 403) { window.location.href = 'dashboard.html'; return; }
+      throw new Error('Failed to load users');
+    }
+
+    const users = await res.json();
+
+    if (users.length === 0) {
+      usersListEl.innerHTML = '<div class="empty-state"><p>No users found.</p></div>';
+      return;
+    }
+
+    usersListEl.innerHTML = `
+      <table class="posts-table">
+        <thead>
+          <tr>
+            <th>Username</th>
+            <th>Role</th>
+            <th>Created</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${users.map(user => `
+            <tr>
+              <td>${escapeHtml(user.username)}</td>
+              <td><span class="role-badge role-${user.role}">${user.role}</span></td>
+              <td>${formatDate(user.created_at)}</td>
+              <td class="actions">
+                ${currentUser && user.id === currentUser.userId
+                  ? '<span class="text-muted">You</span>'
+                  : `<a href="#" class="delete-user-link" data-id="${user.id}" data-username="${escapeHtml(user.username)}">Delete</a>`
+                }
+              </td>
+            </tr>
+          `).join('')}
+        </tbody>
+      </table>`;
+
+    usersListEl.querySelectorAll('.delete-user-link').forEach(link => {
+      link.addEventListener('click', async (e) => {
+        e.preventDefault();
+        const id = link.dataset.id;
+        const username = link.dataset.username;
+
+        if (!confirm(`Delete user "${username}"? This cannot be undone.`)) return;
+
+        try {
+          const res = await fetch(`${API_BASE}/api/admin/users/${id}`, {
+            method: 'DELETE',
+            credentials: 'include'
+          });
+
+          if (!res.ok) {
+            const data = await res.json().catch(() => ({}));
+            alert(data.error || 'Failed to delete user');
+            return;
+          }
+
+          loadUsers();
+        } catch {
+          alert('Could not connect to server');
+        }
+      });
+    });
+  } catch (err) {
+    usersListEl.innerHTML = `
+      <div class="empty-state">
+        <p>Could not load users.</p>
+      </div>`;
+  }
+}
+
+// Create user form
+const createUserForm = document.getElementById('create-user-form');
+if (createUserForm) {
+  createUserForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const errorEl = document.getElementById('user-error');
+    const successEl = document.getElementById('user-success');
+    errorEl.style.display = 'none';
+    successEl.style.display = 'none';
+
+    const username = document.getElementById('new-username').value.trim();
+    const password = document.getElementById('new-password').value;
+    const role = document.getElementById('new-role').value;
+
+    if (!username || !password) {
+      errorEl.textContent = 'Username and password are required';
+      errorEl.style.display = 'block';
+      return;
+    }
+
+    try {
+      const res = await fetch(`${API_BASE}/api/auth/register`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        credentials: 'include',
+        body: JSON.stringify({ username, password, role })
+      });
+
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        errorEl.textContent = data.error || 'Failed to create account';
+        errorEl.style.display = 'block';
+        return;
+      }
+
+      successEl.textContent = `Account "${username}" created successfully`;
+      successEl.style.display = 'block';
+      createUserForm.reset();
+      loadUsers();
+    } catch {
+      errorEl.textContent = 'Could not connect to server';
+      errorEl.style.display = 'block';
+    }
+  });
 }
 
 function formatDate(dateStr) {

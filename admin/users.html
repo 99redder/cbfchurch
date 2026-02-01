@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Manage Users | CBF Admin</title>
+  <link rel="stylesheet" href="../css/style.css">
+  <style>
+    .role-badge {
+      display: inline-block;
+      padding: 0.2em 0.6em;
+      border-radius: 4px;
+      font-size: 0.85em;
+      font-weight: 600;
+    }
+    .role-superadmin {
+      background: #e8d5f5;
+      color: #6b21a8;
+    }
+    .role-admin {
+      background: #dbeafe;
+      color: #1e40af;
+    }
+    .create-user-section {
+      margin-top: 2rem;
+      padding: 1.5rem;
+      background: var(--color-bg-light);
+      border-radius: 8px;
+      border: 1px solid var(--color-border);
+    }
+    .create-user-section h3 {
+      margin-top: 0;
+    }
+    .inline-form {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+      align-items: flex-end;
+    }
+    .inline-form .form-group {
+      margin-bottom: 0;
+    }
+    .inline-form .form-group label {
+      display: block;
+      margin-bottom: 0.3rem;
+      font-size: 0.9em;
+      font-weight: 600;
+    }
+    .inline-form input, .inline-form select {
+      padding: 0.5rem 0.75rem;
+      border: 1px solid var(--color-border);
+      border-radius: 4px;
+      font-size: 0.95em;
+    }
+  </style>
+</head>
+<body>
+  <div class="admin-header">
+    <h1>Manage Users</h1>
+    <div>
+      <span id="admin-user" style="margin-right:1rem;"></span>
+      <a href="dashboard.html" style="margin-right:1rem;">&larr; Dashboard</a>
+      <a href="#" id="logout-btn">Logout</a>
+    </div>
+  </div>
+
+  <div class="admin-container">
+    <div class="admin-toolbar">
+      <h2 style="margin:0;">Admin Accounts</h2>
+    </div>
+
+    <div id="users-list">
+      <div class="loading">Loading users...</div>
+    </div>
+
+    <div class="create-user-section">
+      <h3>Create New Admin Account</h3>
+      <div id="user-error" class="alert alert-error" style="display:none;"></div>
+      <div id="user-success" class="alert alert-success" style="display:none;"></div>
+      <form id="create-user-form" class="inline-form">
+        <div class="form-group">
+          <label for="new-username">Username</label>
+          <input type="text" id="new-username" required placeholder="Enter username" autocomplete="off">
+        </div>
+        <div class="form-group">
+          <label for="new-password">Password</label>
+          <input type="password" id="new-password" required placeholder="Min 6 characters" minlength="6" autocomplete="new-password">
+        </div>
+        <div class="form-group">
+          <label for="new-role">Role</label>
+          <select id="new-role">
+            <option value="admin">Admin</option>
+            <option value="superadmin">Super Admin</option>
+          </select>
+        </div>
+        <button type="submit" class="btn btn-primary">Create Account</button>
+      </form>
+    </div>
+  </div>
+
+  <script src="../js/admin.js"></script>
+</body>
+</html>
