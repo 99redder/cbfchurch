@@ -31,9 +31,9 @@
   --color-primary-dark: #2b4463;
   --color-primary-light: #a7c9ef;
   --color-accent: #e3c064;
-  --color-text: #c8ced8;
-  --color-text-light: #aeb6c2;
-  --color-text-muted: #919aa8;
+  --color-text: #a9b1bd;
+  --color-text-light: #98a2b0;
+  --color-text-muted: #7f8a9b;
   --color-bg: #10141b;
   --color-bg-light: #141a23;
   --color-bg-warm: #1a2230;
@@ -49,9 +49,9 @@
     --color-primary-dark: #2b4463;
     --color-primary-light: #a7c9ef;
     --color-accent: #e3c064;
-    --color-text: #c8ced8;
-    --color-text-light: #aeb6c2;
-    --color-text-muted: #919aa8;
+    --color-text: #a9b1bd;
+    --color-text-light: #98a2b0;
+    --color-text-muted: #7f8a9b;
     --color-bg: #10141b;
     --color-bg-light: #141a23;
     --color-bg-warm: #1a2230;
@@ -294,7 +294,7 @@ p {
 
 .theme-icon {
   display: inline-block;
-  font-size: 0.95rem;
+  font-size: 1.2rem;
   line-height: 1;
 }
 
@@ -340,7 +340,7 @@ p {
    Content Cards
    =========================== */
 .card {
-  background: #fff;
+  background: var(--color-bg);
   border-radius: var(--radius);
   box-shadow: var(--shadow);
   padding: 2rem;
@@ -355,7 +355,7 @@ p {
    Blog Post Cards
    =========================== */
 .post-card {
-  background: #fff;
+  background: var(--color-bg);
   border-radius: var(--radius);
   box-shadow: var(--shadow);
   padding: 1.75rem 2rem;
@@ -477,7 +477,7 @@ p {
 }
 
 .sidebar-section {
-  background: #fff;
+  background: var(--color-bg);
   border-radius: var(--radius);
   box-shadow: var(--shadow);
   padding: 1.25rem;
