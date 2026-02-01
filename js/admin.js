@@ -1,6 +1,31 @@
 // Admin panel JavaScript
 const API_BASE = 'https://cbfchurch.onrender.com';
 
+// Theme: restore saved preference
+const storedTheme = localStorage.getItem('cbf-theme');
+if (storedTheme === 'dark' || storedTheme === 'light') {
+  document.documentElement.setAttribute('data-theme', storedTheme);
+}
+
+// Theme toggle
+const adminThemeToggle = document.getElementById('admin-theme-toggle');
+if (adminThemeToggle) {
+  const updateIcon = (theme) => {
+    adminThemeToggle.textContent = theme === 'dark' ? '\u25D0' : '\u25D1';
+  };
+
+  const current = document.documentElement.getAttribute('data-theme');
+  updateIcon(current || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'));
+
+  adminThemeToggle.addEventListener('click', () => {
+    const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+    const next = isDark ? 'light' : 'dark';
+    document.documentElement.setAttribute('data-theme', next);
+    localStorage.setItem('cbf-theme', next);
+    updateIcon(next);
+  });
+}
+
 // Global user info
 let currentUser = null;
 

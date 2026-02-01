@@ -829,6 +829,23 @@ p {
   color: #fff;
 }
 
+.admin-theme-toggle {
+  background: transparent;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  color: rgba(255, 255, 255, 0.8);
+  border-radius: 999px;
+  padding: 0.3rem 0.55rem;
+  font-size: 1rem;
+  cursor: pointer;
+  line-height: 1;
+  transition: border-color var(--transition), color var(--transition);
+}
+
+.admin-theme-toggle:hover {
+  border-color: #fff;
+  color: #fff;
+}
+
 .login-container {
   max-width: 400px;
   margin: 4rem auto;
@@ -836,7 +853,7 @@ p {
 }
 
 .login-form {
-  background: #fff;
+  background: var(--color-bg);
   border-radius: var(--radius);
   box-shadow: var(--shadow);
   padding: 2.5rem;
@@ -906,7 +923,8 @@ p {
 
 .gallery-admin-actions button {
   border: 1px solid var(--color-border);
-  background: #fff;
+  background: var(--color-bg);
+  color: var(--color-text);
   padding: 0.35rem 0.6rem;
   border-radius: var(--radius);
   cursor: pointer;
@@ -1017,6 +1035,90 @@ p {
   border: 1px solid #c3e6cb;
 }
 
+:root[data-theme="dark"] .alert-error {
+  background: #2a1215;
+  color: #f87171;
+  border-color: #4a1c1c;
+}
+
+:root[data-theme="dark"] .alert-success {
+  background: #0f2618;
+  color: #4ade80;
+  border-color: #1a3a2a;
+}
+
+:root[data-theme="dark"] .alert.error {
+  background: #2a1215;
+  color: #f87171;
+  border-color: #4a1c1c;
+}
+
+:root[data-theme="dark"] .alert.success {
+  background: #0f2618;
+  color: #4ade80;
+  border-color: #1a3a2a;
+}
+
+:root[data-theme="dark"] .form-group input,
+:root[data-theme="dark"] .form-group textarea,
+:root[data-theme="dark"] .form-group select {
+  background: var(--color-bg);
+  color: var(--color-text);
+  border-color: var(--color-border);
+}
+
+:root[data-theme="dark"] .admin-header {
+  background: #0c1018;
+}
+
+:root[data-theme="dark"] .admin-theme-toggle {
+  color: rgba(255, 255, 255, 0.7);
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) .alert-error {
+    background: #2a1215;
+    color: #f87171;
+    border-color: #4a1c1c;
+  }
+
+  :root:not([data-theme]) .alert-success {
+    background: #0f2618;
+    color: #4ade80;
+    border-color: #1a3a2a;
+  }
+
+  :root:not([data-theme]) .alert.error {
+    background: #2a1215;
+    color: #f87171;
+    border-color: #4a1c1c;
+  }
+
+  :root:not([data-theme]) .alert.success {
+    background: #0f2618;
+    color: #4ade80;
+    border-color: #1a3a2a;
+  }
+
+  :root:not([data-theme]) .form-group input,
+  :root:not([data-theme]) .form-group textarea,
+  :root:not([data-theme]) .form-group select {
+    background: var(--color-bg);
+    color: var(--color-text);
+    border-color: var(--color-border);
+  }
+
+  :root:not([data-theme]) .admin-header {
+    background: #0c1018;
+  }
+
+  :root:not([data-theme]) .admin-theme-toggle {
+    color: rgba(255, 255, 255, 0.7);
+    border-color: rgba(255, 255, 255, 0.2);
+  }
+}
+
 /* Admin Dashboard */
 .admin-container {
   max-width: var(--max-width);
@@ -1033,7 +1135,7 @@ p {
 
 .posts-table {
   width: 100%;
-  background: #fff;
+  background: var(--color-bg);
   border-radius: var(--radius);
   box-shadow: var(--shadow);
   border-collapse: collapse;
@@ -1100,6 +1202,62 @@ p {
   display: flex;
   gap: 0.75rem;
   margin-top: 1rem;
+}
+
+:root[data-theme="dark"] .ql-toolbar.ql-snow {
+  background: var(--color-bg-light);
+  border-color: var(--color-border);
+}
+
+:root[data-theme="dark"] .ql-container.ql-snow {
+  background: var(--color-bg);
+  border-color: var(--color-border);
+  color: var(--color-text);
+}
+
+:root[data-theme="dark"] .ql-editor.ql-blank::before {
+  color: var(--color-text-muted);
+}
+
+:root[data-theme="dark"] .ql-snow .ql-stroke {
+  stroke: var(--color-text-light);
+}
+
+:root[data-theme="dark"] .ql-snow .ql-fill {
+  fill: var(--color-text-light);
+}
+
+:root[data-theme="dark"] .ql-snow .ql-picker-label {
+  color: var(--color-text-light);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) .ql-toolbar.ql-snow {
+    background: var(--color-bg-light);
+    border-color: var(--color-border);
+  }
+
+  :root:not([data-theme]) .ql-container.ql-snow {
+    background: var(--color-bg);
+    border-color: var(--color-border);
+    color: var(--color-text);
+  }
+
+  :root:not([data-theme]) .ql-editor.ql-blank::before {
+    color: var(--color-text-muted);
+  }
+
+  :root:not([data-theme]) .ql-snow .ql-stroke {
+    stroke: var(--color-text-light);
+  }
+
+  :root:not([data-theme]) .ql-snow .ql-fill {
+    fill: var(--color-text-light);
+  }
+
+  :root:not([data-theme]) .ql-snow .ql-picker-label {
+    color: var(--color-text-light);
+  }
 }
 
 /* ===========================
