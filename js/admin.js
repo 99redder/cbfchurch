@@ -1,5 +1,5 @@
 // Admin panel JavaScript
-const API_BASE = 'http://localhost:3000';
+const API_BASE = 'https://cbfchurch.onrender.com';
 
 // Auth check - redirect to login if not authenticated
 (async function checkAuth() {
