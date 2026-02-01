@@ -760,11 +760,11 @@ p {
 }
 
 .site-footer a {
-  color: rgba(255, 255, 255, 0.9);
+  color: #d94a4a;
 }
 
 .site-footer a:hover {
-  color: #fff;
+  color: #ff6b6b;
 }
 
 .footer-inner {
