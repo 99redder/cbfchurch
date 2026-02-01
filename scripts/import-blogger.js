@@ -18,17 +18,26 @@ function parseBloggerExport(xmlContent) {
   while ((match = entryRegex.exec(xmlContent)) !== null) {
     const entry = match[1];
 
-    const categoryMatches = entry.match(/<category[^>]*term="([^"]*)"[^>]*\/>/g) || [];
-    const terms = categoryMatches.map(c => {
-      const m = c.match(/term="([^"]*)"/);
-      return m ? m[1] : '';
-    });
+    // Google Takeout format: <blogger:type>POST</blogger:type>
+    // Standard Blogger export: <category term="...kind#post"/>
+    const isGoogleTakeout = entry.includes('<blogger:type>');
+    let isPost, isDraft;
 
-    const isPost = terms.some(t => t.includes('kind#post'));
-    if (!isPost) continue;
+    if (isGoogleTakeout) {
+      isPost = entry.includes('<blogger:type>POST</blogger:type>');
+      isDraft = entry.includes('<blogger:status>DRAFT</blogger:status>');
+    } else {
+      const categoryMatches = entry.match(/<category[^>]*term="([^"]*)"[^>]*\/>/g) || [];
+      const terms = categoryMatches.map(c => {
+        const m = c.match(/term="([^"]*)"/);
+        return m ? m[1] : '';
+      });
+      isPost = terms.some(t => t.includes('kind#post'));
+      const draftMatch = entry.match(/<app:draft[^>]*>(yes|no)<\/app:draft>/);
+      isDraft = draftMatch && draftMatch[1] === 'yes';
+    }
 
-    const draftMatch = entry.match(/<app:draft[^>]*>(yes|no)<\/app:draft>/);
-    if (draftMatch && draftMatch[1] === 'yes') continue;
+    if (!isPost || isDraft) continue;
 
     const titleMatch = entry.match(/<title[^>]*>([\s\S]*?)<\/title>/);
     const title = titleMatch ? decodeXml(titleMatch[1].trim()) : 'Untitled';
