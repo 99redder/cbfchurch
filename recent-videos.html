@@ -3,14 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Christian Believers Fellowship - A Bible-based church in Somersworth, New Hampshire. Sunday Worship 10:30am, Tuesday Bible Study 6:30pm.">
-  <title>Christian Believers Fellowship</title>
+  <meta name="description" content="Recent Videos - Pre-recorded services from Christian Believers Fellowship, Somersworth, NH.">
+  <title>Recent Videos | Christian Believers Fellowship</title>
   <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
   <a href="#main" class="skip-link">Skip to content</a>
 
-  <!-- Header -->
   <header class="site-header">
     <div class="header-inner">
       <div class="header-text">
@@ -20,23 +19,20 @@
     </div>
   </header>
 
-  <!-- Navigation -->
   <nav class="site-nav" aria-label="Main navigation">
     <div class="nav-inner">
       <button class="nav-toggle" aria-label="Toggle navigation" aria-expanded="false">
-        <span></span>
-        <span></span>
-        <span></span>
+        <span></span><span></span><span></span>
       </button>
       <ul class="nav-links">
-        <li><a href="index.html" class="active">Home</a></li>
+        <li><a href="index.html">Home</a></li>
         <li><a href="our-beliefs.html">Our Beliefs</a></li>
         <li><a href="mission-statement.html">Mission Statement</a></li>
         <li><a href="cbf-history.html">CBF History</a></li>
         <li><a href="contact.html">Detailed Contact List</a></li>
         <li><a href="photo-gallery.html">Photo Gallery</a></li>
         <li><a href="service-times.html">Service Times</a></li>
-        <li><a href="recent-videos.html">Recent Videos</a></li>
+        <li><a href="recent-videos.html" class="active">Recent Videos</a></li>
         <li><a href="article-archives.html">Article Archives</a></li>
         <li><a href="https://www.youtube.com/user/captaintal55" target="_blank" rel="noopener">Video Archive</a></li>
         <li><a href="learn-the-truth.html">Learn the Truth about the Truth</a></li>
@@ -44,42 +40,42 @@
     </div>
   </nav>
 
-  <!-- Main Content -->
   <div class="page-wrapper">
     <main id="main" class="main-content">
-      <div id="blog-posts">
-        <div class="loading">Loading posts</div>
+      <div class="card">
+        <h1>Recent Videos</h1>
+        <p>Please find below links to pre-recorded services held at the Christian Believers Fellowship chapel in Somersworth, NH.</p>
+
+        <p class="mt-2">For our full video archive, visit our <a href="https://www.youtube.com/user/captaintal55" target="_blank" rel="noopener">YouTube Channel &rarr;</a></p>
+
+        <div class="mt-3" style="display:grid; gap:1.5rem;">
+          <div style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden;border-radius:var(--radius);">
+            <iframe style="position:absolute;top:0;left:0;width:100%;height:100%;border:none;"
+              src="https://www.youtube.com/embed?listType=user_uploads&list=captaintal55"
+              allowfullscreen
+              loading="lazy"
+              title="Recent CBF videos">
+            </iframe>
+          </div>
+        </div>
       </div>
-      <div id="pagination"></div>
     </main>
 
-    <!-- Sidebar -->
     <aside class="sidebar">
       <div class="sidebar-section">
         <h3>Service Times</h3>
-        <div class="service-item">
-          <span class="day">Sunday Worship</span>
-          <span class="time">10:30 AM</span>
-        </div>
-        <div class="service-item">
-          <span class="day">Tuesday Bible Study</span>
-          <span class="time">6:30 PM</span>
-        </div>
+        <div class="service-item"><span class="day">Sunday Worship</span><span class="time">10:30 AM</span></div>
+        <div class="service-item"><span class="day">Tuesday Bible Study</span><span class="time">6:30 PM</span></div>
       </div>
-
       <div class="sidebar-section">
         <h3>Location</h3>
-        <p style="font-size:0.9rem; margin-bottom:0.5rem;">32 Chapel Lane<br>Somersworth, NH</p>
+        <p style="font-size:0.9rem;margin-bottom:0.5rem;">32 Chapel Lane<br>Somersworth, NH</p>
         <a href="https://www.google.com/maps/search/?api=1&query=32+Chapel+Lane+Somersworth+NH" target="_blank" rel="noopener" style="font-size:0.9rem;">Get Directions &rarr;</a>
       </div>
-
       <div class="sidebar-section">
         <h3>Follow Us</h3>
-        <ul>
-          <li><a href="https://twitter.com/CBF_Somersworth" target="_blank" rel="noopener">@CBF_Somersworth on X/Twitter</a></li>
-        </ul>
+        <ul><li><a href="https://twitter.com/CBF_Somersworth" target="_blank" rel="noopener">@CBF_Somersworth on X/Twitter</a></li></ul>
       </div>
-
       <div class="sidebar-section">
         <h3>Ministries</h3>
         <ul>
@@ -96,7 +92,6 @@
     </aside>
   </div>
 
-  <!-- Footer -->
   <footer class="site-footer">
     <div class="footer-inner">
       <p>Christian Believers Fellowship &mdash; 32 Chapel Lane, Somersworth, NH</p>
@@ -105,6 +100,5 @@
   </footer>
 
   <script src="js/common.js"></script>
-  <script src="js/blog.js"></script>
 </body>
 </html>

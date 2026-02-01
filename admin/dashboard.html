@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Dashboard | CBF Admin</title>
+  <link rel="stylesheet" href="../css/style.css">
+</head>
+<body>
+  <div class="admin-header">
+    <h1>CBF Admin Dashboard</h1>
+    <div>
+      <span id="admin-user" style="margin-right:1rem;"></span>
+      <a href="../index.html" style="margin-right:1rem;">View Site</a>
+      <a href="#" id="logout-btn">Logout</a>
+    </div>
+  </div>
+
+  <div class="admin-container">
+    <div class="admin-toolbar">
+      <h2 style="margin:0;">Blog Posts</h2>
+      <a href="editor.html" class="btn btn-primary">+ New Post</a>
+    </div>
+
+    <div id="posts-list">
+      <div class="loading">Loading posts</div>
+    </div>
+  </div>
+
+  <script src="../js/admin.js"></script>
+</body>
+</html>
