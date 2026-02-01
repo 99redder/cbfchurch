@@ -83,7 +83,7 @@
 
     async function loadPost(id) {
       try {
-        const res = await fetch(`${API_BASE}/api/admin/posts/${id}`, { credentials: 'include' });
+        const res = await authFetch(`${API_BASE}/api/admin/posts/${id}`);
         if (!res.ok) {
           if (res.status === 401) { window.location.href = 'login.html'; return; }
           throw new Error('Failed to load post');
@@ -127,10 +127,9 @@
           : `${API_BASE}/api/admin/posts`;
         const method = editId ? 'PUT' : 'POST';
 
-        const res = await fetch(url, {
+        const res = await authFetch(url, {
           method,
           headers: { 'Content-Type': 'application/json' },
-          credentials: 'include',
           body: JSON.stringify({ title, author, content })
         });
 

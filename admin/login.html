@@ -58,6 +58,9 @@
           return;
         }
 
+        if (data.token) {
+          localStorage.setItem('cbf_token', data.token);
+        }
         window.location.href = 'dashboard.html';
       } catch (err) {
         errorEl.textContent = 'Could not connect to server. Please try again.';
@@ -68,7 +71,9 @@
     // Check if already logged in
     (async () => {
       try {
-        const res = await fetch(`${API_BASE}/api/auth/me`, { credentials: 'include' });
+        const token = localStorage.getItem('cbf_token');
+        const headers = token ? { 'Authorization': `Bearer ${token}` } : {};
+        const res = await fetch(`${API_BASE}/api/auth/me`, { headers, credentials: 'include' });
         if (res.ok) window.location.href = 'dashboard.html';
       } catch {}
     })();

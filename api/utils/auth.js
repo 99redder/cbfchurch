@@ -25,7 +25,14 @@ function verifyToken(token) {
 }
 
 function requireAuth(req, res, next) {
-  const token = req.cookies?.token;
+  let token = req.cookies?.token;
+  // Also accept Authorization: Bearer <token> header (for cross-origin without cookies)
+  if (!token && req.headers.authorization) {
+    const parts = req.headers.authorization.split(' ');
+    if (parts.length === 2 && parts[0] === 'Bearer') {
+      token = parts[1];
+    }
+  }
   if (!token) {
     return res.status(401).json({ error: 'Authentication required' });
   }

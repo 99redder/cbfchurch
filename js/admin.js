@@ -4,10 +4,20 @@ const API_BASE = 'https://cbfchurch.onrender.com';
 // Global user info
 let currentUser = null;
 
+// Helper: fetch with auth token
+function authFetch(url, options = {}) {
+  const token = localStorage.getItem('cbf_token');
+  const headers = options.headers ? { ...options.headers } : {};
+  if (token) {
+    headers['Authorization'] = `Bearer ${token}`;
+  }
+  return fetch(url, { ...options, headers, credentials: 'include' });
+}
+
 // Auth check - redirect to login if not authenticated
 (async function checkAuth() {
   try {
-    const res = await fetch(`${API_BASE}/api/auth/me`, { credentials: 'include' });
+    const res = await authFetch(`${API_BASE}/api/auth/me`);
     if (!res.ok) {
       if (!window.location.pathname.includes('login.html')) {
         window.location.href = 'login.html';
@@ -42,11 +52,9 @@ if (logoutBtn) {
   logoutBtn.addEventListener('click', async (e) => {
     e.preventDefault();
     try {
-      await fetch(`${API_BASE}/api/auth/logout`, {
-        method: 'POST',
-        credentials: 'include'
-      });
+      await authFetch(`${API_BASE}/api/auth/logout`, { method: 'POST' });
     } catch {}
+    localStorage.removeItem('cbf_token');
     window.location.href = 'login.html';
   });
 }
@@ -65,7 +73,7 @@ if (galleryAdminListEl) {
 
 async function loadDashboardPosts() {
   try {
-    const res = await fetch(`${API_BASE}/api/admin/posts`, { credentials: 'include' });
+    const res = await authFetch(`${API_BASE}/api/admin/posts`);
     if (!res.ok) {
       if (res.status === 401) { window.location.href = 'login.html'; return; }
       throw new Error('Failed to load posts');
@@ -116,9 +124,8 @@ async function loadDashboardPosts() {
         if (!confirm(`Delete "${title}"? This cannot be undone.`)) return;
 
         try {
-          const res = await fetch(`${API_BASE}/api/admin/posts/${id}`, {
-            method: 'DELETE',
-            credentials: 'include'
+          const res = await authFetch(`${API_BASE}/api/admin/posts/${id}`, {
+            method: 'DELETE'
           });
 
           if (!res.ok) {
@@ -149,7 +156,7 @@ if (usersListEl) {
 
 async function loadUsers() {
   try {
-    const res = await fetch(`${API_BASE}/api/admin/users`, { credentials: 'include' });
+    const res = await authFetch(`${API_BASE}/api/admin/users`);
     if (!res.ok) {
       if (res.status === 401) { window.location.href = 'login.html'; return; }
       if (res.status === 403) { window.location.href = 'dashboard.html'; return; }
@@ -199,9 +206,8 @@ async function loadUsers() {
         if (!confirm(`Delete user "${username}"? This cannot be undone.`)) return;
 
         try {
-          const res = await fetch(`${API_BASE}/api/admin/users/${id}`, {
-            method: 'DELETE',
-            credentials: 'include'
+          const res = await authFetch(`${API_BASE}/api/admin/users/${id}`, {
+            method: 'DELETE'
           });
 
           if (!res.ok) {
@@ -245,10 +251,9 @@ if (createUserForm) {
     }
 
     try {
-      const res = await fetch(`${API_BASE}/api/auth/register`, {
+      const res = await authFetch(`${API_BASE}/api/auth/register`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
         body: JSON.stringify({ username, password, role })
       });
 
@@ -297,10 +302,9 @@ if (galleryUploadForm) {
 
     try {
       const dataUrl = await readFileAsDataUrl(file);
-      const res = await fetch(`${API_BASE}/api/admin/gallery`, {
+      const res = await authFetch(`${API_BASE}/api/admin/gallery`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
         body: JSON.stringify({
           imageData: dataUrl,
           alt: altInput ? altInput.value.trim() : ''
@@ -349,7 +353,7 @@ function readFileAsDataUrl(file) {
 
 async function loadGalleryAdmin() {
   try {
-    const res = await fetch(`${API_BASE}/api/admin/gallery`, { credentials: 'include' });
+    const res = await authFetch(`${API_BASE}/api/admin/gallery`);
     if (!res.ok) {
       if (res.status === 401) { window.location.href = 'login.html'; return; }
       throw new Error('Failed to load gallery');
@@ -420,10 +424,9 @@ async function saveGalleryOrder() {
   const items = Array.from(galleryAdminListEl.querySelectorAll('.gallery-admin-item'));
   const orderedIds = items.map(item => item.dataset.id);
   try {
-    await fetch(`${API_BASE}/api/admin/gallery/reorder`, {
+    await authFetch(`${API_BASE}/api/admin/gallery/reorder`, {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
-      credentials: 'include',
       body: JSON.stringify({ orderedIds })
     });
   } catch {
@@ -437,9 +440,8 @@ async function deleteGalleryItem(item) {
   if (!confirm('Delete this photo? This cannot be undone.')) return;
 
   try {
-    const res = await fetch(`${API_BASE}/api/admin/gallery/${id}`, {
-      method: 'DELETE',
-      credentials: 'include'
+    const res = await authFetch(`${API_BASE}/api/admin/gallery/${id}`, {
+      method: 'DELETE'
     });
     if (!res.ok) {
       alert('Failed to delete photo');
