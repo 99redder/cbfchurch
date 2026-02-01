@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-labelledby="cbfLogoTitle cbfLogoDesc">
+  <title id="cbfLogoTitle">Christian Believers Fellowship</title>
+  <desc id="cbfLogoDesc">A cross above an open book framed by a circular emblem.</desc>
+  <circle cx="60" cy="60" r="52" fill="none" stroke="#d4a843" stroke-width="4" />
+  <circle cx="60" cy="60" r="42" fill="none" stroke="#ffffff" stroke-width="2" opacity="0.7" />
+  <rect x="56" y="30" width="8" height="34" rx="2" fill="#ffffff" />
+  <rect x="44" y="40" width="32" height="8" rx="2" fill="#ffffff" />
+  <circle cx="60" cy="44" r="4" fill="#d4a843" />
+  <path d="M30 76 Q45 66 60 74 Q75 66 90 76" fill="none" stroke="#ffffff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
+  <path d="M30 84 Q45 74 60 82 Q75 74 90 84" fill="none" stroke="#ffffff" stroke-width="4" stroke-linecap="round" stroke-linejoin="round" />
+</svg>
