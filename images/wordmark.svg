@@ -8,9 +8,9 @@
   <rect x="548" y="68" width="4" height="20" rx="2" fill="#ffffff" />
 
   <!-- Primary name -->
-  <text x="550" y="60" fill="#ffffff" text-anchor="middle"
+  <text x="550" y="62" fill="#ffffff" text-anchor="middle"
         font-family="'Garamond', 'Times New Roman', serif"
-        font-size="48" letter-spacing="1.2">
+        font-size="52" letter-spacing="1.1">
     CHRISTIAN BELIEVERS FELLOWSHIP
   </text>
 
