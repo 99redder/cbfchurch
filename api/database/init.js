@@ -27,7 +27,7 @@ async function initializeDatabase() {
     CREATE TABLE IF NOT EXISTS gallery_photos (
       id SERIAL PRIMARY KEY,
       filename TEXT NOT NULL,
-      position INTEGER DEFAULT 0,
+      position BIGINT DEFAULT 0,
       alt TEXT,
       created_at TIMESTAMP DEFAULT NOW()
     )
@@ -35,9 +35,16 @@ async function initializeDatabase() {
 
   // Migration: add position column if it doesn't exist
   try {
-    await exec(`ALTER TABLE gallery_photos ADD COLUMN position INTEGER DEFAULT 0`);
+    await exec(`ALTER TABLE gallery_photos ADD COLUMN position BIGINT DEFAULT 0`);
   } catch {
     // Column already exists — ignore
+  }
+
+  // Migration: widen position column to BIGINT if it exists as INTEGER
+  try {
+    await exec(`ALTER TABLE gallery_photos ALTER COLUMN position TYPE BIGINT USING position::bigint`);
+  } catch {
+    // Column already BIGINT or table doesn't exist — ignore
   }
 
   // Backfill any null positions for older rows
