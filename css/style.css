@@ -16,8 +16,8 @@
   --color-bg-warm: #faf8f5;
   --color-border: #e0e4e8;
   --color-border-light: #eef1f4;
-  --font-heading: 'Georgia', 'Times New Roman', serif;
-  --font-body: -apple-system, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+  --font-heading: 'Inter', -apple-system, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+  --font-body: 'Inter', -apple-system, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
   --max-width: 1100px;
   --sidebar-width: 300px;
   --radius: 6px;
@@ -98,7 +98,7 @@ p {
 .site-header {
   background: linear-gradient(135deg, var(--color-primary-dark) 0%, var(--color-primary) 100%);
   color: #fff;
-  padding: 1.5rem 0;
+  padding: 2rem 0;
   text-align: center;
   box-shadow: 0 2px 12px rgba(0, 0, 0, 0.15);
 }
@@ -123,7 +123,7 @@ p {
 }
 
 .header-wordmark {
-  height: 64px;
+  height: 84px;
   width: auto;
   max-width: min(560px, 100%);
 }
@@ -189,7 +189,9 @@ p {
 }
 
 .nav-links a {
-  display: block;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
   padding: 0.85rem 0.75rem;
   font-size: 0.85rem;
   color: var(--color-text);
@@ -197,6 +199,18 @@ p {
   border-bottom: 2px solid transparent;
   transition: all var(--transition);
   white-space: nowrap;
+}
+
+.nav-links a i {
+  font-size: 0.9em;
+  width: 1em;
+  text-align: center;
+  opacity: 0.7;
+}
+
+.nav-links a:hover i,
+.nav-links a.active i {
+  opacity: 1;
 }
 
 .nav-links a:hover,
@@ -933,7 +947,7 @@ p {
 
 @media (max-width: 768px) {
   .header-wordmark {
-    height: 54px;
+    height: 72px;
   }
 
   .page-wrapper {

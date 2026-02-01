@@ -1,23 +1,23 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 720 140" role="img" aria-labelledby="cbfWordmarkTitle cbfWordmarkDesc">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 160" role="img" aria-labelledby="cbfWordmarkTitle cbfWordmarkDesc" preserveAspectRatio="xMidYMid meet">
   <title id="cbfWordmarkTitle">Christian Believers Fellowship</title>
   <desc id="cbfWordmarkDesc">Wordmark logo with the church name and address.</desc>
 
   <!-- Emblem line and center mark -->
-  <line x1="40" y1="74" x2="680" y2="74" stroke="#d4a843" stroke-width="2" opacity="0.85" />
-  <circle cx="360" cy="74" r="6" fill="#d4a843" />
-  <rect x="358" y="60" width="4" height="18" rx="2" fill="#ffffff" />
+  <line x1="100" y1="84" x2="1000" y2="84" stroke="#d4a843" stroke-width="2" opacity="0.85" />
+  <circle cx="550" cy="84" r="6" fill="#d4a843" />
+  <rect x="548" y="68" width="4" height="20" rx="2" fill="#ffffff" />
 
   <!-- Primary name -->
-  <text x="360" y="46" fill="#ffffff" text-anchor="middle"
+  <text x="550" y="56" fill="#ffffff" text-anchor="middle"
         font-family="'Garamond', 'Times New Roman', serif"
-        font-size="44" letter-spacing="2">
+        font-size="40" letter-spacing="1.2">
     CHRISTIAN BELIEVERS FELLOWSHIP
   </text>
 
   <!-- Address -->
-  <text x="360" y="114" fill="#e9f1fb" text-anchor="middle"
+  <text x="550" y="124" fill="#e9f1fb" text-anchor="middle"
         font-family="'Georgia', 'Times New Roman', serif"
-        font-size="22" letter-spacing="1">
+        font-size="24" letter-spacing="0.8">
     32 CHAPEL LANE · SOMERSWORTH · NEW HAMPSHIRE
   </text>
 </svg>
