@@ -2,7 +2,7 @@
 // Creates the first admin account
 
 require('dotenv').config({ path: require('path').join(__dirname, '..', '.env') });
-const { getDb, get, run } = require('../utils/db');
+const { get, run } = require('../utils/db');
 const { hashPassword } = require('../utils/auth');
 const initializeDatabase = require('./init');
 
@@ -20,18 +20,18 @@ if (password.length < 6) {
 }
 
 async function seed() {
-  await getDb();
-  initializeDatabase();
+  await initializeDatabase();
 
-  const existing = get('SELECT id FROM users WHERE username = ?', [username]);
+  const existing = await get('SELECT id FROM users WHERE username = $1', [username]);
   if (existing) {
     console.error(`User "${username}" already exists`);
     process.exit(1);
   }
 
   const hash = hashPassword(password);
-  run('INSERT INTO users (username, password_hash) VALUES (?, ?)', [username, hash]);
+  await run('INSERT INTO users (username, password_hash) VALUES ($1, $2)', [username, hash]);
   console.log(`Admin account "${username}" created successfully`);
+  process.exit(0);
 }
 
 seed().catch(err => {

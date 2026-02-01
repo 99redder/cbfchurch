@@ -2,7 +2,6 @@ require('dotenv').config();
 const express = require('express');
 const cookieParser = require('cookie-parser');
 const cors = require('cors');
-const { getDb } = require('./utils/db');
 const initializeDatabase = require('./database/init');
 
 const app = express();
@@ -28,8 +27,8 @@ app.get('/api/health', (req, res) => {
 
 // Initialize database then start server
 async function start() {
-  await getDb();
-  initializeDatabase();
+  await initializeDatabase();
+  console.log('Database tables initialized');
   app.listen(PORT, () => {
     console.log(`CBF API server running on port ${PORT}`);
   });

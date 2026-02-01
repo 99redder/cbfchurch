@@ -5,13 +5,11 @@
 //   1. Export your Blogger blog: Settings > Other > Back up content
 //   2. Run: node scripts/import-blogger.js <path-to-blogger-export.xml>
 //
-// This script reads the Blogger Atom XML export and inserts each post
-// into the CBF API database.
+// Requires DATABASE_URL env var to be set (or .env in api/ directory)
 
 const fs = require('fs');
 const path = require('path');
 
-// Simple XML parser for Blogger exports (no external dependency)
 function parseBloggerExport(xmlContent) {
   const posts = [];
   const entryRegex = /<entry>([\s\S]*?)<\/entry>/g;
@@ -20,34 +18,27 @@ function parseBloggerExport(xmlContent) {
   while ((match = entryRegex.exec(xmlContent)) !== null) {
     const entry = match[1];
 
-    // Skip entries that are comments, pages, or templates
     const categoryMatches = entry.match(/<category[^>]*term="([^"]*)"[^>]*\/>/g) || [];
     const terms = categoryMatches.map(c => {
       const m = c.match(/term="([^"]*)"/);
       return m ? m[1] : '';
     });
 
-    // Only include actual posts (not settings, comments, pages)
     const isPost = terms.some(t => t.includes('kind#post'));
     if (!isPost) continue;
 
-    // Check if published (not draft)
     const draftMatch = entry.match(/<app:draft[^>]*>(yes|no)<\/app:draft>/);
     if (draftMatch && draftMatch[1] === 'yes') continue;
 
-    // Extract title
     const titleMatch = entry.match(/<title[^>]*>([\s\S]*?)<\/title>/);
     const title = titleMatch ? decodeXml(titleMatch[1].trim()) : 'Untitled';
 
-    // Extract content
     const contentMatch = entry.match(/<content[^>]*>([\s\S]*?)<\/content>/);
     const content = contentMatch ? decodeXml(contentMatch[1].trim()) : '';
 
-    // Extract published date
     const publishedMatch = entry.match(/<published>([\s\S]*?)<\/published>/);
     const published = publishedMatch ? publishedMatch[1].trim() : new Date().toISOString();
 
-    // Extract author
     const authorMatch = entry.match(/<author>[\s\S]*?<name>([\s\S]*?)<\/name>[\s\S]*?<\/author>/);
     const author = authorMatch ? decodeXml(authorMatch[1].trim()) : 'CBF';
 
@@ -90,13 +81,13 @@ async function main() {
     process.exit(1);
   }
 
-  // Load the database
-  require('dotenv').config({ path: path.join(__dirname, '..', 'api', '.env') });
-  const dbModule = require(path.join(__dirname, '..', 'api', 'utils', 'db'));
-  const init = require(path.join(__dirname, '..', 'api', 'database', 'init'));
+  // Load env and modules from api/ directory
+  const apiDir = path.join(__dirname, '..', 'api');
+  require(path.join(apiDir, 'node_modules', 'dotenv')).config({ path: path.join(apiDir, '.env') });
+  const dbModule = require(path.join(apiDir, 'utils', 'db'));
+  const init = require(path.join(apiDir, 'database', 'init'));
 
-  await dbModule.getDb();
-  init();
+  await init();
 
   const xmlContent = fs.readFileSync(xmlPath, 'utf8');
   const posts = parseBloggerExport(xmlContent);
@@ -110,7 +101,6 @@ async function main() {
   for (const post of posts) {
     let slug = generateSlug(post.title);
 
-    // Handle duplicate slugs
     if (slugs.has(slug)) {
       let counter = 2;
       while (slugs.has(`${slug}-${counter}`)) counter++;
@@ -118,16 +108,15 @@ async function main() {
     }
     slugs.add(slug);
 
-    // Check if already exists
-    const existing = dbModule.get('SELECT id FROM posts WHERE slug = ?', [slug]);
+    const existing = await dbModule.get('SELECT id FROM posts WHERE slug = $1', [slug]);
     if (existing) {
       skipped++;
       continue;
     }
 
     try {
-      dbModule.run(
-        'INSERT INTO posts (title, content, author, slug, created_at, updated_at) VALUES (?, ?, ?, ?, ?, ?)',
+      await dbModule.run(
+        'INSERT INTO posts (title, content, author, slug, created_at, updated_at) VALUES ($1, $2, $3, $4, $5, $6)',
         [post.title, post.content, post.author, slug, post.published, post.published]
       );
       imported++;
@@ -139,6 +128,7 @@ async function main() {
   }
 
   console.log(`\nDone! Imported: ${imported}, Skipped: ${skipped}`);
+  process.exit(0);
 }
 
 main().catch(err => {
