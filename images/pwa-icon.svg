@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="cbfPwaTitle cbfPwaDesc">
+  <title id="cbfPwaTitle">Christian Believers Fellowship</title>
+  <desc id="cbfPwaDesc">Circular emblem with a cross and open book.</desc>
+  <rect width="512" height="512" rx="96" fill="#365d8a" />
+  <circle cx="256" cy="256" r="192" fill="none" stroke="#d4a843" stroke-width="16" />
+  <circle cx="256" cy="256" r="154" fill="none" stroke="#ffffff" stroke-width="8" opacity="0.7" />
+
+  <rect x="244" y="146" width="24" height="128" rx="8" fill="#ffffff" />
+  <rect x="200" y="186" width="112" height="24" rx="8" fill="#ffffff" />
+  <circle cx="256" cy="198" r="12" fill="#d4a843" />
+
+  <path d="M140 312 Q198 272 256 304 Q314 272 372 312" fill="none" stroke="#ffffff" stroke-width="16" stroke-linecap="round" stroke-linejoin="round" />
+  <path d="M140 352 Q198 312 256 344 Q314 312 372 352" fill="none" stroke="#ffffff" stroke-width="16" stroke-linecap="round" stroke-linejoin="round" />
+</svg>

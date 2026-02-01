@@ -55,3 +55,11 @@ async function apiFetch(endpoint) {
   }
   return res.json();
 }
+
+// Register service worker for PWA
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('sw.js', { updateViaCache: 'none' })
+      .catch(() => {});
+  });
+}
