@@ -9,8 +9,19 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 // Middleware
+const allowedOrigins = (process.env.ALLOWED_ORIGIN || 'http://localhost:8080')
+  .split(',')
+  .map(s => s.trim());
+
 app.use(cors({
-  origin: process.env.ALLOWED_ORIGIN || 'http://localhost:8080',
+  origin: function (origin, callback) {
+    // Allow requests with no origin (e.g. server-to-server, curl)
+    if (!origin) return callback(null, true);
+    if (allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    }
+    return callback(new Error('Not allowed by CORS'));
+  },
   credentials: true
 }));
 app.use(cookieParser());
