@@ -1,9 +1,8 @@
 const express = require('express');
 const router = express.Router();
-const fs = require('fs');
-const path = require('path');
 const { get, all, run } = require('../utils/db');
 const { requireAuth, requireSuperAdmin } = require('../utils/auth');
+const { saveGalleryImage, deleteGalleryImage, attachPublicUrl } = require('../utils/storage');
 
 // All admin routes require authentication
 router.use(requireAuth);
@@ -173,22 +172,18 @@ router.post('/gallery', async (req, res) => {
       return res.status(413).json({ error: 'Image too large (max 4MB)' });
     }
 
-    const uploadDir = path.join(__dirname, '..', 'uploads', 'gallery');
-    fs.mkdirSync(uploadDir, { recursive: true });
-
-    const filename = `gallery-${Date.now()}-${Math.random().toString(36).slice(2, 8)}.${ext}`;
-    const filepath = path.join(uploadDir, filename);
-    fs.writeFileSync(filepath, buffer);
+    const { filename, storageKey, url } = await saveGalleryImage({ buffer, mime, ext });
 
     const result = await run(
-      'INSERT INTO gallery_photos (filename, alt, position) VALUES ($1, $2, $3) RETURNING id',
-      [filename, (alt || '').trim(), Date.now()]
+      'INSERT INTO gallery_photos (filename, alt, position, storage_key, url) VALUES ($1, $2, $3, $4, $5) RETURNING id',
+      [filename, (alt || '').trim(), Date.now(), storageKey, url]
     );
 
     res.status(201).json({
       message: 'Photo uploaded',
       id: result.lastInsertId,
-      filename
+      filename,
+      url: url || ''
     });
   } catch (err) {
     console.error('Upload gallery photo error:', err);
@@ -200,9 +195,9 @@ router.post('/gallery', async (req, res) => {
 router.get('/gallery', async (req, res) => {
   try {
     const photos = await all(
-      'SELECT id, filename, alt, position, created_at FROM gallery_photos ORDER BY position ASC, created_at DESC'
+      'SELECT id, filename, alt, position, created_at, storage_key, url FROM gallery_photos ORDER BY position ASC, created_at DESC'
     );
-    res.json(photos);
+    res.json(photos.map(attachPublicUrl));
   } catch (err) {
     console.error('Admin get gallery photos error:', err);
     res.status(500).json({ error: 'Internal server error' });
@@ -234,17 +229,13 @@ router.put('/gallery/reorder', async (req, res) => {
 router.delete('/gallery/:id', async (req, res) => {
   try {
     const id = parseInt(req.params.id);
-    const photo = await get('SELECT filename FROM gallery_photos WHERE id = $1', [id]);
+    const photo = await get('SELECT filename, storage_key FROM gallery_photos WHERE id = $1', [id]);
     if (!photo) {
       return res.status(404).json({ error: 'Photo not found' });
     }
 
     await run('DELETE FROM gallery_photos WHERE id = $1', [id]);
-
-    const filepath = path.join(__dirname, '..', 'uploads', 'gallery', photo.filename);
-    if (fs.existsSync(filepath)) {
-      fs.unlinkSync(filepath);
-    }
+    await deleteGalleryImage({ filename: photo.filename, storageKey: photo.storage_key });
 
     res.json({ message: 'Photo deleted' });
   } catch (err) {

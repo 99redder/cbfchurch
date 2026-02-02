@@ -392,7 +392,7 @@ async function loadGalleryAdmin() {
 
     galleryAdminListEl.innerHTML = photos.map((photo, index) => `
       <div class="gallery-admin-item" data-id="${photo.id}">
-        <img class="gallery-admin-thumb" src="${API_BASE}/uploads/gallery/${photo.filename}" alt="${escapeHtml(photo.alt || 'Gallery photo')}">
+        <img class="gallery-admin-thumb" src="${photo.url || `${API_BASE}/uploads/gallery/${photo.filename}`}" alt="${escapeHtml(photo.alt || 'Gallery photo')}">
         <div class="gallery-admin-meta">
           <strong>${escapeHtml(photo.alt || 'Gallery photo')}</strong>
           <span class="text-muted">${formatDate(photo.created_at)}</span>

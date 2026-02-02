@@ -36,7 +36,7 @@
       const photos = await res.json();
       photos.forEach(photo => {
         const img = document.createElement('img');
-        img.src = `${API_BASE}/uploads/gallery/${photo.filename}`;
+        img.src = photo.url || `${API_BASE}/uploads/gallery/${photo.filename}`;
         img.alt = photo.alt || 'CBF Fellowship photo';
         img.loading = 'lazy';
         img.addEventListener('error', () => {

@@ -8,6 +8,7 @@
     "seed": "node database/seed.js"
   },
   "dependencies": {
+    "aws-sdk": "^2.1691.0",
     "pg": "^8.13.1",
     "bcryptjs": "^2.4.3",
     "cookie-parser": "^1.4.7",

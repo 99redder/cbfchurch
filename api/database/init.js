@@ -28,6 +28,8 @@ async function initializeDatabase() {
       id SERIAL PRIMARY KEY,
       filename TEXT NOT NULL,
       position BIGINT DEFAULT 0,
+      storage_key TEXT,
+      url TEXT,
       alt TEXT,
       created_at TIMESTAMP DEFAULT NOW()
     )
@@ -45,6 +47,20 @@ async function initializeDatabase() {
     await exec(`ALTER TABLE gallery_photos ALTER COLUMN position TYPE BIGINT USING position::bigint`);
   } catch {
     // Column already BIGINT or table doesn't exist — ignore
+  }
+
+  // Migration: add storage_key column if it doesn't exist
+  try {
+    await exec(`ALTER TABLE gallery_photos ADD COLUMN storage_key TEXT`);
+  } catch {
+    // Column already exists — ignore
+  }
+
+  // Migration: add url column if it doesn't exist
+  try {
+    await exec(`ALTER TABLE gallery_photos ADD COLUMN url TEXT`);
+  } catch {
+    // Column already exists — ignore
   }
 
   // Backfill any null positions for older rows
