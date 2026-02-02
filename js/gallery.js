@@ -59,7 +59,13 @@
       const res = await fetch(`${API_BASE}/api/gallery`);
       if (!res.ok) return;
       const photos = await res.json();
-      const fragment = document.createDocumentFragment();
+      const now = new Date();
+      const cutoff = new Date(now);
+      cutoff.setFullYear(cutoff.getFullYear() - 1);
+
+      const recentFragment = document.createDocumentFragment();
+      const olderFragment = document.createDocumentFragment();
+
       photos.forEach(photo => {
         const img = document.createElement('img');
         img.src = photo.url || `${API_BASE}/uploads/gallery/${photo.filename}`;
@@ -70,9 +76,36 @@
         const wrapper = document.createElement('div');
         wrapper.className = 'gallery-item';
         wrapper.appendChild(img);
-        fragment.appendChild(wrapper);
+
+        const createdAt = photo.created_at ? new Date(photo.created_at) : null;
+        if (createdAt && createdAt >= cutoff) {
+          recentFragment.appendChild(wrapper);
+        } else {
+          olderFragment.appendChild(wrapper);
+        }
       });
-      gallery.insertBefore(fragment, gallery.firstChild);
+
+      const card = gallery.closest('.card') || gallery.parentElement;
+      let recentSection = document.getElementById('recent-uploads-section');
+      let recentGrid = document.getElementById('recent-uploads-grid');
+
+      if (recentFragment.childNodes.length > 0) {
+        if (!recentSection && card) {
+          recentSection = document.createElement('section');
+          recentSection.id = 'recent-uploads-section';
+          recentSection.innerHTML = `
+            <h2>New uploads (last 12 months)</h2>
+            <div id="recent-uploads-grid" class="gallery-grid mt-2"></div>
+          `;
+          card.insertBefore(recentSection, gallery);
+          recentGrid = document.getElementById('recent-uploads-grid');
+        }
+        if (recentGrid) {
+          recentGrid.appendChild(recentFragment);
+        }
+      }
+
+      gallery.insertBefore(olderFragment, gallery.firstChild);
       refreshItems();
     } catch {
       // ignore
