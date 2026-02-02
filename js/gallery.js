@@ -39,8 +39,11 @@
     img.addEventListener('error', () => removeBrokenImage(img));
 
     if (typeof img.decode === 'function') {
-      img.decode().catch(() => removeBrokenImage(img));
-      return;
+      img.decode().catch(() => {
+        if (img.naturalWidth === 0) {
+          removeBrokenImage(img);
+        }
+      });
     }
 
     setTimeout(() => {
