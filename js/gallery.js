@@ -28,6 +28,28 @@
     items = Array.from(gallery.querySelectorAll('.gallery-item img'));
   }
 
+  function removeBrokenImage(img) {
+    if (!img) return;
+    if (img.parentElement) img.parentElement.remove();
+    refreshItems();
+  }
+
+  function guardImage(img) {
+    if (!img) return;
+    img.addEventListener('error', () => removeBrokenImage(img));
+
+    if (typeof img.decode === 'function') {
+      img.decode().catch(() => removeBrokenImage(img));
+      return;
+    }
+
+    setTimeout(() => {
+      if (img.complete && img.naturalWidth === 0) {
+        removeBrokenImage(img);
+      }
+    }, 500);
+  }
+
   async function loadUploadedPhotos() {
     if (typeof API_BASE === 'undefined') return;
     try {
@@ -39,10 +61,7 @@
         img.src = photo.url || `${API_BASE}/uploads/gallery/${photo.filename}`;
         img.alt = photo.alt || 'CBF Fellowship photo';
         img.loading = 'lazy';
-        img.addEventListener('error', () => {
-          if (img.parentElement) img.parentElement.remove();
-          refreshItems();
-        });
+        guardImage(img);
 
         const wrapper = document.createElement('div');
         wrapper.className = 'gallery-item';
@@ -91,12 +110,7 @@
     if (index >= 0) open(index);
   });
 
-  items.forEach((img) => {
-    img.addEventListener('error', () => {
-      if (img.parentElement) img.parentElement.remove();
-      refreshItems();
-    });
-  });
+  items.forEach(guardImage);
 
   loadUploadedPhotos();
 
