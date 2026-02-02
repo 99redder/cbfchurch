@@ -59,6 +59,7 @@
       const res = await fetch(`${API_BASE}/api/gallery`);
       if (!res.ok) return;
       const photos = await res.json();
+      const fragment = document.createDocumentFragment();
       photos.forEach(photo => {
         const img = document.createElement('img');
         img.src = photo.url || `${API_BASE}/uploads/gallery/${photo.filename}`;
@@ -69,8 +70,9 @@
         const wrapper = document.createElement('div');
         wrapper.className = 'gallery-item';
         wrapper.appendChild(img);
-        gallery.appendChild(wrapper);
+        fragment.appendChild(wrapper);
       });
+      gallery.insertBefore(fragment, gallery.firstChild);
       refreshItems();
     } catch {
       // ignore
