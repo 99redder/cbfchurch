@@ -176,7 +176,7 @@ router.post('/gallery', async (req, res) => {
 
     const result = await run(
       'INSERT INTO gallery_photos (filename, alt, position, storage_key, url) VALUES ($1, $2, $3, $4, $5) RETURNING id',
-      [filename, (alt || '').trim(), Date.now(), storageKey, url]
+      [filename, (alt || '').trim(), 0, storageKey, url]
     );
 
     res.status(201).json({
