@@ -633,6 +633,16 @@ p {
   font-size: 1rem;
 }
 
+:root[data-theme="dark"] .contact-card h4 {
+  color: var(--color-text-light);
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) .contact-card h4 {
+    color: var(--color-text-light);
+  }
+}
+
 .contact-card .role {
   font-size: 0.8rem;
   color: var(--color-text-muted);
