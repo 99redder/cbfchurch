@@ -40,7 +40,8 @@
 
     if (typeof img.decode === 'function') {
       img.decode().catch(() => {
-        if (img.naturalWidth === 0) {
+        // Firefox can reject decode before the image finishes loading.
+        if (img.complete && img.naturalWidth === 0) {
           removeBrokenImage(img);
         }
       });
