@@ -3,7 +3,7 @@
   const gallery = document.querySelector('.gallery-grid');
   if (!gallery) return;
 
-  let items = Array.from(gallery.querySelectorAll('.gallery-item img'));
+  let items = Array.from(document.querySelectorAll('.gallery-grid .gallery-item img'));
 
   // Create lightbox elements
   const lightbox = document.createElement('div');
@@ -25,7 +25,7 @@
   let currentIndex = 0;
 
   function refreshItems() {
-    items = Array.from(gallery.querySelectorAll('.gallery-item img'));
+    items = Array.from(document.querySelectorAll('.gallery-grid .gallery-item img'));
   }
 
   function removeBrokenImage(img) {
@@ -140,7 +140,7 @@
   }
 
   // Event listeners
-  gallery.addEventListener('click', (e) => {
+  document.addEventListener('click', (e) => {
     const img = e.target.closest('.gallery-item img');
     if (!img) return;
     refreshItems();
