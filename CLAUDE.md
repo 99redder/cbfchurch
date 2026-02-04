@@ -4,7 +4,7 @@
 
 Website for Christian Believers Fellowship (CBF), a church at 32 Chapel Lane, Somersworth, NH. The project is split into two deployments:
 
-- **Frontend (GitHub Pages):** Static HTML/CSS/JS site at `www.cbfchurch.com` (repo: chrisgorham999.github.io or similar)
+- **Frontend (GitHub Pages):** Static HTML/CSS/JS site at `www.cbfchurch.com` (repo: 99redder.github.io or similar)
 - **Backend API (Render.com free tier):** Node.js/Express API at `cbfchurch.onrender.com`
 - **Database (Neon.tech):** PostgreSQL — the `DATABASE_URL` env var points here
 
@@ -164,7 +164,7 @@ Flow:
 - `DATABASE_URL` — Neon PostgreSQL connection string
 - `SESSION_SECRET` — JWT signing secret
 - `NODE_ENV` — Must be `production`
-- `ALLOWED_ORIGIN` — Comma-separated origins, e.g. `https://www.cbfchurch.com,https://chrisgorham999.github.io`
+- `ALLOWED_ORIGIN` — Comma-separated origins, e.g. `https://www.cbfchurch.com,https://99redder.github.io`
 
 ### Local (`api/.env`, gitignored)
 - `PORT=3000`
