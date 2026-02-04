@@ -54,6 +54,23 @@
     }, 500);
   }
 
+  const probedUrls = new Set();
+  async function probeImageHeaders(src) {
+    if (!src || probedUrls.has(src)) return;
+    probedUrls.add(src);
+    try {
+      const res = await fetch(src, { method: 'HEAD' });
+      const type = res.headers.get('content-type');
+      if (!res.ok) {
+        console.warn('Gallery image HEAD failed', res.status, src);
+      } else if (type && !type.startsWith('image/')) {
+        console.warn('Gallery image content-type not image/*', type, src);
+      }
+    } catch (err) {
+      console.warn('Gallery image HEAD error', src, err);
+    }
+  }
+
   async function loadUploadedPhotos() {
     if (typeof API_BASE === 'undefined') return;
     try {
@@ -73,6 +90,7 @@
         img.alt = photo.alt || 'CBF Fellowship photo';
         img.loading = 'lazy';
         guardImage(img);
+        probeImageHeaders(img.src);
 
         const wrapper = document.createElement('div');
         wrapper.className = 'gallery-item';
