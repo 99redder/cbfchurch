@@ -136,7 +136,7 @@ async function apiFetch(endpoint) {
     <p>We reserve the right to update these Terms of Use at any time. Continued use of the site after changes constitutes acceptance of the updated terms.</p>
 
     <h3>Contact Us</h3>
-    <p>If you have questions about these Terms of Use, please <a href="contact.html">contact us</a> through the information on our Detailed Contact List page.</p>
+    <p>If you have questions about these Terms of Use, please visit our <a href="contact.html">Detailed Contact List</a> page.</p>
   `;
 
   // Create modal element
