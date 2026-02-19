@@ -1615,3 +1615,39 @@ p {
   color: var(--color-text-light);
   min-height: 1.2rem;
 }
+
+
+.quick-message-modal-card {
+  padding: 0.9rem 1rem 1rem;
+}
+
+.quick-message-form .form-row {
+  margin-bottom: 0.6rem;
+}
+
+.quick-message-form textarea {
+  min-height: 110px;
+}
+
+.quick-message-form select[multiple] {
+  min-height: 120px;
+}
+
+.field-help {
+  display: block;
+  margin-top: 0.2rem;
+  color: var(--color-text-muted);
+  font-size: 0.8rem;
+}
+
+.quick-message-actions {
+  display: flex;
+  justify-content: center;
+  margin-top: 0.25rem;
+}
+
+#quick-send-btn {
+  min-width: 220px;
+  font-size: 1.05rem;
+  padding: 0.8rem 1.3rem;
+}

@@ -57,35 +57,40 @@ router.post('/quick-message', async (req, res) => {
       return res.status(429).json({ error: 'Too many requests. Please try again in a few minutes.' });
     }
 
-    const fromInput = normalizeEmail(req.body?.from);
+    const fromName = String(req.body?.fromName || '').trim();
     const replyToInput = normalizeEmail(req.body?.replyTo);
     const to = normalizeEmail(req.body?.to);
-    const cc = normalizeEmail(req.body?.cc);
+    const ccRaw = req.body?.cc;
+    const ccList = Array.isArray(ccRaw) ? ccRaw.map(normalizeEmail).filter(Boolean) : (ccRaw ? [normalizeEmail(ccRaw)] : []);
     const subject = String(req.body?.subject || '').trim();
     const message = String(req.body?.message || '').trim();
 
-    if (!isEmail(fromInput) || !isEmail(replyToInput) || !isEmail(to) || !subject || !message) {
-      return res.status(400).json({ error: 'From, Reply-To, To, Subject, and Message are required.' });
+    if (!fromName || !isEmail(replyToInput) || !isEmail(to) || !subject || !message) {
+      return res.status(400).json({ error: 'Your Name, Your Email Address, To, Subject, and Message are required.' });
     }
 
-    if (cc && !isEmail(cc)) {
-      return res.status(400).json({ error: 'CC must be a valid email address.' });
+    if (ccList.some(v => !isEmail(v))) {
+      return res.status(400).json({ error: 'CC must contain valid email addresses.' });
+    }
+
+    if (ccList.some(v => !ALLOWED_RECIPIENTS.has(v))) {
+      return res.status(400).json({ error: 'CC recipient is not allowed.' });
     }
 
     if (!ALLOWED_RECIPIENTS.has(to)) {
       return res.status(400).json({ error: 'Selected recipient is not allowed.' });
     }
 
-    const replyToList = Array.from(new Set([replyToInput, fromInput].filter(Boolean)));
+    const replyToList = [replyToInput];
 
     const payload = {
       from: `CBF Website Messenger <${QUICK_MESSAGE_FROM}>`,
       to: [to],
       subject,
       text: [
-        `From (submitted): ${fromInput}`,
+        `From Name: ${fromName}`,
         `Reply-To (submitted): ${replyToInput}`,
-        cc ? `CC requested: ${cc}` : '',
+        ccList.length ? `CC requested: ${ccList.join(', ')}` : '',
         '',
         message
       ].filter(Boolean).join('\n'),
@@ -95,7 +100,7 @@ router.post('/quick-message', async (req, res) => {
       }
     };
 
-    if (cc) payload.cc = [cc];
+    if (ccList.length) payload.cc = ccList;
 
     const resendRes = await fetch('https://api.resend.com/emails', {
       method: 'POST',
