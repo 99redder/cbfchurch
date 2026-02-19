@@ -1528,3 +1528,90 @@ p {
     flex-direction: column;
   }
 }
+
+
+/* Quick message modal (contact page) */
+.quick-message-row {
+  display: flex;
+  justify-content: flex-start;
+}
+
+.quick-message-modal {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.58);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 1100;
+  padding: 1rem;
+}
+
+.quick-message-modal.active {
+  display: flex;
+}
+
+.quick-message-modal-card {
+  width: min(720px, 100%);
+  max-height: 90vh;
+  overflow: auto;
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  box-shadow: var(--shadow-hover);
+  padding: 1rem 1rem 1.2rem;
+  position: relative;
+}
+
+.quick-message-close {
+  position: absolute;
+  right: 0.65rem;
+  top: 0.4rem;
+  border: 0;
+  background: transparent;
+  font-size: 1.7rem;
+  color: var(--color-text-light);
+  cursor: pointer;
+}
+
+.quick-message-subtitle {
+  margin-top: -0.35rem;
+  color: var(--color-text-light);
+}
+
+.quick-message-form .form-row {
+  margin-bottom: 0.8rem;
+}
+
+.quick-message-form label {
+  display: block;
+  margin-bottom: 0.3rem;
+  font-weight: 600;
+}
+
+.quick-message-form input,
+.quick-message-form select,
+.quick-message-form textarea {
+  width: 100%;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius);
+  background: var(--color-bg);
+  color: var(--color-text);
+  font: inherit;
+  padding: 0.55rem 0.65rem;
+}
+
+.quick-message-form textarea {
+  resize: vertical;
+}
+
+.quick-message-actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.quick-message-status {
+  margin-top: 0.5rem;
+  color: var(--color-text-light);
+  min-height: 1.2rem;
+}

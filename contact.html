@@ -66,6 +66,83 @@
         <h1>Detailed Contact List</h1>
         <p>Feel free to reach out to any of our leadership team members. You can also contact us on X/Twitter at <a href="https://twitter.com/CBF_Somersworth" target="_blank" rel="noopener">@CBF_Somersworth</a>.</p>
 
+
+        <div class="quick-message-row mb-3">
+          <button type="button" id="quick-message-open" class="btn btn-primary">
+            <i class="fas fa-paper-plane"></i> Send a Quick Message Now
+          </button>
+        </div>
+
+        <div id="quick-message-modal" class="quick-message-modal" aria-hidden="true" role="dialog" aria-labelledby="quick-message-title">
+          <div class="quick-message-modal-card">
+            <button type="button" class="quick-message-close" id="quick-message-close" aria-label="Close">&times;</button>
+            <h2 id="quick-message-title">Send a Quick Message</h2>
+            <p class="quick-message-subtitle">Choose a contact, add optional CC, and send your note.</p>
+
+            <form id="quick-message-form" class="quick-message-form">
+              <div class="form-row">
+                <label for="quick-from">From</label>
+                <input id="quick-from" name="from" type="email" required placeholder="you@example.com">
+              </div>
+
+              <div class="form-row">
+                <label for="quick-reply-to">Reply-To</label>
+                <input id="quick-reply-to" name="replyTo" type="email" required placeholder="you@example.com">
+              </div>
+
+              <div class="form-row">
+                <label for="quick-to">To</label>
+                <select id="quick-to" name="to" required>
+                  <option value="">Select a recipient...</option>
+                  <optgroup label="Elders">
+                    <option value="dennisgorham@comcast.net">Elder — Dennis Gorham (dennisgorham@comcast.net)</option>
+                    <option value="bblake351@gmail.com">Elder — Bruce Blake (bblake351@gmail.com)</option>
+                  </optgroup>
+                  <optgroup label="Administrative">
+                    <option value="leavittrichard49@gmail.com">Music Director — Richard Leavitt (leavittrichard49@gmail.com)</option>
+                    <option value="deniseleavitt52@gmail.com">Corresponding Secretary — Denise Leavitt (deniseleavitt52@gmail.com)</option>
+                    <option value="cbf-somersworthnh@hotmail.com">Treasurer — Faye Hoffner (cbf-somersworthnh@hotmail.com)</option>
+                  </optgroup>
+                  <optgroup label="Deacons & Trustees">
+                    <option value="Stevefayehoffner@hotmail.com">Deacon / Trustee — Steve Hoffner (Stevefayehoffner@hotmail.com)</option>
+                    <option value="hoffnerjustinb1@gmail.com">Trustee — Justin Hoffner (hoffnerjustinb1@gmail.com)</option>
+                    <option value="sblake4588@gmail.com">Trustee — Chere Blake (sblake4588@gmail.com)</option>
+                    <option value="cynthia.choate@gmail.com">Trustee — Cindy Choate (cynthia.choate@gmail.com)</option>
+                    <option value="tdomosiaris@comcast.net">Trustee / CBF News — Tim Domosiaris (tdomosiaris@comcast.net)</option>
+                    <option value="hrhopkinson@gmail.com">Trustee — Henry Hopkinson (hrhopkinson@gmail.com)</option>
+                  </optgroup>
+                  <optgroup label="Other">
+                    <option value="rimaro@metrocast.net">Member — Richard Roberg (rimaro@metrocast.net)</option>
+                  </optgroup>
+                  <optgroup label="Web Admin">
+                    <option value="support@easternshore.ai">Web Admin Support — Eastern Shore AI (support@easternshore.ai)</option>
+                  </optgroup>
+                </select>
+              </div>
+
+              <div class="form-row">
+                <label for="quick-cc">CC (optional)</label>
+                <input id="quick-cc" name="cc" type="email" placeholder="name@example.com">
+              </div>
+
+              <div class="form-row">
+                <label for="quick-subject">Subject</label>
+                <input id="quick-subject" name="subject" type="text" required placeholder="Message subject">
+              </div>
+
+              <div class="form-row">
+                <label for="quick-message">Message</label>
+                <textarea id="quick-message" name="message" rows="7" required placeholder="Write your message here..."></textarea>
+              </div>
+
+              <div class="quick-message-actions">
+                <button type="submit" class="btn btn-primary" id="quick-send-btn">Send</button>
+              </div>
+              <p id="quick-message-status" class="quick-message-status" aria-live="polite"></p>
+            </form>
+          </div>
+        </div>
+
         <h2 class="mt-3">Elders</h2>
         <div class="contact-grid mb-3">
           <div class="contact-card">
@@ -182,5 +259,83 @@
   </footer>
 
   <script src="js/common.js"></script>
+
+  <script>
+    (function initQuickMessageModal() {
+      const modal = document.getElementById('quick-message-modal');
+      const openBtn = document.getElementById('quick-message-open');
+      const closeBtn = document.getElementById('quick-message-close');
+      const form = document.getElementById('quick-message-form');
+      const statusEl = document.getElementById('quick-message-status');
+      const sendBtn = document.getElementById('quick-send-btn');
+      if (!modal || !openBtn || !closeBtn || !form) return;
+
+      const openModal = () => {
+        modal.classList.add('active');
+        modal.setAttribute('aria-hidden', 'false');
+        document.body.style.overflow = 'hidden';
+      };
+
+      const closeModal = () => {
+        modal.classList.remove('active');
+        modal.setAttribute('aria-hidden', 'true');
+        document.body.style.overflow = '';
+      };
+
+      openBtn.addEventListener('click', openModal);
+      closeBtn.addEventListener('click', closeModal);
+      modal.addEventListener('click', (e) => {
+        if (e.target === modal) closeModal();
+      });
+      document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && modal.classList.contains('active')) closeModal();
+      });
+
+      form.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        statusEl.textContent = '';
+        const fd = new FormData(form);
+        const payload = {
+          from: (fd.get('from') || '').trim(),
+          replyTo: (fd.get('replyTo') || '').trim(),
+          to: fd.get('to'),
+          cc: (fd.get('cc') || '').trim(),
+          subject: (fd.get('subject') || '').trim(),
+          message: (fd.get('message') || '').trim(),
+          source: 'cbfchurch-contact-quick-message'
+        };
+
+        if (!payload.from || !payload.replyTo || !payload.to || !payload.subject || !payload.message) {
+          statusEl.textContent = 'Please fill out From, Reply-To, To, Subject, and Message.';
+          return;
+        }
+
+        sendBtn.disabled = true;
+        sendBtn.textContent = 'Sending...';
+
+        try {
+          const res = await fetch(`${API_BASE}/api/contact/quick-message`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            credentials: 'include',
+            body: JSON.stringify(payload)
+          });
+
+          const data = await res.json().catch(() => ({}));
+          if (!res.ok) throw new Error(data.error || 'Unable to send message right now.');
+
+          statusEl.textContent = 'Message sent successfully.';
+          form.reset();
+          setTimeout(closeModal, 700);
+        } catch (err) {
+          statusEl.textContent = err.message || 'Unable to send message right now.';
+        } finally {
+          sendBtn.disabled = false;
+          sendBtn.textContent = 'Send';
+        }
+      });
+    })();
+  </script>
 </body>
 </html>
+
