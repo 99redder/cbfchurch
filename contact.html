@@ -121,33 +121,38 @@
               </div>
 
               <div class="form-row">
-                <label for="quick-cc">CC (optional, select one or more)</label>
-                <select id="quick-cc" name="cc" multiple size="6">
-                  <optgroup label="Elders">
-                    <option value="dennisgorham@comcast.net">Elder — Dennis Gorham (dennisgorham@comcast.net)</option>
-                    <option value="bblake351@gmail.com">Elder — Bruce Blake (bblake351@gmail.com)</option>
-                  </optgroup>
-                  <optgroup label="Administrative">
-                    <option value="leavittrichard49@gmail.com">Music Director — Richard Leavitt (leavittrichard49@gmail.com)</option>
-                    <option value="deniseleavitt52@gmail.com">Corresponding Secretary — Denise Leavitt (deniseleavitt52@gmail.com)</option>
-                    <option value="cbf-somersworthnh@hotmail.com">Treasurer — Faye Hoffner (cbf-somersworthnh@hotmail.com)</option>
-                  </optgroup>
-                  <optgroup label="Deacons & Trustees">
-                    <option value="Stevefayehoffner@hotmail.com">Deacon / Trustee — Steve Hoffner (Stevefayehoffner@hotmail.com)</option>
-                    <option value="hoffnerjustinb1@gmail.com">Trustee — Justin Hoffner (hoffnerjustinb1@gmail.com)</option>
-                    <option value="sblake4588@gmail.com">Trustee — Chere Blake (sblake4588@gmail.com)</option>
-                    <option value="cynthia.choate@gmail.com">Trustee — Cindy Choate (cynthia.choate@gmail.com)</option>
-                    <option value="tdomosiaris@comcast.net">Trustee / CBF News — Tim Domosiaris (tdomosiaris@comcast.net)</option>
-                    <option value="hrhopkinson@gmail.com">Trustee — Henry Hopkinson (hrhopkinson@gmail.com)</option>
-                  </optgroup>
-                  <optgroup label="Other">
-                    <option value="rimaro@metrocast.net">Member — Richard Roberg (rimaro@metrocast.net)</option>
-                  </optgroup>
-                  <optgroup label="Web Admin">
-                    <option value="support@easternshore.ai">Web Admin Support — Eastern Shore AI (support@easternshore.ai)</option>
-                  </optgroup>
-                </select>
-                <small class="field-help">Hold Cmd/Ctrl to select multiple contacts.</small>
+                <label for="quick-cc">CC (optional)</label>
+                <div class="quick-cc-inline">
+                  <select id="quick-cc" name="cc">
+                    <option value="">Select a CC recipient...</option>
+                    <optgroup label="Elders">
+                      <option value="dennisgorham@comcast.net">Elder — Dennis Gorham (dennisgorham@comcast.net)</option>
+                      <option value="bblake351@gmail.com">Elder — Bruce Blake (bblake351@gmail.com)</option>
+                    </optgroup>
+                    <optgroup label="Administrative">
+                      <option value="leavittrichard49@gmail.com">Music Director — Richard Leavitt (leavittrichard49@gmail.com)</option>
+                      <option value="deniseleavitt52@gmail.com">Corresponding Secretary — Denise Leavitt (deniseleavitt52@gmail.com)</option>
+                      <option value="cbf-somersworthnh@hotmail.com">Treasurer — Faye Hoffner (cbf-somersworthnh@hotmail.com)</option>
+                    </optgroup>
+                    <optgroup label="Deacons & Trustees">
+                      <option value="Stevefayehoffner@hotmail.com">Deacon / Trustee — Steve Hoffner (Stevefayehoffner@hotmail.com)</option>
+                      <option value="hoffnerjustinb1@gmail.com">Trustee — Justin Hoffner (hoffnerjustinb1@gmail.com)</option>
+                      <option value="sblake4588@gmail.com">Trustee — Chere Blake (sblake4588@gmail.com)</option>
+                      <option value="cynthia.choate@gmail.com">Trustee — Cindy Choate (cynthia.choate@gmail.com)</option>
+                      <option value="tdomosiaris@comcast.net">Trustee / CBF News — Tim Domosiaris (tdomosiaris@comcast.net)</option>
+                      <option value="hrhopkinson@gmail.com">Trustee — Henry Hopkinson (hrhopkinson@gmail.com)</option>
+                    </optgroup>
+                    <optgroup label="Other">
+                      <option value="rimaro@metrocast.net">Member — Richard Roberg (rimaro@metrocast.net)</option>
+                    </optgroup>
+                    <optgroup label="Web Admin">
+                      <option value="support@easternshore.ai">Web Admin Support — Eastern Shore AI (support@easternshore.ai)</option>
+                    </optgroup>
+                  </select>
+                  <button type="button" class="btn" id="quick-cc-add">Add</button>
+                </div>
+                <div id="quick-cc-list" class="quick-cc-list"></div>
+                <small class="field-help">Use Add to include multiple CC recipients.</small>
               </div>
 
               <div class="form-row">
@@ -293,7 +298,37 @@
       const form = document.getElementById('quick-message-form');
       const statusEl = document.getElementById('quick-message-status');
       const sendBtn = document.getElementById('quick-send-btn');
+      const ccSelect = document.getElementById('quick-cc');
+      const ccAddBtn = document.getElementById('quick-cc-add');
+      const ccListEl = document.getElementById('quick-cc-list');
+      const selectedCc = new Set();
       if (!modal || !openBtn || !closeBtn || !form) return;
+
+      function renderCcList() {
+        if (!ccListEl) return;
+        ccListEl.innerHTML = '';
+        selectedCc.forEach((email) => {
+          const chip = document.createElement('button');
+          chip.type = 'button';
+          chip.className = 'cc-chip';
+          chip.textContent = email + ' ✕';
+          chip.addEventListener('click', () => {
+            selectedCc.delete(email);
+            renderCcList();
+          });
+          ccListEl.appendChild(chip);
+        });
+      }
+
+      if (ccAddBtn && ccSelect) {
+        ccAddBtn.addEventListener('click', () => {
+          const value = (ccSelect.value || '').trim();
+          if (!value) return;
+          selectedCc.add(value);
+          ccSelect.value = '';
+          renderCcList();
+        });
+      }
 
       const openModal = () => {
         modal.classList.add('active');
@@ -324,7 +359,7 @@
           fromName: (fd.get('from') || '').trim(),
           replyTo: (fd.get('replyTo') || '').trim(),
           to: fd.get('to'),
-          cc: Array.from(document.getElementById('quick-cc').selectedOptions).map(o => o.value),
+          cc: Array.from(selectedCc),
           subject: (fd.get('subject') || '').trim(),
           message: (fd.get('message') || '').trim(),
           source: 'cbfchurch-contact-quick-message'
@@ -351,6 +386,8 @@
 
           statusEl.textContent = 'Message sent successfully.';
           form.reset();
+          selectedCc.clear();
+          renderCcList();
           setTimeout(closeModal, 700);
         } catch (err) {
           statusEl.textContent = err.message || 'Unable to send message right now.';

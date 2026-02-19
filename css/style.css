@@ -1629,9 +1629,6 @@ p {
   min-height: 110px;
 }
 
-.quick-message-form select[multiple] {
-  min-height: 120px;
-}
 
 .field-help {
   display: block;
@@ -1650,4 +1647,34 @@ p {
   min-width: 220px;
   font-size: 1.05rem;
   padding: 0.8rem 1.3rem;
+}
+
+
+.quick-cc-inline {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+#quick-cc-add {
+  padding: 0.55rem 0.9rem;
+  white-space: nowrap;
+}
+
+.quick-cc-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  margin-top: 0.45rem;
+}
+
+.cc-chip {
+  border: 1px solid var(--color-border);
+  background: var(--color-bg-light);
+  color: var(--color-text);
+  border-radius: 999px;
+  padding: 0.2rem 0.55rem;
+  font-size: 0.82rem;
+  cursor: pointer;
 }
