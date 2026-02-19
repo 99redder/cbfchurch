@@ -91,6 +91,11 @@
               </div>
 
               <div class="form-row">
+                <label for="quick-phone">Phone Number (optional)</label>
+                <input id="quick-phone" name="phone" type="tel" placeholder="(555) 123-4567">
+              </div>
+
+              <div class="form-row">
                 <label for="quick-to">To</label>
                 <select id="quick-to" name="to" required>
                   <option value="">Select a recipient...</option>
@@ -358,6 +363,7 @@
         const payload = {
           fromName: (fd.get('from') || '').trim(),
           replyTo: (fd.get('replyTo') || '').trim(),
+          phone: (fd.get('phone') || '').trim(),
           to: fd.get('to'),
           cc: Array.from(selectedCc),
           subject: (fd.get('subject') || '').trim(),

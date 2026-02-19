@@ -60,6 +60,7 @@ router.post('/quick-message', async (req, res) => {
     const fromName = String(req.body?.fromName || '').trim();
     const replyToInput = normalizeEmail(req.body?.replyTo);
     const to = normalizeEmail(req.body?.to);
+    const phone = String(req.body?.phone || '').trim();
     const ccRaw = req.body?.cc;
     const ccList = Array.isArray(ccRaw) ? ccRaw.map(normalizeEmail).filter(Boolean) : (ccRaw ? [normalizeEmail(ccRaw)] : []);
     const subject = String(req.body?.subject || '').trim();
@@ -90,6 +91,7 @@ router.post('/quick-message', async (req, res) => {
       text: [
         `From Name: ${fromName}`,
         `Reply-To (submitted): ${replyToInput}`,
+        phone ? `Phone (submitted): ${phone}` : '',
         ccList.length ? `CC requested: ${ccList.join(', ')}` : '',
         '',
         message
