@@ -2,10 +2,10 @@
 
 ## Overview
 
-Website for Christian Believers Fellowship (CBF), a church at 32 Chapel Lane, Somersworth, NH. The project is split into two deployments:
+Website for Christian Believers Fellowship (CBF), a church at 32 Chapel Lane, Somersworth, NH 03878. The project is split into two deployments:
 
-- **Frontend (GitHub Pages):** Static HTML/CSS/JS site at `www.cbfchurch.com` (repo: 99redder.github.io or similar)
-- **Backend API (Render.com free tier):** Node.js/Express API at `cbfchurch.onrender.com`
+- **Frontend (GitHub Pages):** Static HTML/CSS/JS site at `https://www.cbfchurch.com` (repo: chrisgorham999/chrisgorham999.github.io)
+- **Backend API (Render.com free tier):** Node.js/Express API at `https://cbfchurch.onrender.com`
 - **Database (Neon.tech):** PostgreSQL — the `DATABASE_URL` env var points here
 
 The admin panel is part of the static site but communicates with the API for authentication, blog CRUD, gallery management, and user management.
@@ -19,9 +19,12 @@ The admin panel is part of the static site but communicates with the API for aut
 | Backend API | Node.js + Express |
 | Database | PostgreSQL on Neon.tech (`pg` library) |
 | Auth | bcryptjs + JWT (localStorage + Bearer token) |
-| Blog Editor | Quill.js (CDN) |
+| Blog Editor | Quill.js (CDN `cdn.quilljs.com/1.3.7`) |
 | Photo Gallery | CSS Grid + vanilla JS lightbox |
 | PWA | Service worker + manifest.json |
+| Gallery Storage | AWS S3 (via `aws-sdk`) or Render filesystem fallback |
+| Fonts | Google Fonts — Inter |
+| Icons | Font Awesome 6.5.1 (CDN) |
 
 ## Project Structure
 
@@ -41,44 +44,50 @@ cbfchurch/
 ├── post.html                      # Single blog post view
 ├── manifest.json                  # PWA manifest
 ├── sw.js                          # Service worker
-├── CNAME                          # GitHub Pages custom domain
+├── sitemap.xml                    # SEO sitemap
+├── robots.txt                     # Search crawler rules
+├── CNAME                          # GitHub Pages custom domain (www.cbfchurch.com)
 ├── admin/
-│   ├── login.html
-│   ├── dashboard.html
-│   ├── editor.html
-│   └── users.html                 # Superadmin only
+│   ├── login.html                 # Admin login (has inline theme + auth JS)
+│   ├── dashboard.html             # Post list + gallery upload
+│   ├── editor.html                # Quill.js post editor (create/edit)
+│   └── users.html                 # Superadmin only: manage admin accounts
 ├── css/
-│   └── style.css                  # Single stylesheet, includes dark mode
+│   └── style.css                  # Single stylesheet: public + admin + dark mode
 ├── js/
-│   ├── common.js                  # Shared: API_BASE, nav toggle, theme toggle, formatDate
+│   ├── common.js                  # Shared: API_BASE, nav toggle, theme toggle,
+│   │                              #   formatDate, apiFetch, legal modals (privacy/terms)
 │   ├── blog.js                    # Fetch/render blog posts on home page
 │   ├── post.js                    # Fetch/render single post
 │   ├── archives.js                # Fetch/render archive listing
 │   ├── gallery.js                 # Lightbox functionality
-│   └── admin.js                   # Auth, dashboard, editor, gallery, user management
+│   └── admin.js                   # Auth check, authFetch, theme toggle, dashboard,
+│                                  #   gallery CRUD, user management
 ├── images/
 │   ├── logo.svg
 │   ├── wordmark.svg
 │   ├── pwa-icon.svg
-│   └── gallery/                   # ~60 static gallery photos
+│   └── gallery/                   # ~60 static gallery photos (committed to git)
 ├── api/                           # Backend (deployed separately to Render)
-│   ├── server.js                  # Express entry point
-│   ├── package.json
+│   ├── server.js                  # Express entry point, CORS config, route mounting
+│   ├── package.json               # Dependencies: express, pg, bcryptjs, cors,
+│   │                              #   cookie-parser, dotenv, jsonwebtoken, aws-sdk
 │   ├── .env                       # Local env (gitignored)
 │   ├── .env.example
 │   ├── database/
-│   │   ├── init.js                # CREATE TABLE + migrations
-│   │   └── seed.js                # Create initial superadmin account
+│   │   ├── init.js                # CREATE TABLE + all migrations (runs on server start)
+│   │   └── seed.js                # Create initial superadmin: node seed.js <user> <pass>
 │   ├── routes/
-│   │   ├── auth.js                # Login, logout, register, /me
-│   │   ├── posts.js               # Public blog endpoints (GET)
-│   │   ├── admin.js               # Protected blog CRUD, gallery CRUD, user management
-│   │   └── gallery.js             # Public gallery endpoints
+│   │   ├── auth.js                # POST /login (returns JWT), /logout, /register, GET /me
+│   │   ├── posts.js               # Public GET endpoints for blog
+│   │   ├── admin.js               # Protected CRUD: posts, gallery, users
+│   │   └── gallery.js             # Public GET endpoint for gallery
 │   ├── utils/
-│   │   ├── db.js                  # PostgreSQL connection pool + helpers (run, get, all, exec)
-│   │   └── auth.js                # JWT + bcrypt helpers, requireAuth, requireSuperAdmin
+│   │   ├── db.js                  # PostgreSQL pool + run/get/all/exec helpers
+│   │   ├── auth.js                # JWT helpers, requireAuth, requireSuperAdmin
+│   │   └── storage.js             # saveGalleryImage, deleteGalleryImage, attachPublicUrl
 │   └── uploads/
-│       └── gallery/               # Uploaded gallery photos (on Render filesystem)
+│       └── gallery/               # Gallery photos if not using S3
 └── scripts/
     ├── import-blogger.js          # One-time: import Blogger XML export
     └── download-gallery.js        # One-time: pull gallery photos
@@ -108,11 +117,15 @@ CREATE TABLE posts (
 CREATE TABLE gallery_photos (
     id SERIAL PRIMARY KEY,
     filename TEXT NOT NULL,
-    position INTEGER DEFAULT 0,
+    position BIGINT DEFAULT 0,
+    storage_key TEXT,              -- S3 key if using AWS, null if filesystem
+    url TEXT,                      -- Public URL if using S3, null if filesystem
     alt TEXT,
     created_at TIMESTAMP DEFAULT NOW()
 );
 ```
+
+**Migrations** are handled automatically in `api/database/init.js` on every server start using `ALTER TABLE ... ADD COLUMN IF NOT EXISTS` pattern with try/catch blocks.
 
 ## API Endpoints
 
@@ -124,10 +137,10 @@ CREATE TABLE gallery_photos (
 - `GET /api/health` — Health check
 
 ### Auth
-- `POST /api/auth/login` — Returns JWT in response body + httpOnly cookie
+- `POST /api/auth/login` — Returns `{ token, username, message }` + sets httpOnly cookie
 - `POST /api/auth/logout` — Clears cookie
 - `POST /api/auth/register` — Create admin account (superadmin only)
-- `GET /api/auth/me` — Check auth status, returns username/role
+- `GET /api/auth/me` — Check auth status, returns `{ username, role }`
 
 ### Admin (JWT required via Bearer token)
 - `GET /api/admin/posts` — All posts for dashboard
@@ -138,25 +151,27 @@ CREATE TABLE gallery_photos (
 - `GET /api/admin/users` — List users (superadmin only)
 - `DELETE /api/admin/users/:id` — Delete user (superadmin only, can't delete self)
 - `GET /api/admin/gallery` — List gallery photos
-- `POST /api/admin/gallery` — Upload photo (base64 in JSON body)
+- `POST /api/admin/gallery` — Upload photo (base64 in JSON body, max 4MB)
 - `PUT /api/admin/gallery/reorder` — Reorder gallery photos
 - `DELETE /api/admin/gallery/:id` — Delete gallery photo
 
 ## Authentication Architecture
 
-**Cross-origin setup:** Frontend on `www.cbfchurch.com` (GitHub Pages), API on `cbfchurch.onrender.com` (Render). Modern browsers block third-party cookies between different origins, so auth uses **localStorage + Authorization Bearer header** instead of cookies.
+**Cross-origin setup:** Frontend on `www.cbfchurch.com` (GitHub Pages), API on `cbfchurch.onrender.com` (Render). Modern browsers block third-party cookies between different origins, so auth uses **localStorage + Authorization Bearer header**.
 
 Flow:
-1. Login POST returns `{ token, username, message }` — token is also set as httpOnly cookie (fallback)
+1. Login POST returns `{ token, username, message }` — token also set as httpOnly cookie (fallback)
 2. Frontend stores token in `localStorage` as `cbf_token`
-3. All subsequent requests use `authFetch()` helper in `js/admin.js` which attaches `Authorization: Bearer <token>` header
-4. `requireAuth` middleware in `api/utils/auth.js` checks cookie first, then falls back to Bearer header
-5. Logout clears both cookie and `localStorage.removeItem('cbf_token')`
+3. All admin requests use `authFetch()` in `js/admin.js` which attaches `Authorization: Bearer <token>`
+4. `requireAuth` middleware checks cookie first, then falls back to Bearer header
+5. Logout: `POST /api/auth/logout` + `localStorage.removeItem('cbf_token')`
 
 **Role system:**
-- `superadmin` — Can manage users, manage posts, manage gallery
+- `superadmin` — Can manage users, posts, and gallery
 - `admin` — Can manage posts and gallery only
-- The first seeded user (id=1) is auto-promoted to superadmin by `init.js`
+- User with id=1 is auto-promoted to superadmin by `init.js`
+
+**Important:** Do NOT switch back to cookie-only auth. The cross-origin setup requires the Bearer token approach.
 
 ## Environment Variables
 
@@ -164,7 +179,7 @@ Flow:
 - `DATABASE_URL` — Neon PostgreSQL connection string
 - `SESSION_SECRET` — JWT signing secret
 - `NODE_ENV` — Must be `production`
-- `ALLOWED_ORIGIN` — Comma-separated origins, e.g. `https://www.cbfchurch.com,https://99redder.github.io`
+- `ALLOWED_ORIGIN` — Comma-separated: `https://www.cbfchurch.com,https://chrisgorham999.github.io`
 
 ### Local (`api/.env`, gitignored)
 - `PORT=3000`
@@ -174,12 +189,28 @@ Flow:
 
 ## Dark Mode
 
-The site supports dark mode via CSS custom properties on `:root[data-theme="dark"]` and `@media (prefers-color-scheme: dark)` for system default.
+- CSS custom properties on `:root[data-theme="dark"]` and `@media (prefers-color-scheme: dark)`
+- Theme stored in `localStorage` as `cbf-theme` (`'dark'` or `'light'`)
+- Public pages: `.theme-toggle` button in nav, logic in `js/common.js`
+- Admin pages: `#admin-theme-toggle` button in `.admin-header`, logic in `js/admin.js`
+- `login.html` has inline theme JS since it doesn't load `admin.js` at parse time
+- Both use the same `cbf-theme` key so preference syncs across public and admin pages
 
-- Theme preference stored in `localStorage` as `cbf-theme` (`'dark'` or `'light'`)
-- Public pages: toggle button in nav bar, logic in `js/common.js`
-- Admin pages: toggle button in admin header, logic in `js/admin.js` (and inline in `login.html`)
-- Both share the same `cbf-theme` localStorage key so preference syncs
+## Legal Modals (Privacy Policy & Terms of Use)
+
+- Links are in the footer of all 12 public pages: `id="privacy-link"` and `id="terms-link"`
+- `js/common.js` detects these IDs on load, injects a modal into `document.body`, and wires up open/close
+- Modal closes on X button, overlay click, or Escape key
+- Content is defined inline in `common.js` — edit there to update policy text
+
+## Gallery Storage
+
+`api/utils/storage.js` abstracts gallery photo storage:
+- If `AWS_ACCESS_KEY_ID` is set in env → stores to S3, saves `storage_key` and `url` in DB
+- Otherwise → saves to local filesystem at `api/uploads/gallery/`
+- `attachPublicUrl(photo)` normalizes the photo object for API responses
+
+**Warning:** Render free tier has ephemeral filesystem — local uploads will be lost on redeploy. Use S3 for persistent gallery uploads in production.
 
 ## Common Tasks
 
@@ -193,7 +224,8 @@ cd api && npm install && node server.js
 cd api && node database/seed.js <username> <password>
 ```
 
-### Reset a user's password (run from api/ directory)
+### Reset a user's password
+Run from `api/` directory (uses local `.env` to connect to Neon directly):
 ```bash
 node -e "
 require('dotenv').config();
@@ -209,6 +241,7 @@ const client = new Client({ connectionString: process.env.DATABASE_URL, ssl: { r
 })();
 "
 ```
+Note: Render free tier has no shell access. Always run DB maintenance scripts locally against Neon.
 
 ### Serve frontend locally
 ```bash
@@ -217,24 +250,53 @@ npx serve .
 # Make sure api/.env has ALLOWED_ORIGIN=http://localhost:3000
 ```
 
+### Add a new public page
+1. Copy the structure from an existing simple page (e.g. `our-beliefs.html`)
+2. Update `<title>`, `<meta name="description">`, and canonical `<link rel="canonical">`
+3. Add Open Graph tags (`og:title`, `og:description`, `og:url`)
+4. Add the nav link in every page's `<nav>` (all nav bars are hand-coded — no template)
+5. Load `js/common.js` at the bottom of `<body>`
+6. Add the page to `sitemap.xml`
+
 ## Key Files to Know
 
 | File | Purpose |
 |------|---------|
-| `js/admin.js` | All admin panel logic: auth, theme, dashboard, editor helpers, gallery CRUD, user management. Defines `authFetch()` used by all admin pages. |
-| `js/common.js` | Shared across public pages: `API_BASE` constant, nav toggle, theme toggle, `formatDate()`, `apiFetch()` |
-| `css/style.css` | Single stylesheet for entire site including dark mode, admin styles, responsive breakpoints at 768px and 1024px |
-| `api/utils/auth.js` | JWT creation/verification, `requireAuth` and `requireSuperAdmin` middleware |
-| `api/utils/db.js` | PostgreSQL pool + helper functions (`run`, `get`, `all`, `exec`) |
-| `api/database/init.js` | Table creation + column migrations (runs on every server start) |
-| `api/routes/admin.js` | Protected CRUD for posts, gallery, and users |
+| `js/admin.js` | All admin logic: `authFetch()`, theme toggle, auth check, dashboard, editor, gallery CRUD, user management |
+| `js/common.js` | Public pages: `API_BASE`, nav toggle, theme toggle, `formatDate()`, `apiFetch()`, legal modals |
+| `css/style.css` | Single stylesheet: public site, admin panel, dark mode, responsive (breakpoints: 768px, 1024px) |
+| `api/server.js` | Express app: CORS (multi-origin), cookie-parser, route mounting |
+| `api/utils/auth.js` | `createToken()`, `verifyToken()`, `requireAuth`, `requireSuperAdmin` |
+| `api/utils/db.js` | PostgreSQL pool + `run()`, `get()`, `all()`, `exec()` helpers |
+| `api/utils/storage.js` | `saveGalleryImage()`, `deleteGalleryImage()`, `attachPublicUrl()` |
+| `api/database/init.js` | Table creation + all column migrations (idempotent, runs on every start) |
+| `api/routes/admin.js` | Protected CRUD: posts, gallery, users |
+| `sitemap.xml` | All public page URLs for search engines |
+| `robots.txt` | Allows all crawlers, points to sitemap, blocks `/admin/` |
+
+## CSS Architecture Notes
+
+`css/style.css` is organized in sections (use comments to navigate):
+1. CSS custom properties (`:root`) — colors, fonts, spacing, shadows
+2. Dark mode overrides (`[data-theme="dark"]` + `@media prefers-color-scheme`)
+3. Reset / base styles
+4. Layout (header, nav, main, footer)
+5. Components (cards, buttons, forms, alerts, badges)
+6. Page-specific (blog, gallery, archives, contact, video)
+7. Admin panel (`.admin-header`, `.posts-table`, `.editor-container`, gallery admin)
+8. Dark mode overrides for admin elements and Quill editor
+9. Responsive breakpoints (768px, 1024px)
+
+All colors use CSS custom properties — never use hardcoded hex values in new rules.
 
 ## Important Notes
 
 - The `api/.env` file contains database credentials and is gitignored. Never commit it.
-- Render free tier does not support shell access. Use local scripts connecting to Neon directly for DB maintenance.
-- Gallery photos uploaded via admin are stored on Render's filesystem at `api/uploads/gallery/`. Render's free tier has ephemeral storage — files may be lost on redeploy. The static gallery photos in `images/gallery/` are committed to git and served from GitHub Pages.
-- The Quill.js editor is loaded from CDN (`cdn.quilljs.com/1.3.7`).
-- Blog posts imported from the old Blogger site using `scripts/import-blogger.js`.
-- CORS is configured to accept only origins listed in the `ALLOWED_ORIGIN` env var.
+- Render free tier has no shell access and ephemeral filesystem — use S3 for gallery storage and local scripts for DB maintenance.
+- All 12 public HTML pages share the same nav structure — any nav changes must be made in every file.
 - SQL uses `$1`, `$2` parameterized queries (PostgreSQL style, not `?`).
+- CORS accepts only origins in `ALLOWED_ORIGIN` env var (comma-separated).
+- The Quill.js editor is loaded from CDN — do not try to install it locally.
+- `post.html` uses URL query param `?slug=` to fetch a single post dynamically.
+- Blog posts were originally imported from Blogger via `scripts/import-blogger.js`.
+- Static gallery photos in `images/gallery/` are served from GitHub Pages (git-committed). Admin-uploaded photos are served from Render/S3.

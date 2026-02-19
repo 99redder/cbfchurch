@@ -3,8 +3,18 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="Christian Believers Fellowship - A Bible-based church in Somersworth, New Hampshire. Sunday Worship 10:30am, Tuesday Bible Study 6:30pm.">
-  <title>Christian Believers Fellowship</title>
+  <meta name="description" content="Christian Believers Fellowship — A Bible-based church in Somersworth, New Hampshire. Sunday Worship 10:30am, Tuesday Bible Study 6:30pm. Serving the Seacoast and Southern NH area.">
+  <title>Christian Believers Fellowship | Church in Somersworth, NH</title>
+  <link rel="canonical" href="https://www.cbfchurch.com/">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Christian Believers Fellowship">
+  <meta property="og:title" content="Christian Believers Fellowship | Church in Somersworth, NH">
+  <meta property="og:description" content="A Bible-based church in Somersworth, New Hampshire. Sunday Worship 10:30am, Tuesday Bible Study 6:30pm. Serving the Seacoast and Southern NH area.">
+  <meta property="og:url" content="https://www.cbfchurch.com/">
+  <meta property="og:image" content="https://www.cbfchurch.com/images/wordmark.svg">
+  <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Christian Believers Fellowship | Church in Somersworth, NH">
+  <meta name="twitter:description" content="A Bible-based church in Somersworth, New Hampshire. Sunday Worship 10:30am, Tuesday Bible Study 6:30pm. Serving the Seacoast and Southern NH area.">
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#365d8a">
   <link rel="icon" href="images/logo.svg" type="image/svg+xml">
@@ -118,5 +128,63 @@
   <!-- Scripts -->
   <script src="js/common.js"></script>
   <script src="js/blog.js"></script>
+
+  <!-- Schema.org structured data -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@type": "Church",
+    "name": "Christian Believers Fellowship",
+    "alternateName": "CBF",
+    "url": "https://www.cbfchurch.com",
+    "logo": "https://www.cbfchurch.com/images/logo.svg",
+    "image": "https://www.cbfchurch.com/images/wordmark.svg",
+    "description": "A Bible-based church in Somersworth, New Hampshire serving the Seacoast and Southern NH area.",
+    "address": {
+      "@type": "PostalAddress",
+      "streetAddress": "32 Chapel Lane",
+      "addressLocality": "Somersworth",
+      "addressRegion": "NH",
+      "postalCode": "03878",
+      "addressCountry": "US"
+    },
+    "geo": {
+      "@type": "GeoCoordinates",
+      "latitude": 43.2509,
+      "longitude": -70.8745
+    },
+    "openingHours": [
+      "Su 10:30-12:00",
+      "Tu 18:30-20:00"
+    ],
+    "openingHoursSpecification": [
+      {
+        "@type": "OpeningHoursSpecification",
+        "dayOfWeek": "Sunday",
+        "name": "Sunday Worship Service",
+        "opens": "10:30",
+        "closes": "12:00"
+      },
+      {
+        "@type": "OpeningHoursSpecification",
+        "dayOfWeek": "Tuesday",
+        "name": "Bible Study",
+        "opens": "18:30",
+        "closes": "20:00"
+      }
+    ],
+    "sameAs": [
+      "https://www.youtube.com/@cbfchurch"
+    ],
+    "areaServed": [
+      "Somersworth, NH",
+      "Dover, NH",
+      "Rochester, NH",
+      "Portsmouth, NH",
+      "Southern New Hampshire",
+      "Seacoast New Hampshire"
+    ]
+  }
+  </script>
 </body>
 </html>
