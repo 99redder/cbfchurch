@@ -109,7 +109,7 @@ async function apiFetch(endpoint) {
     <p>We may update this Privacy Policy from time to time. Any changes will be reflected on this page with an updated revision date.</p>
 
     <h3>Contact Us</h3>
-    <p>If you have questions about this Privacy Policy, please <a href="contact.html">contact us</a> through the information on our Detailed Contact List page.</p>
+    <p>If you have questions about this Privacy Policy, please visit our <a href="contact.html">Detailed Contact List</a> page.</p>
   `;
 
   const termsContent = `
