@@ -109,7 +109,7 @@ async function apiFetch(endpoint) {
     <p>We may update this Privacy Policy from time to time. Any changes will be reflected on this page with an updated revision date.</p>
 
     <h3>Contact Us</h3>
-    <p>If you have questions about this Privacy Policy, please contact us through the information on our Contact page.</p>
+    <p>If you have questions about this Privacy Policy, please <a href="contact.html">contact us</a> through the information on our Detailed Contact List page.</p>
   `;
 
   const termsContent = `
@@ -136,7 +136,7 @@ async function apiFetch(endpoint) {
     <p>We reserve the right to update these Terms of Use at any time. Continued use of the site after changes constitutes acceptance of the updated terms.</p>
 
     <h3>Contact Us</h3>
-    <p>If you have questions about these Terms of Use, please contact us through the information on our Contact page.</p>
+    <p>If you have questions about these Terms of Use, please <a href="contact.html">contact us</a> through the information on our Detailed Contact List page.</p>
   `;
 
   // Create modal element
