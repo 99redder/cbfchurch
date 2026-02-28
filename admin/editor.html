@@ -25,15 +25,21 @@
 
     .ql-snow .ql-clean {
       width: auto;
-      padding: 0 8px;
+      min-width: 136px;
+      padding: 0 10px;
+      border-left: 1px solid #ccc;
+      white-space: nowrap;
     }
     .ql-snow .ql-clean svg {
       display: none;
     }
     .ql-snow .ql-clean::before {
       content: 'Clear formatting';
+      display: inline-block;
+      white-space: nowrap;
       font-size: 13px;
       line-height: 24px;
+      font-weight: 600;
     }
   </style>
 </head>
