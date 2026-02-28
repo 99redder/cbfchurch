@@ -62,8 +62,8 @@
     .editor-toolbar-btn {
       width: auto;
       min-width: 136px;
-      height: 30px;
-      padding: 0 10px;
+      height: 32px;
+      padding: 0 12px;
       border: 1px solid #c9d3e0;
       border-radius: 6px;
       background: #f8fafc;
@@ -72,15 +72,19 @@
       font-size: 13px;
       font-weight: 600;
       cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      vertical-align: middle;
     }
     .ql-snow .ql-clean:hover,
     .editor-toolbar-btn:hover { background: #eef2f7; }
     .ql-snow .ql-clean svg { display: none; }
     .ql-snow .ql-clean::before {
-      content: 'Clear formatting';
+      content: 'Clear Formatting';
       display: inline-block;
       white-space: nowrap;
-      line-height: 28px;
+      line-height: 1;
       font-size: 13px;
       font-weight: 600;
       color: inherit;
