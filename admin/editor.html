@@ -29,6 +29,7 @@
       padding: 0 10px;
       border-left: 1px solid #ccc;
       white-space: nowrap;
+      color: #374151;
     }
     .ql-snow .ql-clean svg {
       display: none;
@@ -40,6 +41,19 @@
       font-size: 13px;
       line-height: 24px;
       font-weight: 600;
+      color: inherit;
+    }
+
+    :root[data-theme="dark"] .ql-snow .ql-clean {
+      color: #c9d4e3;
+      border-left-color: #3a465b;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root:not([data-theme]) .ql-snow .ql-clean {
+        color: #c9d4e3;
+        border-left-color: #3a465b;
+      }
     }
   </style>
 </head>
@@ -98,6 +112,7 @@
         toolbar: {
           container: [
             [{ 'font': Font.whitelist }],
+            [{ 'size': ['small', false, 'large', 'huge'] }],
             [{ 'header': [1, 2, 3, false] }],
             ['bold', 'italic', 'underline'],
             [{ 'list': 'ordered' }, { 'list': 'bullet' }],
