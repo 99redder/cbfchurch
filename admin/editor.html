@@ -55,9 +55,14 @@
       border-bottom: 1px solid #e5e7eb;
       padding: 4px 6px;
     }
+    .editor-toolbar-row + .editor-toolbar-row {
+      margin-top: 6px;
+    }
     .editor-toolbar-row:last-child {
       border-bottom: none;
       gap: 6px;
+      padding-top: 2px;
+      padding-bottom: 8px;
     }
     #editor-area {
       border-top-left-radius: 0;
@@ -82,9 +87,14 @@
       align-items: center;
       justify-content: center;
       vertical-align: middle;
+      transition: background .15s ease, border-color .15s ease, box-shadow .15s ease;
     }
     .ql-snow .ql-clean:hover,
-    .editor-toolbar-btn:hover { background: #eef2f7; }
+    .editor-toolbar-btn:hover {
+      background: #eef2f7;
+      border-color: #9fb4cc;
+      box-shadow: 0 0 0 2px rgba(74, 127, 181, 0.12);
+    }
     .ql-snow .ql-clean svg { display: none; }
     .ql-snow .ql-clean::before {
       content: 'Clear Formatting';
@@ -163,7 +173,16 @@
           <div id="editor-toolbar">
             <div class="editor-toolbar-row">
               <span class="ql-formats">
-                <select class="ql-font"></select>
+                <select class="ql-font">
+                  <option value="sans" selected>Sans</option>
+                  <option value="inter">Inter</option>
+                  <option value="serif">Serif</option>
+                  <option value="georgia">Georgia</option>
+                  <option value="times">Times</option>
+                  <option value="mono">Monospace</option>
+                  <option value="arial">Arial</option>
+                  <option value="verdana">Verdana</option>
+                </select>
                 <select class="ql-size">
                   <option value="12px">12</option>
                   <option value="14px">14</option>
