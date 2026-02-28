@@ -22,6 +22,8 @@
     .ql-snow .ql-picker.ql-font .ql-picker-item[data-value="mono"]::before { content: 'Monospace'; }
     .ql-snow .ql-picker.ql-font .ql-picker-label[data-value="arial"]::before,
     .ql-snow .ql-picker.ql-font .ql-picker-item[data-value="arial"]::before { content: 'Arial'; }
+    .ql-snow .ql-picker.ql-font .ql-picker-label[data-value="verdana"]::before,
+    .ql-snow .ql-picker.ql-font .ql-picker-item[data-value="verdana"]::before { content: 'Verdana'; }
 
     .ql-snow .ql-picker.ql-size .ql-picker-label[data-value="12px"]::before,
     .ql-snow .ql-picker.ql-size .ql-picker-item[data-value="12px"]::before { content: '12'; }
@@ -31,8 +33,12 @@
     .ql-snow .ql-picker.ql-size .ql-picker-item[data-value="16px"]::before { content: '16'; }
     .ql-snow .ql-picker.ql-size .ql-picker-label[data-value="18px"]::before,
     .ql-snow .ql-picker.ql-size .ql-picker-item[data-value="18px"]::before { content: '18'; }
+    .ql-snow .ql-picker.ql-size .ql-picker-label[data-value="20px"]::before,
+    .ql-snow .ql-picker.ql-size .ql-picker-item[data-value="20px"]::before { content: '20'; }
     .ql-snow .ql-picker.ql-size .ql-picker-label[data-value="24px"]::before,
     .ql-snow .ql-picker.ql-size .ql-picker-item[data-value="24px"]::before { content: '24'; }
+    .ql-snow .ql-picker.ql-size .ql-picker-label[data-value="28px"]::before,
+    .ql-snow .ql-picker.ql-size .ql-picker-item[data-value="28px"]::before { content: '28'; }
     .ql-snow .ql-picker.ql-size .ql-picker-label[data-value="32px"]::before,
     .ql-snow .ql-picker.ql-size .ql-picker-item[data-value="32px"]::before { content: '32'; }
 
@@ -158,7 +164,16 @@
             <div class="editor-toolbar-row">
               <span class="ql-formats">
                 <select class="ql-font"></select>
-                <select class="ql-size"></select>
+                <select class="ql-size">
+                  <option value="12px">12</option>
+                  <option value="14px">14</option>
+                  <option value="16px" selected>16</option>
+                  <option value="18px">18</option>
+                  <option value="20px">20</option>
+                  <option value="24px">24</option>
+                  <option value="28px">28</option>
+                  <option value="32px">32</option>
+                </select>
                 <select class="ql-header">
                   <option selected></option>
                   <option value="1"></option>
@@ -217,11 +232,11 @@
   <script src="../js/admin.js"></script>
   <script>
     const Font = Quill.import('formats/font');
-    Font.whitelist = ['sans', 'inter', 'serif', 'georgia', 'times', 'mono', 'arial'];
+    Font.whitelist = ['sans', 'inter', 'serif', 'georgia', 'times', 'mono', 'arial', 'verdana'];
     Quill.register(Font, true);
 
     const Size = Quill.import('attributors/style/size');
-    Size.whitelist = ['12px', '14px', '16px', '18px', '24px', '32px'];
+    Size.whitelist = ['12px', '14px', '16px', '18px', '20px', '24px', '28px', '32px'];
     Quill.register(Size, true);
 
     // Initialize Quill editor
