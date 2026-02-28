@@ -133,12 +133,26 @@
     :root[data-theme="dark"] .editor-toolbar-row { border-color: #314156; background: var(--color-bg-light); }
     :root[data-theme="dark"] .ql-snow .ql-clean,
     :root[data-theme="dark"] .editor-toolbar-btn { background: #1e2836; border-color: #3a465b; color: #e5edf7; }
+    :root[data-theme="dark"] .ql-snow .ql-clean:hover,
+    :root[data-theme="dark"] .editor-toolbar-btn:hover {
+      background: #273448;
+      border-color: #4e627f;
+      box-shadow: 0 0 0 2px rgba(127, 176, 230, 0.18);
+      color: #f3f7fd;
+    }
 
     @media (prefers-color-scheme: dark) {
       :root:not([data-theme]) #editor-toolbar,
       :root:not([data-theme]) .editor-toolbar-row { border-color: #314156; background: var(--color-bg-light); }
       :root:not([data-theme]) .ql-snow .ql-clean,
       :root:not([data-theme]) .editor-toolbar-btn { background: #1e2836; border-color: #3a465b; color: #e5edf7; }
+      :root:not([data-theme]) .ql-snow .ql-clean:hover,
+      :root:not([data-theme]) .editor-toolbar-btn:hover {
+        background: #273448;
+        border-color: #4e627f;
+        box-shadow: 0 0 0 2px rgba(127, 176, 230, 0.18);
+        color: #f3f7fd;
+      }
     }
   </style>
 </head>
