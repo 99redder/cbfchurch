@@ -23,6 +23,19 @@
     .ql-snow .ql-picker.ql-font .ql-picker-label[data-value="arial"]::before,
     .ql-snow .ql-picker.ql-font .ql-picker-item[data-value="arial"]::before { content: 'Arial'; }
 
+    .ql-snow .ql-picker.ql-size .ql-picker-label[data-value="12px"]::before,
+    .ql-snow .ql-picker.ql-size .ql-picker-item[data-value="12px"]::before { content: '12'; }
+    .ql-snow .ql-picker.ql-size .ql-picker-label[data-value="14px"]::before,
+    .ql-snow .ql-picker.ql-size .ql-picker-item[data-value="14px"]::before { content: '14'; }
+    .ql-snow .ql-picker.ql-size .ql-picker-label[data-value="16px"]::before,
+    .ql-snow .ql-picker.ql-size .ql-picker-item[data-value="16px"]::before { content: '16'; }
+    .ql-snow .ql-picker.ql-size .ql-picker-label[data-value="18px"]::before,
+    .ql-snow .ql-picker.ql-size .ql-picker-item[data-value="18px"]::before { content: '18'; }
+    .ql-snow .ql-picker.ql-size .ql-picker-label[data-value="24px"]::before,
+    .ql-snow .ql-picker.ql-size .ql-picker-item[data-value="24px"]::before { content: '24'; }
+    .ql-snow .ql-picker.ql-size .ql-picker-label[data-value="32px"]::before,
+    .ql-snow .ql-picker.ql-size .ql-picker-item[data-value="32px"]::before { content: '32'; }
+
     .ql-snow .ql-clean {
       width: auto;
       min-width: 136px;
@@ -104,6 +117,10 @@
     Font.whitelist = ['sans', 'inter', 'serif', 'georgia', 'times', 'mono', 'arial'];
     Quill.register(Font, true);
 
+    const Size = Quill.import('attributors/style/size');
+    Size.whitelist = ['12px', '14px', '16px', '18px', '24px', '32px'];
+    Quill.register(Size, true);
+
     // Initialize Quill editor
     const quill = new Quill('#editor-area', {
       theme: 'snow',
@@ -112,7 +129,7 @@
         toolbar: {
           container: [
             [{ 'font': Font.whitelist }],
-            [{ 'size': ['small', false, 'large', 'huge'] }],
+            [{ 'size': Size.whitelist }],
             [{ 'header': [1, 2, 3, false] }],
             ['bold', 'italic', 'underline'],
             [{ 'list': 'ordered' }, { 'list': 'bullet' }],
