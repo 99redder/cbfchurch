@@ -1303,8 +1303,12 @@ p {
 }
 
 .ql-font-sans { font-family: var(--font-body); }
+.ql-font-inter { font-family: 'Inter', -apple-system, 'Segoe UI', 'Helvetica Neue', Arial, sans-serif; }
 .ql-font-serif { font-family: Georgia, 'Times New Roman', serif; }
+.ql-font-georgia { font-family: Georgia, 'Times New Roman', serif; }
+.ql-font-times { font-family: 'Times New Roman', Times, serif; }
 .ql-font-mono { font-family: Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace; }
+.ql-font-arial { font-family: Arial, Helvetica, sans-serif; }
 
 .editor-actions {
   display: flex;

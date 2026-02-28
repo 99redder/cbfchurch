@@ -10,10 +10,18 @@
   <style>
     .ql-snow .ql-picker.ql-font .ql-picker-label[data-value="sans"]::before,
     .ql-snow .ql-picker.ql-font .ql-picker-item[data-value="sans"]::before { content: 'Sans'; }
+    .ql-snow .ql-picker.ql-font .ql-picker-label[data-value="inter"]::before,
+    .ql-snow .ql-picker.ql-font .ql-picker-item[data-value="inter"]::before { content: 'Inter'; }
     .ql-snow .ql-picker.ql-font .ql-picker-label[data-value="serif"]::before,
     .ql-snow .ql-picker.ql-font .ql-picker-item[data-value="serif"]::before { content: 'Serif'; }
+    .ql-snow .ql-picker.ql-font .ql-picker-label[data-value="georgia"]::before,
+    .ql-snow .ql-picker.ql-font .ql-picker-item[data-value="georgia"]::before { content: 'Georgia'; }
+    .ql-snow .ql-picker.ql-font .ql-picker-label[data-value="times"]::before,
+    .ql-snow .ql-picker.ql-font .ql-picker-item[data-value="times"]::before { content: 'Times'; }
     .ql-snow .ql-picker.ql-font .ql-picker-label[data-value="mono"]::before,
     .ql-snow .ql-picker.ql-font .ql-picker-item[data-value="mono"]::before { content: 'Monospace'; }
+    .ql-snow .ql-picker.ql-font .ql-picker-label[data-value="arial"]::before,
+    .ql-snow .ql-picker.ql-font .ql-picker-item[data-value="arial"]::before { content: 'Arial'; }
   </style>
 </head>
 <body>
@@ -60,7 +68,7 @@
   <script src="../js/admin.js"></script>
   <script>
     const Font = Quill.import('formats/font');
-    Font.whitelist = ['sans', 'serif', 'mono'];
+    Font.whitelist = ['sans', 'inter', 'serif', 'georgia', 'times', 'mono', 'arial'];
     Quill.register(Font, true);
 
     // Initialize Quill editor
