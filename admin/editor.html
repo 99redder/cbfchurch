@@ -36,37 +36,89 @@
     .ql-snow .ql-picker.ql-size .ql-picker-label[data-value="32px"]::before,
     .ql-snow .ql-picker.ql-size .ql-picker-item[data-value="32px"]::before { content: '32'; }
 
-    .ql-snow .ql-clean {
+    #editor-toolbar {
+      border: 1px solid #ccc;
+      border-bottom: none;
+      border-radius: 6px 6px 0 0;
+      background: #fff;
+    }
+    .editor-toolbar-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      border-bottom: 1px solid #e5e7eb;
+      padding: 4px 6px;
+    }
+    .editor-toolbar-row:last-child {
+      border-bottom: none;
+      gap: 6px;
+    }
+    #editor-area {
+      border-top-left-radius: 0;
+      border-top-right-radius: 0;
+    }
+
+    .ql-snow .ql-clean,
+    .editor-toolbar-btn {
       width: auto;
       min-width: 136px;
+      height: 30px;
       padding: 0 10px;
-      border-left: 1px solid #ccc;
+      border: 1px solid #c9d3e0;
+      border-radius: 6px;
+      background: #f8fafc;
       white-space: nowrap;
       color: #374151;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
     }
-    .ql-snow .ql-clean svg {
-      display: none;
-    }
+    .ql-snow .ql-clean:hover,
+    .editor-toolbar-btn:hover { background: #eef2f7; }
+    .ql-snow .ql-clean svg { display: none; }
     .ql-snow .ql-clean::before {
       content: 'Clear formatting';
       display: inline-block;
       white-space: nowrap;
+      line-height: 28px;
       font-size: 13px;
-      line-height: 24px;
       font-weight: 600;
       color: inherit;
     }
 
-    :root[data-theme="dark"] .ql-snow .ql-clean {
-      color: #c9d4e3;
-      border-left-color: #3a465b;
+    .editor-modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.58);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 1200;
+      padding: 1rem;
     }
+    .editor-modal-overlay.active { display: flex; }
+    .editor-modal {
+      width: min(560px, 100%);
+      background: var(--color-bg);
+      border: 1px solid var(--color-border);
+      border-radius: 8px;
+      box-shadow: var(--shadow-hover);
+      padding: 1rem 1rem 1.1rem;
+    }
+    .editor-modal h3 { margin-bottom: .45rem; }
+    .editor-modal p { margin-bottom: .85rem; }
+    .editor-modal-actions { display: flex; gap: .6rem; justify-content: flex-end; }
+
+    :root[data-theme="dark"] #editor-toolbar,
+    :root[data-theme="dark"] .editor-toolbar-row { border-color: #314156; background: var(--color-bg-light); }
+    :root[data-theme="dark"] .ql-snow .ql-clean,
+    :root[data-theme="dark"] .editor-toolbar-btn { background: #1e2836; border-color: #3a465b; color: #e5edf7; }
 
     @media (prefers-color-scheme: dark) {
-      :root:not([data-theme]) .ql-snow .ql-clean {
-        color: #c9d4e3;
-        border-left-color: #3a465b;
-      }
+      :root:not([data-theme]) #editor-toolbar,
+      :root:not([data-theme]) .editor-toolbar-row { border-color: #314156; background: var(--color-bg-light); }
+      :root:not([data-theme]) .ql-snow .ql-clean,
+      :root:not([data-theme]) .editor-toolbar-btn { background: #1e2836; border-color: #3a465b; color: #e5edf7; }
     }
   </style>
 </head>
@@ -98,6 +150,42 @@
 
         <div class="form-group">
           <label>Content</label>
+          <div id="editor-toolbar">
+            <div class="editor-toolbar-row">
+              <span class="ql-formats">
+                <select class="ql-font"></select>
+                <select class="ql-size"></select>
+                <select class="ql-header">
+                  <option selected></option>
+                  <option value="1"></option>
+                  <option value="2"></option>
+                  <option value="3"></option>
+                </select>
+              </span>
+              <span class="ql-formats">
+                <button class="ql-bold"></button>
+                <button class="ql-italic"></button>
+                <button class="ql-underline"></button>
+              </span>
+              <span class="ql-formats">
+                <button class="ql-list" value="ordered"></button>
+                <button class="ql-list" value="bullet"></button>
+                <button class="ql-blockquote"></button>
+              </span>
+              <span class="ql-formats">
+                <button class="ql-link"></button>
+                <button class="ql-image"></button>
+              </span>
+            </div>
+            <div class="editor-toolbar-row">
+              <span class="ql-formats">
+                <button class="ql-clean" type="button"></button>
+              </span>
+              <span class="ql-formats">
+                <button class="editor-toolbar-btn" id="clear-entry-btn" type="button">Clear Entry</button>
+              </span>
+            </div>
+          </div>
           <div id="editor-area"></div>
           <input type="hidden" id="post-content" name="content">
         </div>
@@ -107,6 +195,17 @@
           <a href="dashboard.html" class="btn btn-outline">Cancel</a>
         </div>
       </form>
+    </div>
+  </div>
+
+  <div class="editor-modal-overlay" id="clear-entry-modal" aria-hidden="true">
+    <div class="editor-modal" role="dialog" aria-modal="true" aria-labelledby="clear-entry-title">
+      <h3 id="clear-entry-title">Clear Blog Entry?</h3>
+      <p>This will erase the current title, author, and content in the editor. This cannot be undone.</p>
+      <div class="editor-modal-actions">
+        <button type="button" class="btn btn-outline" id="clear-entry-cancel-btn">Cancel</button>
+        <button type="button" class="btn btn-primary" id="clear-entry-confirm-btn">Yes, Clear Entry</button>
+      </div>
     </div>
   </div>
 
@@ -127,16 +226,7 @@
       placeholder: 'Write your blog post...',
       modules: {
         toolbar: {
-          container: [
-            [{ 'font': Font.whitelist }],
-            [{ 'size': Size.whitelist }],
-            [{ 'header': [1, 2, 3, false] }],
-            ['bold', 'italic', 'underline'],
-            [{ 'list': 'ordered' }, { 'list': 'bullet' }],
-            ['blockquote'],
-            ['link', 'image'],
-            ['clean']
-          ],
+          container: '#editor-toolbar',
           handlers: {
             image: imageHandler
           }
@@ -189,6 +279,10 @@
     // Check if editing existing post
     const urlParams = new URLSearchParams(window.location.search);
     const editId = urlParams.get('id');
+    const clearEntryBtn = document.getElementById('clear-entry-btn');
+    const clearEntryModal = document.getElementById('clear-entry-modal');
+    const clearEntryCancelBtn = document.getElementById('clear-entry-cancel-btn');
+    const clearEntryConfirmBtn = document.getElementById('clear-entry-confirm-btn');
 
     if (editId) {
       document.getElementById('editor-title').textContent = 'Edit Blog Post';
@@ -210,6 +304,31 @@
         showError(err.message);
       }
     }
+
+    function openClearEntryModal() {
+      clearEntryModal?.classList.add('active');
+      clearEntryModal?.setAttribute('aria-hidden', 'false');
+    }
+
+    function closeClearEntryModal() {
+      clearEntryModal?.classList.remove('active');
+      clearEntryModal?.setAttribute('aria-hidden', 'true');
+    }
+
+    function clearCurrentEntry() {
+      document.getElementById('post-title').value = '';
+      document.getElementById('post-author').value = '';
+      quill.setText('');
+      closeClearEntryModal();
+    }
+
+    clearEntryBtn?.addEventListener('click', openClearEntryModal);
+    clearEntryCancelBtn?.addEventListener('click', closeClearEntryModal);
+    clearEntryConfirmBtn?.addEventListener('click', clearCurrentEntry);
+    clearEntryModal?.addEventListener('click', (e) => { if (e.target === clearEntryModal) closeClearEntryModal(); });
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape' && clearEntryModal?.classList.contains('active')) closeClearEntryModal();
+    });
 
     document.getElementById('post-form').addEventListener('submit', async (e) => {
       e.preventDefault();
