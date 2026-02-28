@@ -7,6 +7,14 @@
   <title>Post Editor | CBF Admin</title>
   <link rel="stylesheet" href="../css/style.css">
   <link href="https://cdn.quilljs.com/1.3.7/quill.snow.css" rel="stylesheet">
+  <style>
+    .ql-snow .ql-picker.ql-font .ql-picker-label[data-value="sans"]::before,
+    .ql-snow .ql-picker.ql-font .ql-picker-item[data-value="sans"]::before { content: 'Sans'; }
+    .ql-snow .ql-picker.ql-font .ql-picker-label[data-value="serif"]::before,
+    .ql-snow .ql-picker.ql-font .ql-picker-item[data-value="serif"]::before { content: 'Serif'; }
+    .ql-snow .ql-picker.ql-font .ql-picker-label[data-value="mono"]::before,
+    .ql-snow .ql-picker.ql-font .ql-picker-item[data-value="mono"]::before { content: 'Monospace'; }
+  </style>
 </head>
 <body>
   <div class="admin-header">
@@ -51,21 +59,67 @@
   <script src="https://cdn.quilljs.com/1.3.7/quill.min.js"></script>
   <script src="../js/admin.js"></script>
   <script>
+    const Font = Quill.import('formats/font');
+    Font.whitelist = ['sans', 'serif', 'mono'];
+    Quill.register(Font, true);
+
     // Initialize Quill editor
     const quill = new Quill('#editor-area', {
       theme: 'snow',
       placeholder: 'Write your blog post...',
       modules: {
-        toolbar: [
-          [{ 'header': [1, 2, 3, false] }],
-          ['bold', 'italic', 'underline'],
-          [{ 'list': 'ordered' }, { 'list': 'bullet' }],
-          ['blockquote'],
-          ['link'],
-          ['clean']
-        ]
+        toolbar: {
+          container: [
+            [{ 'font': Font.whitelist }],
+            [{ 'header': [1, 2, 3, false] }],
+            ['bold', 'italic', 'underline'],
+            [{ 'list': 'ordered' }, { 'list': 'bullet' }],
+            ['blockquote'],
+            ['link', 'image'],
+            ['clean']
+          ],
+          handlers: {
+            image: imageHandler
+          }
+        }
       }
     });
+
+    function imageHandler() {
+      const input = document.createElement('input');
+      input.setAttribute('type', 'file');
+      input.setAttribute('accept', 'image/*');
+      input.click();
+
+      input.onchange = async () => {
+        const file = input.files && input.files[0];
+        if (!file) return;
+
+        if (file.size > 5 * 1024 * 1024) {
+          showError('Image is too large (max 5MB).');
+          return;
+        }
+
+        try {
+          const dataUrl = await fileToDataUrl(file);
+          const range = quill.getSelection(true);
+          const index = range ? range.index : quill.getLength();
+          quill.insertEmbed(index, 'image', dataUrl, 'user');
+          quill.setSelection(index + 1, 0);
+        } catch (err) {
+          showError('Could not insert image. Try a different file.');
+        }
+      };
+    }
+
+    function fileToDataUrl(file) {
+      return new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(reader.result);
+        reader.onerror = () => reject(new Error('Failed to read image'));
+        reader.readAsDataURL(file);
+      });
+    }
 
     // Restore last used author name
     const savedAuthor = localStorage.getItem('cbf-admin-author');

@@ -1302,6 +1302,10 @@ p {
   margin-bottom: 1rem;
 }
 
+.ql-font-sans { font-family: var(--font-body); }
+.ql-font-serif { font-family: Georgia, 'Times New Roman', serif; }
+.ql-font-mono { font-family: Menlo, Monaco, Consolas, 'Liberation Mono', 'Courier New', monospace; }
+
 .editor-actions {
   display: flex;
   gap: 0.75rem;
