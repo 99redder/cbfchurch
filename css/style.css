@@ -224,8 +224,8 @@ p {
 
 @media (min-width: 901px) {
   .nav-inner {
-    max-width: min(1680px, 98vw);
-    padding: 0 0.75rem;
+    max-width: min(1460px, 96vw);
+    padding: 0 0.9rem;
   }
 
   .nav-links {
@@ -233,13 +233,13 @@ p {
   }
 
   .nav-links a {
-    padding: 0.62rem 0.56rem;
-    font-size: 0.8rem;
+    padding: 0.64rem 0.58rem;
+    font-size: 0.81rem;
     line-height: 1.2;
   }
 
   .theme-toggle {
-    margin-left: 0.65rem;
+    margin-left: 0.75rem;
   }
 }
 
