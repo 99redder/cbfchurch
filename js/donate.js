@@ -9,6 +9,11 @@
   const donateBtn = document.getElementById('donate-btn');
   const nameEl = document.getElementById('donor-name');
   const emailEl = document.getElementById('donor-email');
+  const resultOverlay = document.getElementById('donation-result-overlay');
+  const resultTitle = document.getElementById('donation-result-title');
+  const resultMessage = document.getElementById('donation-result-message');
+  const resultPrimary = document.getElementById('donation-result-primary');
+  const resultSecondary = document.getElementById('donation-result-secondary');
 
   let frequency = 'one_time';
 
@@ -25,11 +30,49 @@
     statusEl.className = `alert ${type === 'success' ? 'alert-success' : 'alert-error'}`;
   }
 
+  function showResult(kind) {
+    if (!resultOverlay || !resultTitle || !resultMessage) return;
+    if (kind === 'paid') {
+      resultTitle.textContent = 'Thank You for Your Gift';
+      resultTitle.style.color = 'var(--color-primary)';
+      resultMessage.textContent = 'Your donation was processed successfully. We appreciate your support of Christian Believers Fellowship.';
+      if (resultPrimary) {
+        resultPrimary.textContent = 'Continue';
+        resultPrimary.href = 'donate.html';
+      }
+      if (resultSecondary) {
+        resultSecondary.textContent = 'Visit Home';
+        resultSecondary.href = 'index.html';
+      }
+    } else {
+      resultTitle.textContent = 'Donation Checkout Canceled';
+      resultTitle.style.color = '#dc3545';
+      resultMessage.textContent = 'No charge was made. You can return and complete your donation whenever you are ready.';
+      if (resultPrimary) {
+        resultPrimary.textContent = 'Try Again';
+        resultPrimary.href = 'donate.html';
+      }
+      if (resultSecondary) {
+        resultSecondary.textContent = 'Contact Us';
+        resultSecondary.href = 'contact.html';
+      }
+    }
+    resultOverlay.style.display = 'flex';
+  }
+
   const params = new URLSearchParams(window.location.search);
   if (params.get('paid') === '1') {
     setStatus('Thank you! Your donation was successful.', 'success');
+    showResult('paid');
+    params.delete('paid');
+    const clean = `${window.location.pathname}${params.toString() ? `?${params.toString()}` : ''}`;
+    window.history.replaceState({}, '', clean);
   } else if (params.get('canceled') === '1') {
     setStatus('Donation checkout canceled. You can try again any time.');
+    showResult('canceled');
+    params.delete('canceled');
+    const clean = `${window.location.pathname}${params.toString() ? `?${params.toString()}` : ''}`;
+    window.history.replaceState({}, '', clean);
   }
 
   frequencyButtons.forEach(btn => {
@@ -50,6 +93,10 @@
       btn.classList.remove('btn-outline');
       amountInput.value = btn.dataset.amount || '';
     });
+  });
+
+  resultOverlay?.addEventListener('click', (e) => {
+    if (e.target === resultOverlay) resultOverlay.style.display = 'none';
   });
 
   form.addEventListener('submit', async (e) => {
