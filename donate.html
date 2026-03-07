@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Support Christian Believers Fellowship with one-time or recurring donations.">
+  <title>Donate | Christian Believers Fellowship</title>
+  <link rel="canonical" href="https://www.cbfchurch.com/donate.html">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Christian Believers Fellowship">
+  <meta property="og:title" content="Donate | Christian Believers Fellowship">
+  <meta property="og:description" content="Support Christian Believers Fellowship with one-time or recurring donations.">
+  <meta property="og:url" content="https://www.cbfchurch.com/donate.html">
+  <meta property="og:image" content="https://www.cbfchurch.com/images/wordmark.svg">
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#365d8a">
+  <link rel="icon" href="images/logo.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+  <a href="#main" class="skip-link">Skip to content</a>
+  <header class="site-header">
+    <div class="header-inner">
+      <a class="header-logo-link" href="index.html" aria-label="Return to home">
+        <img class="header-logo" src="images/logo.svg" alt="Christian Believers Fellowship logo">
+        <img class="header-wordmark" src="images/wordmark.svg" alt="Christian Believers Fellowship — 32 Chapel Lane, Somersworth, New Hampshire">
+      </a>
+    </div>
+  </header>
+
+  <nav class="site-nav" aria-label="Main navigation">
+    <div class="nav-inner">
+      <button class="nav-toggle" aria-label="Toggle navigation" aria-expanded="false"><span></span><span></span><span></span></button>
+      <ul class="nav-links">
+        <li><a href="index.html"><i class="fas fa-home"></i> Home</a></li>
+        <li><a href="service-times.html"><i class="fas fa-clock"></i> Service Times</a></li>
+        <li><a href="our-beliefs.html"><i class="fas fa-cross"></i> Our Beliefs</a></li>
+        <li><a href="donate.html" class="active"><i class="fas fa-hand-holding-heart"></i> Donate</a></li>
+        <li><a href="contact.html"><i class="fas fa-address-book"></i> Contact</a></li>
+        <li><a href="admin/login.html"><i class="fas fa-lock"></i> Admin Login</a></li>
+      </ul>
+      <button class="theme-toggle" type="button" aria-pressed="false" aria-label="Toggle dark mode"><span class="theme-icon" aria-hidden="true">◐</span></button>
+    </div>
+  </nav>
+
+  <div class="page-wrapper">
+    <main id="main" class="main-content">
+      <div class="card">
+        <h1>Support Christian Believers Fellowship</h1>
+        <p>Your gift helps support ministry work, outreach, and church operations. Thank you for your generosity.</p>
+
+        <form id="donation-form" style="margin-top:1rem;">
+          <div class="form-group">
+            <label for="donor-name">Name (optional)</label>
+            <input id="donor-name" type="text" placeholder="Your name">
+          </div>
+          <div class="form-group">
+            <label for="donor-email">Email (optional)</label>
+            <input id="donor-email" type="email" placeholder="you@example.com">
+          </div>
+
+          <div class="form-group">
+            <label>Donation Type</label>
+            <div style="display:flex; gap:.5rem; flex-wrap:wrap;">
+              <button type="button" class="btn btn-outline freq-btn active" data-frequency="one_time">One-time</button>
+              <button type="button" class="btn btn-outline freq-btn" data-frequency="monthly">Monthly</button>
+              <button type="button" class="btn btn-outline freq-btn" data-frequency="yearly">Yearly</button>
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label>Amount</label>
+            <div style="display:flex; gap:.5rem; flex-wrap:wrap; margin-bottom:.6rem;">
+              <button type="button" class="btn btn-outline amount-btn" data-amount="25">$25</button>
+              <button type="button" class="btn btn-outline amount-btn" data-amount="50">$50</button>
+              <button type="button" class="btn btn-outline amount-btn" data-amount="100">$100</button>
+              <button type="button" class="btn btn-outline amount-btn" data-amount="250">$250</button>
+            </div>
+            <input id="donation-amount" type="number" min="1" step="0.01" placeholder="Custom amount (USD)" required>
+          </div>
+
+          <div id="donation-status" class="alert" style="display:none;"></div>
+
+          <button id="donate-btn" class="btn btn-primary btn-full" type="submit">Continue to Secure Checkout</button>
+        </form>
+      </div>
+    </main>
+
+    <aside class="sidebar">
+      <div class="sidebar-section">
+        <h3>Secure Giving</h3>
+        <p style="font-size:0.95rem;">Donations are processed securely through Stripe Checkout.</p>
+      </div>
+      <div class="sidebar-section">
+        <h3>Questions?</h3>
+        <p style="font-size:0.95rem;">Please see our <a href="contact.html">contact page</a> for ministry and giving questions.</p>
+      </div>
+    </aside>
+  </div>
+
+  <footer class="site-footer">
+    <div class="footer-inner">
+      <p>&copy; <span id="footer-year"></span> Christian Believers Fellowship. All rights reserved. &middot; Website maintained by <a href="https://www.easternshore.ai" target="_blank" rel="noopener">Eastern Shore AI, LLC</a></p>
+      <p class="footer-links"><a href="#" id="privacy-link">Privacy Policy</a> &middot; <a href="#" id="terms-link">Terms of Use</a></p>
+    </div>
+  </footer>
+
+  <script src="js/common.js"></script>
+  <script src="js/donate.js"></script>
+</body>
+</html>

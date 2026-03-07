@@ -34,6 +34,8 @@ app.use('/api/posts', require('./routes/posts'));
 app.use('/api/admin', require('./routes/admin'));
 app.use('/api/gallery', require('./routes/gallery'));
 app.use('/api/contact', require('./routes/contact'));
+app.use('/api/donations', require('./routes/donations'));
+app.use('/api/content', require('./routes/content'));
 
 // Health check
 app.get('/api/health', (req, res) => {

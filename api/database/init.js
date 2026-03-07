@@ -35,6 +35,14 @@ async function initializeDatabase() {
     )
   `);
 
+  await exec(`
+    CREATE TABLE IF NOT EXISTS site_content (
+      key TEXT PRIMARY KEY,
+      value_json JSONB NOT NULL DEFAULT '{}'::jsonb,
+      updated_at TIMESTAMP DEFAULT NOW()
+    )
+  `);
+
   // Migration: add position column if it doesn't exist
   try {
     await exec(`ALTER TABLE gallery_photos ADD COLUMN position BIGINT DEFAULT 0`);

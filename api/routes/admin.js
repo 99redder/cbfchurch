@@ -244,6 +244,37 @@ router.delete('/gallery/:id', async (req, res) => {
   }
 });
 
+// PUT /api/admin/site-content/:key - update editable site content (text-only)
+router.put('/site-content/:key', async (req, res) => {
+  try {
+    const key = String(req.params.key || '').trim();
+    const value = req.body?.value;
+
+    if (!key) return res.status(400).json({ error: 'Content key is required' });
+    if (!value || typeof value !== 'object') {
+      return res.status(400).json({ error: 'value object is required' });
+    }
+
+    // Allow only known editable keys for now
+    if (!['beliefs', 'history'].includes(key)) {
+      return res.status(400).json({ error: 'This content key is not editable.' });
+    }
+
+    await run(
+      `INSERT INTO site_content (key, value_json, updated_at)
+       VALUES ($1, $2::jsonb, NOW())
+       ON CONFLICT (key)
+       DO UPDATE SET value_json = EXCLUDED.value_json, updated_at = NOW()`,
+      [key, JSON.stringify(value)]
+    );
+
+    res.json({ message: 'Content saved', key });
+  } catch (err) {
+    console.error('Update site content error:', err);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
 function generateSlug(title) {
   return title
     .toLowerCase()
