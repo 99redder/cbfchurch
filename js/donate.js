@@ -14,6 +14,7 @@
   const resultMessage = document.getElementById('donation-result-message');
   const resultPrimary = document.getElementById('donation-result-primary');
   const resultSecondary = document.getElementById('donation-result-secondary');
+  const resultClose = document.getElementById('donation-result-close');
 
   let frequency = 'one_time';
 
@@ -95,8 +96,13 @@
     });
   });
 
+  function closeResultOverlay() {
+    if (resultOverlay) resultOverlay.style.display = 'none';
+  }
+
+  resultClose?.addEventListener('click', closeResultOverlay);
   resultOverlay?.addEventListener('click', (e) => {
-    if (e.target === resultOverlay) resultOverlay.style.display = 'none';
+    if (e.target === resultOverlay) closeResultOverlay();
   });
 
   form.addEventListener('submit', async (e) => {
