@@ -66,7 +66,16 @@
     fields.forEach(el => {
       const key = el.getAttribute('data-content-field');
       if (!key) return;
-      out.fields[key] = sanitizeText(el.textContent);
+      if (el.tagName === 'DIV') {
+        const pTags = el.querySelectorAll('p');
+        if (pTags.length > 0) {
+          out.fields[key] = Array.from(pTags).map(p => sanitizeText(p.textContent)).filter(Boolean).join('\n\n');
+        } else {
+          out.fields[key] = sanitizeText(el.textContent);
+        }
+      } else {
+        out.fields[key] = sanitizeText(el.textContent);
+      }
     });
     return out;
   }
@@ -77,7 +86,18 @@
     fields.forEach(el => {
       const key = el.getAttribute('data-content-field');
       if (key && Object.prototype.hasOwnProperty.call(map, key)) {
-        el.textContent = String(map[key] || '');
+        const text = String(map[key] || '');
+        if (el.tagName === 'DIV') {
+          const paragraphs = text.split('\n\n').map(s => s.trim()).filter(Boolean);
+          el.innerHTML = '';
+          paragraphs.forEach(para => {
+            const p = document.createElement('p');
+            p.textContent = para;
+            el.appendChild(p);
+          });
+        } else {
+          el.textContent = text;
+        }
       }
     });
   }
