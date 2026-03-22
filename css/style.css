@@ -633,6 +633,13 @@ p {
   margin-top: 0.25rem;
 }
 
+.mission-list .scripture-cite {
+  display: inline;
+  text-align: inherit;
+  margin-top: 0;
+  margin-left: 0.2rem;
+}
+
 /* Contact Cards */
 .contact-grid {
   display: grid;
