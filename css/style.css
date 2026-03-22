@@ -633,6 +633,14 @@ p {
   margin-top: 0.25rem;
 }
 
+.mission-list li {
+  margin-bottom: 1rem;
+}
+
+.mission-list li:last-child {
+  margin-bottom: 0;
+}
+
 .mission-list .scripture-cite {
   display: inline;
   text-align: inherit;
