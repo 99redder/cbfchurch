@@ -632,6 +632,20 @@ p {
   color: var(--color-primary);
 }
 
+.learn-truth-card {
+  background: var(--color-primary-light);
+}
+
+.learn-truth-card h3,
+.learn-truth-card li a,
+.learn-truth-card li a:hover {
+  color: #111;
+}
+
+.learn-truth-card h3 {
+  border-bottom-color: rgba(0, 0, 0, 0.2);
+}
+
 .service-item {
   display: flex;
   justify-content: space-between;
