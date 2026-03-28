@@ -337,7 +337,13 @@ p {
 :root[data-theme="dark"] h3,
 :root[data-theme="dark"] .sidebar-section h3,
 :root[data-theme="dark"] .content-section h2,
-:root[data-theme="dark"] .post-full h1 {
+:root[data-theme="dark"] .post-full h1,
+:root[data-theme="dark"] .post-full .post-content h1,
+:root[data-theme="dark"] .post-full .post-content h2,
+:root[data-theme="dark"] .post-full .post-content h3,
+:root[data-theme="dark"] .post-full .post-content h4,
+:root[data-theme="dark"] .post-full .post-content h5,
+:root[data-theme="dark"] .post-full .post-content h6 {
   color: var(--color-primary-light);
 }
 
@@ -363,7 +369,13 @@ p {
   :root:not([data-theme]) h3,
   :root:not([data-theme]) .sidebar-section h3,
   :root:not([data-theme]) .content-section h2,
-  :root:not([data-theme]) .post-full h1 {
+  :root:not([data-theme]) .post-full h1,
+  :root:not([data-theme]) .post-full .post-content h1,
+  :root:not([data-theme]) .post-full .post-content h2,
+  :root:not([data-theme]) .post-full .post-content h3,
+  :root:not([data-theme]) .post-full .post-content h4,
+  :root:not([data-theme]) .post-full .post-content h5,
+  :root:not([data-theme]) .post-full .post-content h6 {
     color: var(--color-primary-light);
   }
 
@@ -487,6 +499,37 @@ p {
 .post-full .post-content {
   font-size: 1.05rem;
   line-height: 1.75;
+  color: var(--color-text);
+}
+
+.post-full .post-content,
+.post-full .post-content p,
+.post-full .post-content li,
+.post-full .post-content ul,
+.post-full .post-content ol,
+.post-full .post-content strong,
+.post-full .post-content em,
+.post-full .post-content span,
+.post-full .post-content div {
+  color: inherit;
+}
+
+.post-full .post-content [style*="color:"],
+.post-full .post-content font[color] {
+  color: inherit !important;
+}
+
+.post-full .post-content a {
+  color: var(--color-primary);
+}
+
+.post-full .post-content h1,
+.post-full .post-content h2,
+.post-full .post-content h3,
+.post-full .post-content h4,
+.post-full .post-content h5,
+.post-full .post-content h6 {
+  color: var(--color-primary-dark);
 }
 
 .post-full .post-content p {
