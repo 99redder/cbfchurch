@@ -226,10 +226,16 @@ p {
   .nav-inner {
     max-width: min(1460px, 96vw);
     padding: 0 0.9rem;
+    align-items: flex-start;
   }
 
   .nav-links {
     row-gap: 0;
+    align-items: flex-start;
+  }
+
+  .nav-links .nav-second-row {
+    margin-top: 2.3rem;
   }
 
   .nav-links a {
@@ -240,6 +246,7 @@ p {
 
   .theme-toggle {
     margin-left: 0.75rem;
+    margin-top: 0.35rem;
   }
 }
 
