@@ -654,7 +654,7 @@ p {
   display: flex;
   flex-direction: column;
   gap: 0;
-  text-align: center;
+  text-align: left;
 }
 
 .learn-truth-card li {
@@ -674,7 +674,10 @@ p {
 
 .learn-truth-card h3 {
   border-bottom-color: rgba(0, 0, 0, 0.2);
-  text-align: center;
+  text-align: left;
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
 }
 
 :root[data-theme="dark"] .learn-truth-card {
