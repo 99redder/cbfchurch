@@ -235,7 +235,21 @@ p {
   }
 
   .nav-links .nav-second-row {
-    margin-top: 2.3rem;
+    flex-basis: auto;
+    margin-top: 0;
+  }
+
+  .nav-links::before {
+    content: '';
+    flex-basis: 100%;
+    height: 0;
+    order: 998;
+  }
+
+  .nav-links .nav-second-row:nth-last-child(3),
+  .nav-links .nav-second-row:nth-last-child(2),
+  .nav-links .nav-second-row:nth-last-child(1) {
+    order: 999;
   }
 
   .nav-links a {
