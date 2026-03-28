@@ -636,14 +636,31 @@ p {
   background: var(--color-primary-light);
 }
 
+.learn-truth-card ul {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+  text-align: center;
+}
+
+.learn-truth-card li {
+  padding: 0;
+}
+
 .learn-truth-card h3,
 .learn-truth-card li a,
 .learn-truth-card li a:hover {
   color: #111;
 }
 
+.learn-truth-card li a {
+  display: block;
+  padding: 0.28rem 0;
+}
+
 .learn-truth-card h3 {
   border-bottom-color: rgba(0, 0, 0, 0.2);
+  text-align: center;
 }
 
 .service-item {
