@@ -677,6 +677,28 @@ p {
   text-align: center;
 }
 
+:root[data-theme="dark"] .learn-truth-card {
+  background: var(--color-primary-light);
+}
+
+:root[data-theme="dark"] .learn-truth-card h3,
+:root[data-theme="dark"] .learn-truth-card li a,
+:root[data-theme="dark"] .learn-truth-card li a:hover {
+  color: #111;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme]) .learn-truth-card {
+    background: var(--color-primary-light);
+  }
+
+  :root:not([data-theme]) .learn-truth-card h3,
+  :root:not([data-theme]) .learn-truth-card li a,
+  :root:not([data-theme]) .learn-truth-card li a:hover {
+    color: #111;
+  }
+}
+
 .service-item {
   display: flex;
   justify-content: space-between;
