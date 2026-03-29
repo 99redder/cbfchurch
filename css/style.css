@@ -169,14 +169,14 @@ p {
 }
 
 .header-logo-accent {
-  width: 22px;
-  height: 22px;
+  width: 60px;
+  height: 60px;
   border-radius: 50%;
   object-fit: cover;
   border: 2px solid rgba(255,255,255,0.85);
   box-shadow: 0 1px 4px rgba(0,0,0,0.25);
   background: #fff;
-  flex: 0 0 22px;
+  flex: 0 0 60px;
   margin-left: 8px;
 }
 
