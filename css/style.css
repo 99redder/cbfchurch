@@ -157,6 +157,8 @@ p {
   border-radius: 50%;
   background: rgba(255, 255, 255, 0.15);
   padding: 4px;
+  object-fit: cover;
+  display: block;
 }
 
 .header-logo-link {
