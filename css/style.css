@@ -781,6 +781,71 @@ p {
   margin-top: 0.25rem;
 }
 
+/* Accordion */
+.accordion-section {
+  border-bottom: 1px solid var(--color-border-light);
+}
+
+.accordion-section:last-child {
+  border-bottom: none;
+}
+
+.accordion-trigger {
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1.1rem 0;
+  background: none;
+  border: none;
+  cursor: pointer;
+  text-align: left;
+  font-family: var(--font-heading);
+  font-size: 1.15rem;
+  font-weight: 700;
+  color: var(--color-primary);
+  gap: 1rem;
+  transition: color var(--transition);
+}
+
+.accordion-trigger:hover {
+  color: var(--color-primary-dark);
+}
+
+.accordion-icon {
+  font-size: 0.85rem;
+  flex-shrink: 0;
+  color: var(--color-accent);
+  transition: transform 0.25s ease;
+}
+
+.accordion-trigger[aria-expanded="true"] .accordion-icon {
+  transform: rotate(180deg);
+}
+
+.accordion-body {
+  overflow: hidden;
+  max-height: 0;
+  transition: max-height 0.35s ease;
+}
+
+.accordion-body-inner {
+  padding-bottom: 1.75rem;
+}
+
+.accordion-body-inner h3 {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--color-text);
+  margin: 1.5rem 0 0.5rem;
+  padding-bottom: 0.25rem;
+  border-bottom: 1px solid var(--color-border-light);
+}
+
+.accordion-body-inner h3:first-child {
+  margin-top: 0;
+}
+
 .mission-list li {
   margin-bottom: 1rem;
 }
