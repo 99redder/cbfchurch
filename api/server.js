@@ -3,12 +3,33 @@ const express = require('express');
 const path = require('path');
 const cookieParser = require('cookie-parser');
 const cors = require('cors');
+const helmet = require('helmet');
+const rateLimit = require('express-rate-limit');
 const initializeDatabase = require('./database/init');
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
 // Middleware
+app.disable('x-powered-by');
+app.set('trust proxy', 1);
+
+if (process.env.NODE_ENV === 'production' && !process.env.SESSION_SECRET) {
+  throw new Error('SESSION_SECRET is required in production');
+}
+
+app.use(helmet({
+  contentSecurityPolicy: false,
+  crossOriginResourcePolicy: false
+}));
+
+app.use('/api/', rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 300,
+  standardHeaders: true,
+  legacyHeaders: false
+}));
+
 const allowedOrigins = (process.env.ALLOWED_ORIGIN || 'http://localhost:8080')
   .split(',')
   .map(s => s.trim());

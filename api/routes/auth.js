@@ -1,17 +1,27 @@
 const express = require('express');
 const router = express.Router();
+const rateLimit = require('express-rate-limit');
 const { get, run } = require('../utils/db');
 const { hashPassword, verifyPassword, createToken, requireAuth, requireSuperAdmin } = require('../utils/auth');
 
+const loginLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000,
+  max: 10,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: 'Too many login attempts. Please try again in 15 minutes.' }
+});
+
 // POST /api/auth/login
-router.post('/login', async (req, res) => {
+router.post('/login', loginLimiter, async (req, res) => {
   try {
     const { username, password } = req.body;
-    if (!username || !password) {
+    const normalizedUsername = String(username || '').trim().toLowerCase();
+    if (!normalizedUsername || !password) {
       return res.status(400).json({ error: 'Username and password are required' });
     }
 
-    const user = await get('SELECT * FROM users WHERE username = $1', [username]);
+    const user = await get('SELECT * FROM users WHERE username = $1', [normalizedUsername]);
     if (!user || !verifyPassword(password, user.password_hash)) {
       return res.status(401).json({ error: 'Invalid username or password' });
     }
@@ -45,17 +55,21 @@ router.post('/logout', (req, res) => {
 router.post('/register', requireAuth, requireSuperAdmin, async (req, res) => {
   try {
     const { username, password, role } = req.body;
-    if (!username || !password) {
+    const normalizedUsername = String(username || '').trim().toLowerCase();
+    if (!normalizedUsername || !password) {
       return res.status(400).json({ error: 'Username and password are required' });
     }
-    if (password.length < 6) {
-      return res.status(400).json({ error: 'Password must be at least 6 characters' });
+    if (password.length < 12) {
+      return res.status(400).json({ error: 'Password must be at least 12 characters' });
+    }
+    if (!/^[a-z0-9._-]{3,64}$/.test(normalizedUsername)) {
+      return res.status(400).json({ error: 'Username must be 3-64 characters and use letters, numbers, dots, underscores, or hyphens.' });
     }
 
     const validRoles = ['admin', 'superadmin'];
     const userRole = validRoles.includes(role) ? role : 'admin';
 
-    const existing = await get('SELECT id FROM users WHERE username = $1', [username]);
+    const existing = await get('SELECT id FROM users WHERE username = $1', [normalizedUsername]);
     if (existing) {
       return res.status(409).json({ error: 'Username already exists' });
     }
@@ -63,7 +77,7 @@ router.post('/register', requireAuth, requireSuperAdmin, async (req, res) => {
     const hash = hashPassword(password);
     const result = await run(
       'INSERT INTO users (username, password_hash, role) VALUES ($1, $2, $3) RETURNING id',
-      [username, hash, userRole]
+      [normalizedUsername, hash, userRole]
     );
 
     res.status(201).json({ message: 'Admin account created', id: result.lastInsertId });

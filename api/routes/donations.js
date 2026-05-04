@@ -1,5 +1,14 @@
 const express = require('express');
+const rateLimit = require('express-rate-limit');
 const router = express.Router();
+
+const donationLimiter = rateLimit({
+  windowMs: 10 * 60 * 1000,
+  max: 20,
+  standardHeaders: true,
+  legacyHeaders: false,
+  message: { error: 'Too many donation attempts. Please try again shortly.' }
+});
 
 function getOrigin(req) {
   const origin = String(req.headers.origin || '').trim();
@@ -9,7 +18,7 @@ function getOrigin(req) {
   return host ? `${proto}://${host}` : '';
 }
 
-router.post('/checkout-session', async (req, res) => {
+router.post('/checkout-session', donationLimiter, async (req, res) => {
   try {
     const stripeSecret = String(process.env.STRIPE_SECRET_KEY || '').trim();
     if (!stripeSecret) {
@@ -18,8 +27,8 @@ router.post('/checkout-session', async (req, res) => {
 
     const amountCents = parseInt(req.body?.amountCents, 10);
     const frequency = String(req.body?.frequency || 'one_time').trim(); // one_time|monthly|yearly
-    const donorName = String(req.body?.name || '').trim();
-    const donorEmail = String(req.body?.email || '').trim();
+    const donorName = String(req.body?.name || '').trim().slice(0, 120);
+    const donorEmail = String(req.body?.email || '').trim().toLowerCase();
 
     if (!Number.isFinite(amountCents) || amountCents < 100 || amountCents > 5000000) {
       return res.status(400).json({ error: 'Donation amount must be between $1.00 and $50,000.00.' });
@@ -27,6 +36,10 @@ router.post('/checkout-session', async (req, res) => {
 
     if (!['one_time', 'monthly', 'yearly'].includes(frequency)) {
       return res.status(400).json({ error: 'Invalid donation frequency.' });
+    }
+
+    if (donorEmail && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(donorEmail)) {
+      return res.status(400).json({ error: 'Please enter a valid email address.' });
     }
 
     const siteOrigin = String(process.env.DONATION_SITE_ORIGIN || '').trim() || getOrigin(req) || 'https://www.cbfchurch.com';

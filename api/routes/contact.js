@@ -57,14 +57,14 @@ router.post('/quick-message', async (req, res) => {
       return res.status(429).json({ error: 'Too many requests. Please try again in a few minutes.' });
     }
 
-    const fromName = String(req.body?.fromName || '').trim();
+    const fromName = String(req.body?.fromName || '').trim().slice(0, 120);
     const replyToInput = normalizeEmail(req.body?.replyTo);
     const to = normalizeEmail(req.body?.to);
-    const phone = String(req.body?.phone || '').trim();
+    const phone = String(req.body?.phone || '').trim().slice(0, 40);
     const ccRaw = req.body?.cc;
     const ccList = Array.isArray(ccRaw) ? ccRaw.map(normalizeEmail).filter(Boolean) : (ccRaw ? [normalizeEmail(ccRaw)] : []);
-    const subject = String(req.body?.subject || '').trim();
-    const message = String(req.body?.message || '').trim();
+    const subject = String(req.body?.subject || '').trim().slice(0, 200);
+    const message = String(req.body?.message || '').trim().slice(0, 5000);
 
     if (!fromName || !isEmail(replyToInput) || !isEmail(to) || !subject || !message) {
       return res.status(400).json({ error: 'Your Name, Your Email Address, To, Subject, and Message are required.' });

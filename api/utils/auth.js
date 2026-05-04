@@ -1,8 +1,12 @@
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
-const SECRET = process.env.SESSION_SECRET || 'default-dev-secret';
-const TOKEN_EXPIRY = '24h';
+const SECRET = process.env.SESSION_SECRET || '';
+const TOKEN_EXPIRY = '12h';
+
+if (process.env.NODE_ENV === 'production' && !SECRET) {
+  throw new Error('SESSION_SECRET is required in production');
+}
 
 function hashPassword(plaintext) {
   return bcrypt.hashSync(plaintext, 10);
@@ -13,11 +17,13 @@ function verifyPassword(plaintext, hash) {
 }
 
 function createToken(userId, username, role) {
+  if (!SECRET) throw new Error('SESSION_SECRET is not configured');
   return jwt.sign({ userId, username, role }, SECRET, { expiresIn: TOKEN_EXPIRY });
 }
 
 function verifyToken(token) {
   try {
+    if (!SECRET) return null;
     return jwt.verify(token, SECRET);
   } catch {
     return null;

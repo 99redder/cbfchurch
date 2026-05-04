@@ -1,7 +1,7 @@
 const crypto = require('crypto');
 const fs = require('fs');
 const path = require('path');
-const AWS = require('aws-sdk');
+const { S3Client, PutObjectCommand, DeleteObjectCommand } = require('@aws-sdk/client-s3');
 
 const r2AccountId = process.env.R2_ACCOUNT_ID || '';
 const r2AccessKeyId = process.env.R2_ACCESS_KEY_ID || '';
@@ -11,13 +11,14 @@ const r2PublicBaseUrl = process.env.R2_PUBLIC_BASE_URL || '';
 
 const r2Enabled = Boolean(r2AccountId && r2AccessKeyId && r2SecretAccessKey && r2Bucket);
 
-const r2Client = r2Enabled ? new AWS.S3({
+const r2Client = r2Enabled ? new S3Client({
   region: 'auto',
   endpoint: `https://${r2AccountId}.r2.cloudflarestorage.com`,
-  accessKeyId: r2AccessKeyId,
-  secretAccessKey: r2SecretAccessKey,
-  signatureVersion: 'v4',
-  s3ForcePathStyle: true
+  credentials: {
+    accessKeyId: r2AccessKeyId,
+    secretAccessKey: r2SecretAccessKey
+  },
+  forcePathStyle: true
 }) : null;
 
 function normalizeBaseUrl(url) {
@@ -52,12 +53,12 @@ async function saveGalleryImage({ buffer, mime, ext }) {
   }
 
   const storageKey = `gallery/${filename}`;
-  await r2Client.putObject({
+  await r2Client.send(new PutObjectCommand({
     Bucket: r2Bucket,
     Key: storageKey,
     Body: buffer,
     ContentType: mime
-  }).promise();
+  }));
 
   return { filename, storageKey, url: buildPublicUrl(storageKey) };
 }
@@ -65,10 +66,10 @@ async function saveGalleryImage({ buffer, mime, ext }) {
 async function deleteGalleryImage({ filename, storageKey }) {
   if (r2Enabled && storageKey) {
     try {
-      await r2Client.deleteObject({
+      await r2Client.send(new DeleteObjectCommand({
         Bucket: r2Bucket,
         Key: storageKey
-      }).promise();
+      }));
     } catch (err) {
       console.error('Failed to delete R2 object:', err);
     }

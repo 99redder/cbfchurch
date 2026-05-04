@@ -1,8 +1,30 @@
 const express = require('express');
 const router = express.Router();
+const sanitizeHtml = require('sanitize-html');
 const { get, all, run } = require('../utils/db');
 const { requireAuth, requireSuperAdmin } = require('../utils/auth');
 const { saveGalleryImage, deleteGalleryImage, attachPublicUrl } = require('../utils/storage');
+
+function sanitizePostContent(content) {
+  return sanitizeHtml(String(content || ''), {
+    allowedTags: ['p','br','strong','b','em','i','u','s','blockquote','ol','ul','li','a','h1','h2','h3','h4','pre','code'],
+    allowedAttributes: {
+      a: ['href', 'name', 'target', 'rel']
+    },
+    allowedSchemes: ['http', 'https', 'mailto'],
+    transformTags: {
+      a: sanitizeHtml.simpleTransform('a', { rel: 'noopener noreferrer' }, true)
+    }
+  }).trim();
+}
+
+function hasValidImageSignature(buffer, mime) {
+  if (!Buffer.isBuffer(buffer) || buffer.length < 12) return false;
+  if (mime === 'image/png') return buffer.subarray(0, 8).equals(Buffer.from([0x89,0x50,0x4e,0x47,0x0d,0x0a,0x1a,0x0a]));
+  if (mime === 'image/jpeg' || mime === 'image/jpg') return buffer[0] === 0xff && buffer[1] === 0xd8 && buffer[buffer.length - 2] === 0xff && buffer[buffer.length - 1] === 0xd9;
+  if (mime === 'image/webp') return buffer.toString('ascii', 0, 4) === 'RIFF' && buffer.toString('ascii', 8, 12) === 'WEBP';
+  return false;
+}
 
 // All admin routes require authentication
 router.use(requireAuth);
@@ -24,7 +46,8 @@ router.get('/posts', async (req, res) => {
 router.post('/posts', async (req, res) => {
   try {
     const { title, content, author } = req.body;
-    if (!title || !content || !author) {
+    const cleanContent = sanitizePostContent(content);
+    if (!title || !cleanContent || !author) {
       return res.status(400).json({ error: 'Title, content, and author are required' });
     }
 
@@ -37,7 +60,7 @@ router.post('/posts', async (req, res) => {
 
     const result = await run(
       'INSERT INTO posts (title, content, author, slug) VALUES ($1, $2, $3, $4) RETURNING id',
-      [title, content, author, slug]
+      [String(title).trim().slice(0, 200), cleanContent, String(author).trim().slice(0, 120), slug]
     );
 
     res.status(201).json({
@@ -55,7 +78,8 @@ router.post('/posts', async (req, res) => {
 router.put('/posts/:id', async (req, res) => {
   try {
     const { title, content, author } = req.body;
-    if (!title || !content || !author) {
+    const cleanContent = sanitizePostContent(content);
+    if (!title || !cleanContent || !author) {
       return res.status(400).json({ error: 'Title, content, and author are required' });
     }
 
@@ -74,7 +98,7 @@ router.put('/posts/:id', async (req, res) => {
 
     await run(
       'UPDATE posts SET title = $1, content = $2, author = $3, slug = $4, updated_at = NOW() WHERE id = $5',
-      [title, content, author, slug, id]
+      [String(title).trim().slice(0, 200), cleanContent, String(author).trim().slice(0, 120), slug, id]
     );
 
     res.json({ message: 'Post updated', slug });
@@ -168,6 +192,10 @@ router.post('/gallery', async (req, res) => {
     const base64Data = match[3];
     const buffer = Buffer.from(base64Data, 'base64');
 
+    if (!hasValidImageSignature(buffer, mime)) {
+      return res.status(400).json({ error: 'Uploaded file is not a valid image.' });
+    }
+
     if (buffer.length > 4 * 1024 * 1024) {
       return res.status(413).json({ error: 'Image too large (max 4MB)' });
     }
@@ -176,7 +204,7 @@ router.post('/gallery', async (req, res) => {
 
     const result = await run(
       'INSERT INTO gallery_photos (filename, alt, position, storage_key, url) VALUES ($1, $2, $3, $4, $5) RETURNING id',
-      [filename, (alt || '').trim(), 0, storageKey, url]
+      [filename, (alt || '').trim().slice(0, 200), 0, storageKey, url]
     );
 
     res.status(201).json({
