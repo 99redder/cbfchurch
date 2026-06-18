@@ -430,6 +430,10 @@
 
   <script src="js/common.js"></script>
   <script>
+    var ransomSection = document.querySelector('[aria-controls="acc-ransom-for-all"]').closest('.accordion-section');
+    var firstArticleSection = document.querySelector('.accordion-section');
+    firstArticleSection.parentNode.insertBefore(ransomSection, firstArticleSection);
+
     document.querySelectorAll('.accordion-trigger').forEach(function(btn) {
       var body = document.getElementById(btn.getAttribute('aria-controls'));
       btn.addEventListener('click', function() {
