@@ -234,7 +234,8 @@ The mobile pieces (all in `common.js`, all mirrored by CSS sections in `style.cs
 3. **Bottom tab bar** (`.tab-bar`) — fixed, thumb-reachable: **Home · Beliefs · Times · Location ·
    More**. Built by `initMobileTabBar()`. Active tab is derived from `currentPage`; any page not
    in the primary tabs marks **More** active. Tabs may be `external: true` (opens in a new tab,
-   never marked active) — **Location** links to the church's Google Maps directions. `body` gets
+   never marked active). **Location** deep-links to `service-times.html#location` (the map
+   section, which has `scroll-margin-top` so it clears the sticky header). `body` gets
    `padding-bottom` to clear the bar.
 4. **"More" bottom sheet** (`.tab-sheet-overlay` / `.tab-sheet`) — slide-up sheet with the
    overflow links (Photo Gallery, Mission Statement, CBF History, Learn the Truth, Article

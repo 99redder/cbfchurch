@@ -289,7 +289,7 @@ async function apiFetch(endpoint) {
     { href: 'index.html', icon: 'fa-house', label: 'Home' },
     { href: 'our-beliefs.html', icon: 'fa-book-bible', label: 'Beliefs' },
     { href: 'service-times.html', icon: 'fa-clock', label: 'Times' },
-    { href: 'https://www.google.com/maps/search/?api=1&query=32+Chapel+Lane+Somersworth+NH', icon: 'fa-location-dot', label: 'Location', external: true }
+    { href: 'service-times.html#location', icon: 'fa-location-dot', label: 'Location' }
   ];
 
   const moreLinks = [

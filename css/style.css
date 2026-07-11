@@ -1763,6 +1763,14 @@ p {
   border: none;
 }
 
+/* When the Location tab deep-links to #location, keep the heading clear of
+   the sticky mobile app-bar header instead of scrolling under it. */
+@media (max-width: 768px) {
+  #location {
+    scroll-margin-top: 84px;
+  }
+}
+
 /* ===========================
    Responsive Design
    =========================== */
