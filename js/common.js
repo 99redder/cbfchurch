@@ -199,6 +199,20 @@ async function apiFetch(endpoint) {
   });
 })();
 
+// Add the mobile-only stacked wordmark to the header (CSS shows it only on
+// small screens). Injected here so all pages get it without editing markup.
+(function addMobileWordmark() {
+  const link = document.querySelector('.header-logo-link');
+  if (!link || link.querySelector('.header-wordmark-mobile')) return;
+  const img = document.createElement('img');
+  img.className = 'header-wordmark-mobile';
+  img.src = 'images/wordmark-mobile.svg';
+  img.alt = 'Christian Believers Fellowship — 32 Chapel Lane, Somersworth, New Hampshire';
+  const wordmark = link.querySelector('.header-wordmark');
+  if (wordmark) wordmark.insertAdjacentElement('afterend', img);
+  else link.appendChild(img);
+})();
+
 // Mobile app bar: a native-app-style bottom tab bar + "More" sheet.
 // Injected on every public page (CSS hides it on desktop). Primary tabs
 // live in the bar; everything else lives in the slide-up sheet.

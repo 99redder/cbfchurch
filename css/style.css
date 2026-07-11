@@ -199,6 +199,12 @@ p {
   margin-right: -22px;
 }
 
+/* Mobile-only wordmark (stacked, larger text). Hidden on desktop;
+   swapped in by the mobile header rules + common.js. */
+.header-wordmark-mobile {
+  display: none;
+}
+
 .header-text h1 {
   font-size: 1.75rem;
   color: #fff;
@@ -1718,17 +1724,23 @@ p {
   .header-logo-link {
     flex-wrap: nowrap;
     justify-content: center;
-    gap: 0.5rem;
+    gap: 0.6rem;
   }
 
   .header-logo-accent {
     display: none;
   }
 
+  /* Swap the wide desktop wordmark for the stacked, larger-text version. */
   .header-wordmark {
-    height: 30px;
+    display: none;
+  }
+
+  .header-wordmark-mobile {
+    display: block;
+    height: 58px;
     width: auto;
-    max-width: 74vw;
+    max-width: 76vw;
     margin: 0;
   }
 
@@ -1743,8 +1755,8 @@ p {
   }
 
   .header-logo {
-    width: 34px;
-    height: 34px;
+    width: 44px;
+    height: 44px;
   }
 
   /* Mobile Nav */
