@@ -745,12 +745,33 @@ p {
     max-height: 40rem;
   }
 
+  /* Legal dropdowns (Privacy / Terms) hold long text — give them room. */
+  .sidebar-accordion .sidebar-acc-doc.open .sidebar-acc-body {
+    max-height: 400rem;
+  }
+
   .sidebar-accordion .sidebar-section.open .sidebar-acc-trigger {
     border-bottom: 1px solid var(--color-border-light);
   }
 
   .sidebar-accordion .sidebar-acc-body-inner {
     padding: 1rem 1.25rem 1.25rem;
+  }
+
+  .sidebar-accordion .sidebar-acc-doc .sidebar-acc-body-inner {
+    font-size: 0.85rem;
+  }
+
+  .sidebar-accordion .sidebar-acc-doc .sidebar-acc-body-inner h3 {
+    font-size: 0.95rem;
+    margin: 1rem 0 0.35rem;
+    padding-bottom: 0;
+    border-bottom: none;
+    color: var(--color-primary);
+  }
+
+  .sidebar-accordion .sidebar-acc-doc .sidebar-acc-body-inner h3:first-child {
+    margin-top: 0;
   }
 }
 
@@ -1898,9 +1919,10 @@ p {
     align-items: stretch;
   }
 
-  /* Mobile footer: unpin it and give the links real, tappable targets.
-     On phones a fixed bar just wastes vertical space; let it flow at the
-     end of the page instead. Bottom padding clears the fixed tab bar. */
+  /* Mobile footer: unpin it and keep only the copyright text — the
+     Contact / Privacy / Terms links move into the sidebar accordion
+     dropdowns. On phones a fixed bar just wastes vertical space; let it
+     flow at the end of the page instead. Bottom padding clears the tab bar. */
   body {
     padding-bottom: calc(56px + env(safe-area-inset-bottom, 0px));
   }
@@ -1917,20 +1939,7 @@ p {
   }
 
   .footer-links {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    align-items: center;
-    gap: 0.1rem 0.35rem;
-    margin-top: 0.5rem;
-  }
-
-  .footer-links a {
-    display: inline-block;
-    margin: 0;
-    padding: 0.7rem 0.75rem;
-    font-size: 0.95rem;
-    line-height: 1.1;
+    display: none;
   }
 }
 

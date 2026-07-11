@@ -246,10 +246,14 @@ The mobile pieces (all in `common.js`, all mirrored by CSS sections in `style.cs
    `.sidebar-section` cards: Learn the Truth, Service Times, Location, Archives & Videos, Follow
    Us, Ministries) into collapsible accordion rows. Each `<h3>` becomes the trigger (`role=button`,
    Enter/Space), content moves into a `.sidebar-acc-body`; open state is a `.open` class (no inline
-   styles, so it survives resize).
+   styles, so it survives resize). It also **appends the footer links as extra dropdowns** after
+   Ministries: Contact Us (blurb + link to the contact page), Privacy Policy, and Terms of Use.
+   Privacy/Terms (`.sidebar-acc-doc`, larger max-height) expand to their full legal text inline,
+   reusing the shared `cbfLegalContent` copy that `initLegalModals` also feeds the desktop modals.
 
-The `.site-footer` is `position: fixed` on desktop but **unpinned (static)** on mobile with larger
-tap targets, since the bottom tab bar now owns the fixed bottom area.
+On mobile the `.site-footer` is **unpinned (static)** and keeps only the copyright line — the
+Contact / Privacy / Terms links (`.footer-links`) are hidden and live in the accordion instead.
+On desktop the footer is `position: fixed` with its links, unchanged.
 
 **Desktop-safety rules (important for future edits):**
 - Every mobile style is under `@media (max-width: 768px)`.

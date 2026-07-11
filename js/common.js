@@ -88,12 +88,12 @@ async function apiFetch(endpoint) {
   return res.json();
 }
 
+// Shared legal copy — used by the desktop modals (below) and the mobile
+// footer dropdowns in the sidebar accordion (initSidebarAccordion).
+let cbfLegalContent = { privacy: '', terms: '' };
+
 // Legal modals (Privacy Policy & Terms of Use)
 (function initLegalModals() {
-  const privacyLink = document.getElementById('privacy-link');
-  const termsLink = document.getElementById('terms-link');
-  if (!privacyLink && !termsLink) return;
-
   const privacyContent = `
     <h3>Privacy Policy</h3>
     <p><strong>Last updated:</strong> February 2026</p>
@@ -145,6 +145,14 @@ async function apiFetch(endpoint) {
     <h3>Contact Us</h3>
     <p>If you have questions about these Terms of Use, please visit our <a href="contact.html">Detailed Contact List</a> page.</p>
   `;
+
+  // Share the copy so the mobile footer dropdowns can reuse it.
+  cbfLegalContent.privacy = privacyContent;
+  cbfLegalContent.terms = termsContent;
+
+  const privacyLink = document.getElementById('privacy-link');
+  const termsLink = document.getElementById('terms-link');
+  if (!privacyLink && !termsLink) return;
 
   // Create modal element
   const overlay = document.createElement('div');
@@ -228,6 +236,26 @@ async function apiFetch(endpoint) {
     if (built) return;
     built = true;
     sidebar.classList.add('sidebar-accordion');
+
+    // Append the footer's Contact / Privacy / Terms as extra dropdowns after
+    // Ministries (mobile only). Privacy & Terms reveal their full text inline
+    // (reusing the legal copy); Contact links out to the full contact page.
+    const stripHeading = (html) => html.replace(/^\s*<h3>[\s\S]*?<\/h3>/, '');
+    const extras = [
+      {
+        title: 'Contact Us',
+        html: '<p style="font-size:0.9rem;margin-bottom:0.5rem;">Reach any of our leadership team members, or send a quick message.</p>' +
+              '<a href="contact.html" style="font-size:0.9rem;">Go to Contact page &rarr;</a>'
+      },
+      { title: 'Privacy Policy', html: stripHeading(cbfLegalContent.privacy), doc: true },
+      { title: 'Terms of Use', html: stripHeading(cbfLegalContent.terms), doc: true }
+    ];
+    extras.forEach((x) => {
+      const sec = document.createElement('div');
+      sec.className = 'sidebar-section' + (x.doc ? ' sidebar-acc-doc' : '');
+      sec.innerHTML = '<h3>' + x.title + '</h3>' + x.html;
+      sidebar.appendChild(sec);
+    });
 
     sidebar.querySelectorAll('.sidebar-section').forEach((section, i) => {
       const h3 = section.querySelector('h3');
