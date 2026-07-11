@@ -213,6 +213,70 @@ async function apiFetch(endpoint) {
   else link.appendChild(img);
 })();
 
+// Mobile: turn the right-hand sidebar into a collapsible accordion so each
+// section (Learn the Truth, Service Times, Location, Archives, Follow Us,
+// Ministries) becomes a tidy, tappable row instead of a stack of cards.
+// Only builds on small screens; the desktop sidebar is left untouched.
+(function initSidebarAccordion() {
+  const sidebar = document.querySelector('.sidebar');
+  if (!sidebar) return;
+
+  const mq = window.matchMedia('(max-width: 768px)');
+  let built = false;
+
+  function build() {
+    if (built) return;
+    built = true;
+    sidebar.classList.add('sidebar-accordion');
+
+    sidebar.querySelectorAll('.sidebar-section').forEach((section, i) => {
+      const h3 = section.querySelector('h3');
+      if (!h3) return;
+
+      // Move everything after the heading into a collapsible body.
+      const body = document.createElement('div');
+      body.className = 'sidebar-acc-body';
+      body.id = 'sidebar-acc-' + i;
+      const inner = document.createElement('div');
+      inner.className = 'sidebar-acc-body-inner';
+      let node = h3.nextSibling;
+      while (node) {
+        const next = node.nextSibling;
+        inner.appendChild(node);
+        node = next;
+      }
+      body.appendChild(inner);
+      section.appendChild(body);
+
+      // Turn the heading into the accordion trigger.
+      h3.classList.add('sidebar-acc-trigger');
+      h3.setAttribute('role', 'button');
+      h3.setAttribute('tabindex', '0');
+      h3.setAttribute('aria-expanded', 'false');
+      h3.setAttribute('aria-controls', body.id);
+      const chevron = document.createElement('i');
+      chevron.className = 'fas fa-chevron-down sidebar-acc-icon';
+      chevron.setAttribute('aria-hidden', 'true');
+      h3.appendChild(chevron);
+
+      function toggle() {
+        const open = section.classList.toggle('open');
+        h3.setAttribute('aria-expanded', open ? 'true' : 'false');
+      }
+      h3.addEventListener('click', toggle);
+      h3.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          toggle();
+        }
+      });
+    });
+  }
+
+  if (mq.matches) build();
+  mq.addEventListener('change', (e) => { if (e.matches) build(); });
+})();
+
 // Mobile app bar: a native-app-style bottom tab bar + "More" sheet.
 // Injected on every public page (CSS hides it on desktop). Primary tabs
 // live in the bar; everything else lives in the slide-up sheet.

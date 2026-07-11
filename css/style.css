@@ -691,6 +691,68 @@ p {
   color: #111;
 }
 
+/* Sidebar as a collapsible accordion on mobile (built by common.js).
+   Each section becomes a tappable card that expands its content. */
+@media (max-width: 768px) {
+  .sidebar-accordion .sidebar-section {
+    padding: 0;
+    overflow: hidden;
+  }
+
+  .sidebar-accordion .sidebar-acc-trigger {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    margin: 0;
+    padding: 1rem 1.25rem;
+    border-bottom: 0;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .sidebar-accordion .sidebar-acc-icon {
+    font-size: 0.8rem;
+    color: var(--color-accent);
+    flex-shrink: 0;
+    transition: transform 0.25s ease;
+  }
+
+  .sidebar-accordion .sidebar-section.open .sidebar-acc-icon {
+    transform: rotate(180deg);
+  }
+
+  .sidebar-accordion .sidebar-acc-body {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.3s ease;
+  }
+
+  .sidebar-accordion .sidebar-section.open .sidebar-acc-body {
+    max-height: 40rem;
+  }
+
+  .sidebar-accordion .sidebar-section.open .sidebar-acc-trigger {
+    border-bottom: 1px solid var(--color-border-light);
+  }
+
+  .sidebar-accordion .sidebar-acc-body-inner {
+    padding: 1rem 1.25rem 1.25rem;
+  }
+}
+
+/* Safety net: if the accordion was built and the window is later widened
+   to desktop, show every section fully and drop the chevrons. */
+@media (min-width: 769px) {
+  .sidebar-accordion .sidebar-acc-body {
+    max-height: none;
+  }
+
+  .sidebar-accordion .sidebar-acc-icon {
+    display: none;
+  }
+}
+
 .learn-truth-card li a:hover {
   color: var(--color-primary-dark);
 }
