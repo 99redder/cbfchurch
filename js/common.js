@@ -7,21 +7,28 @@ const yearEl = document.getElementById('footer-year');
 if (yearEl) yearEl.textContent = new Date().getFullYear();
 
 // Mobile nav toggle
+// The nav has two <ul class="nav-links"> rows (primary + secondary), so
+// toggle every one — otherwise the secondary links (Contact/Donate/Admin)
+// stay hidden on mobile.
 const navToggle = document.querySelector('.nav-toggle');
-const navLinks = document.querySelector('.nav-links');
+const navLinksAll = document.querySelectorAll('.nav-links');
 const themeToggle = document.querySelector('.theme-toggle');
 
-if (navToggle && navLinks) {
+if (navToggle && navLinksAll.length) {
+  const setNav = (open) => {
+    navLinksAll.forEach(ul => ul.classList.toggle('open', open));
+    navToggle.setAttribute('aria-expanded', open);
+  };
+
   navToggle.addEventListener('click', () => {
-    const isOpen = navLinks.classList.toggle('open');
-    navToggle.setAttribute('aria-expanded', isOpen);
+    const willOpen = !navLinksAll[0].classList.contains('open');
+    setNav(willOpen);
   });
 
   // Close nav when clicking a link (mobile)
-  navLinks.querySelectorAll('a').forEach(link => {
-    link.addEventListener('click', () => {
-      navLinks.classList.remove('open');
-      navToggle.setAttribute('aria-expanded', 'false');
+  navLinksAll.forEach(ul => {
+    ul.querySelectorAll('a').forEach(link => {
+      link.addEventListener('click', () => setNav(false));
     });
   });
 }
@@ -189,6 +196,127 @@ async function apiFetch(endpoint) {
   });
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape' && overlay.classList.contains('active')) closeModal();
+  });
+})();
+
+// Mobile app bar: a native-app-style bottom tab bar + "More" sheet.
+// Injected on every public page (CSS hides it on desktop). Primary tabs
+// live in the bar; everything else lives in the slide-up sheet.
+(function initMobileTabBar() {
+  if (document.querySelector('.tab-bar')) return; // guard against double-init
+
+  const page = currentPage || 'index.html';
+
+  const tabs = [
+    { href: 'index.html', icon: 'fa-house', label: 'Home' },
+    { href: 'our-beliefs.html', icon: 'fa-book-bible', label: 'Beliefs' },
+    { href: 'service-times.html', icon: 'fa-clock', label: 'Times' },
+    { href: 'photo-gallery.html', icon: 'fa-images', label: 'Gallery' }
+  ];
+
+  const moreLinks = [
+    { href: 'mission-statement.html', icon: 'fa-bullseye', label: 'Mission Statement' },
+    { href: 'cbf-history.html', icon: 'fa-landmark', label: 'CBF History' },
+    { href: 'learn-the-truth.html', icon: 'fa-book-open', label: 'Learn the Truth' },
+    { href: 'article-archives.html', icon: 'fa-newspaper', label: 'Article Archives' },
+    { href: 'video-archive.html', icon: 'fa-video', label: 'Video Archive' },
+    { href: 'contact.html', icon: 'fa-address-book', label: 'Contact Us' },
+    { href: 'donate.html', icon: 'fa-hand-holding-heart', label: 'Donate' },
+    { href: 'admin/login.html', icon: 'fa-lock', label: 'Admin Login' }
+  ];
+
+  const activeIsMore = !tabs.some(t => t.href === page);
+
+  // Build the tab bar
+  const bar = document.createElement('nav');
+  bar.className = 'tab-bar';
+  bar.setAttribute('aria-label', 'Primary navigation');
+
+  tabs.forEach(t => {
+    const a = document.createElement('a');
+    a.href = t.href;
+    a.className = 'tab-item' + (t.href === page ? ' active' : '');
+    if (t.href === page) a.setAttribute('aria-current', 'page');
+    a.innerHTML = `<i class="fas ${t.icon}" aria-hidden="true"></i><span>${t.label}</span>`;
+    bar.appendChild(a);
+  });
+
+  const moreBtn = document.createElement('button');
+  moreBtn.type = 'button';
+  moreBtn.className = 'tab-item tab-more' + (activeIsMore ? ' active' : '');
+  moreBtn.setAttribute('aria-haspopup', 'dialog');
+  moreBtn.setAttribute('aria-expanded', 'false');
+  moreBtn.innerHTML = `<i class="fas fa-ellipsis" aria-hidden="true"></i><span>More</span>`;
+  bar.appendChild(moreBtn);
+
+  document.body.appendChild(bar);
+
+  // Build the "More" sheet
+  const sheetOverlay = document.createElement('div');
+  sheetOverlay.className = 'tab-sheet-overlay';
+  const linksHtml = moreLinks.map(l =>
+    `<a href="${l.href}" class="${l.href === page ? 'active' : ''}">` +
+    `<i class="fas ${l.icon}" aria-hidden="true"></i>${l.label}</a>`
+  ).join('');
+  sheetOverlay.innerHTML = `
+    <div class="tab-sheet" role="dialog" aria-label="More menu" aria-modal="true">
+      <div class="tab-sheet-handle"></div>
+      ${linksHtml}
+      <button type="button" class="tab-sheet-btn tab-sheet-theme"></button>
+    </div>
+  `;
+  document.body.appendChild(sheetOverlay);
+
+  const themeBtn = sheetOverlay.querySelector('.tab-sheet-theme');
+
+  function isDark() {
+    const attr = document.documentElement.getAttribute('data-theme');
+    if (attr) return attr === 'dark';
+    return window.matchMedia('(prefers-color-scheme: dark)').matches;
+  }
+
+  function syncThemeLabel() {
+    const dark = isDark();
+    themeBtn.innerHTML =
+      `<i class="fas ${dark ? 'fa-sun' : 'fa-moon'}" aria-hidden="true"></i>` +
+      `${dark ? 'Light mode' : 'Dark mode'}`;
+  }
+  syncThemeLabel();
+
+  function openSheet() {
+    sheetOverlay.classList.add('active');
+    moreBtn.setAttribute('aria-expanded', 'true');
+    document.body.style.overflow = 'hidden';
+  }
+
+  function closeSheet() {
+    sheetOverlay.classList.remove('active');
+    moreBtn.setAttribute('aria-expanded', 'false');
+    document.body.style.overflow = '';
+  }
+
+  moreBtn.addEventListener('click', () => {
+    sheetOverlay.classList.contains('active') ? closeSheet() : openSheet();
+  });
+
+  sheetOverlay.addEventListener('click', (e) => {
+    if (e.target === sheetOverlay) closeSheet();
+  });
+
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape' && sheetOverlay.classList.contains('active')) closeSheet();
+  });
+
+  themeBtn.addEventListener('click', () => {
+    const desktopToggle = document.querySelector('.theme-toggle');
+    if (desktopToggle) {
+      desktopToggle.click(); // reuse existing theme logic (localStorage + icon sync)
+    } else {
+      const next = isDark() ? 'light' : 'dark';
+      document.documentElement.setAttribute('data-theme', next);
+      localStorage.setItem('cbf-theme', next);
+    }
+    syncThemeLabel();
   });
 })();
 

@@ -1697,8 +1697,39 @@ p {
 }
 
 @media (max-width: 768px) {
+  /* Mobile: the header becomes a compact, sticky app bar (logo + wordmark).
+     The old top nav row is replaced by the bottom tab bar + "More" sheet
+     (injected by common.js — see the "Mobile app bar" section below). */
+  .site-header {
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    padding: 0.5rem 0;
+  }
+
+  .site-nav {
+    display: none;
+  }
+
+  .header-inner {
+    padding: 0 1rem;
+  }
+
+  .header-logo-link {
+    flex-wrap: nowrap;
+    justify-content: center;
+    gap: 0.5rem;
+  }
+
+  .header-logo-accent {
+    display: none;
+  }
+
   .header-wordmark {
-    height: 72px;
+    height: 30px;
+    width: auto;
+    max-width: 74vw;
+    margin: 0;
   }
 
   .page-wrapper {
@@ -1712,8 +1743,8 @@ p {
   }
 
   .header-logo {
-    width: 48px;
-    height: 48px;
+    width: 34px;
+    height: 34px;
   }
 
   /* Mobile Nav */
@@ -1770,6 +1801,41 @@ p {
     flex-direction: column;
     gap: 0.75rem;
     align-items: stretch;
+  }
+
+  /* Mobile footer: unpin it and give the links real, tappable targets.
+     On phones a fixed bar just wastes vertical space; let it flow at the
+     end of the page instead. Bottom padding clears the fixed tab bar. */
+  body {
+    padding-bottom: calc(56px + env(safe-area-inset-bottom, 0px));
+  }
+
+  .site-footer {
+    position: static;
+    padding: 1.1rem 1rem 1.4rem;
+    font-size: 0.8rem;
+  }
+
+  .footer-inner p {
+    margin-bottom: 0.35rem;
+    line-height: 1.45;
+  }
+
+  .footer-links {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 0.1rem 0.35rem;
+    margin-top: 0.5rem;
+  }
+
+  .footer-links a {
+    display: inline-block;
+    margin: 0;
+    padding: 0.7rem 0.75rem;
+    font-size: 0.95rem;
+    line-height: 1.1;
   }
 }
 
@@ -1935,4 +2001,156 @@ p {
   padding: 0.2rem 0.55rem;
   font-size: 0.82rem;
   cursor: pointer;
+}
+
+
+/* ===========================
+   Mobile app bar (bottom tab bar + "More" sheet)
+   Injected by common.js on every public page. Mobile only — the
+   desktop guard at the bottom keeps these hidden ≥769px so the
+   desktop layout is completely untouched.
+   =========================== */
+.tab-bar {
+  display: none;
+}
+
+.tab-sheet-overlay {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .tab-bar {
+    display: flex;
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 200;
+    background: var(--color-bg);
+    border-top: 1px solid var(--color-border);
+    box-shadow: 0 -2px 12px rgba(0, 0, 0, 0.08);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+  }
+
+  .tab-item {
+    flex: 1 1 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 3px;
+    min-height: 54px;
+    padding: 7px 4px 6px;
+    font-family: var(--font-body);
+    font-size: 0.66rem;
+    line-height: 1;
+    letter-spacing: 0.2px;
+    color: var(--color-text-light);
+    text-decoration: none;
+    background: none;
+    border: 0;
+    cursor: pointer;
+    -webkit-tap-highlight-color: transparent;
+    transition: color var(--transition);
+  }
+
+  .tab-item i {
+    font-size: 1.2rem;
+  }
+
+  .tab-item.active {
+    color: var(--color-primary);
+  }
+
+  :root[data-theme="dark"] .tab-bar {
+    background: #121824;
+    border-top-color: rgba(255, 255, 255, 0.08);
+    box-shadow: 0 -2px 12px rgba(0, 0, 0, 0.45);
+  }
+
+  /* "More" bottom sheet */
+  .tab-sheet-overlay {
+    display: flex;
+    position: fixed;
+    inset: 0;
+    z-index: 250;
+    align-items: flex-end;
+    background: rgba(0, 0, 0, 0.5);
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.25s ease;
+  }
+
+  .tab-sheet-overlay.active {
+    opacity: 1;
+    pointer-events: auto;
+  }
+
+  .tab-sheet {
+    width: 100%;
+    max-height: 82vh;
+    overflow-y: auto;
+    background: var(--color-bg);
+    border-radius: 18px 18px 0 0;
+    padding: 8px 14px calc(14px + env(safe-area-inset-bottom, 0px));
+    box-shadow: 0 -6px 24px rgba(0, 0, 0, 0.25);
+    transform: translateY(100%);
+    transition: transform 0.28s ease;
+  }
+
+  .tab-sheet-overlay.active .tab-sheet {
+    transform: translateY(0);
+  }
+
+  .tab-sheet-handle {
+    width: 40px;
+    height: 4px;
+    border-radius: 2px;
+    background: var(--color-border);
+    margin: 6px auto 12px;
+  }
+
+  .tab-sheet a,
+  .tab-sheet .tab-sheet-btn {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    width: 100%;
+    padding: 15px 8px;
+    font-family: var(--font-body);
+    font-size: 1rem;
+    color: var(--color-text);
+    text-align: left;
+    text-decoration: none;
+    background: none;
+    border: 0;
+    border-bottom: 1px solid var(--color-border-light);
+    cursor: pointer;
+  }
+
+  .tab-sheet a:last-child,
+  .tab-sheet .tab-sheet-btn:last-child {
+    border-bottom: 0;
+  }
+
+  .tab-sheet a i,
+  .tab-sheet .tab-sheet-btn i {
+    width: 24px;
+    text-align: center;
+    font-size: 1.05rem;
+    color: var(--color-primary);
+  }
+
+  .tab-sheet a.active {
+    color: var(--color-primary);
+    font-weight: 600;
+  }
+}
+
+/* Desktop guard: the app bar never appears on wider screens. */
+@media (min-width: 769px) {
+  .tab-bar,
+  .tab-sheet-overlay {
+    display: none !important;
+  }
 }
