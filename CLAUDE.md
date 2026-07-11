@@ -231,14 +231,16 @@ The mobile pieces (all in `common.js`, all mirrored by CSS sections in `style.cs
    bar, so `addMobileWordmark()` injects `images/wordmark-mobile.svg` (church name stacked on two
    lines, same colors/fonts). CSS shows `.header-wordmark-mobile` and hides `.header-wordmark`
    only ≤768px (and vice-versa).
-3. **Bottom tab bar** (`.tab-bar`) — fixed, thumb-reachable: **Home · Beliefs · Times · Gallery ·
+3. **Bottom tab bar** (`.tab-bar`) — fixed, thumb-reachable: **Home · Beliefs · Times · Location ·
    More**. Built by `initMobileTabBar()`. Active tab is derived from `currentPage`; any page not
-   in the four primary tabs marks **More** active. `body` gets `padding-bottom` to clear it.
+   in the primary tabs marks **More** active. Tabs may be `external: true` (opens in a new tab,
+   never marked active) — **Location** links to the church's Google Maps directions. `body` gets
+   `padding-bottom` to clear the bar.
 4. **"More" bottom sheet** (`.tab-sheet-overlay` / `.tab-sheet`) — slide-up sheet with the
-   overflow links (Mission Statement, CBF History, Learn the Truth, Article Archives, Video
-   Archive, Contact, Donate, Admin Login) + the dark-mode toggle. Opens from the More tab; closes
-   on backdrop tap / Escape. To add/remove a mobile nav destination, edit the `tabs` / `moreLinks`
-   arrays in `initMobileTabBar()`.
+   overflow links (Photo Gallery, Mission Statement, CBF History, Learn the Truth, Article
+   Archives, Video Archive, Contact, Donate, Admin Login) + the dark-mode toggle. Opens from the
+   More tab; closes on backdrop tap / Escape. To add/remove a mobile nav destination or move one
+   between the bar and the sheet, edit the `tabs` / `moreLinks` arrays in `initMobileTabBar()`.
 5. **Sidebar accordion** — `initSidebarAccordion()` turns the right-hand `.sidebar` (6
    `.sidebar-section` cards: Learn the Truth, Service Times, Location, Archives & Videos, Follow
    Us, Ministries) into collapsible accordion rows. Each `<h3>` becomes the trigger (`role=button`,

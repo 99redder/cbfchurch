@@ -289,10 +289,11 @@ async function apiFetch(endpoint) {
     { href: 'index.html', icon: 'fa-house', label: 'Home' },
     { href: 'our-beliefs.html', icon: 'fa-book-bible', label: 'Beliefs' },
     { href: 'service-times.html', icon: 'fa-clock', label: 'Times' },
-    { href: 'photo-gallery.html', icon: 'fa-images', label: 'Gallery' }
+    { href: 'https://www.google.com/maps/search/?api=1&query=32+Chapel+Lane+Somersworth+NH', icon: 'fa-location-dot', label: 'Location', external: true }
   ];
 
   const moreLinks = [
+    { href: 'photo-gallery.html', icon: 'fa-images', label: 'Photo Gallery' },
     { href: 'mission-statement.html', icon: 'fa-bullseye', label: 'Mission Statement' },
     { href: 'cbf-history.html', icon: 'fa-landmark', label: 'CBF History' },
     { href: 'learn-the-truth.html', icon: 'fa-book-open', label: 'Learn the Truth' },
@@ -315,6 +316,10 @@ async function apiFetch(endpoint) {
     a.href = t.href;
     a.className = 'tab-item' + (t.href === page ? ' active' : '');
     if (t.href === page) a.setAttribute('aria-current', 'page');
+    if (t.external) {
+      a.target = '_blank';
+      a.rel = 'noopener';
+    }
     a.innerHTML = `<i class="fas ${t.icon}" aria-hidden="true"></i><span>${t.label}</span>`;
     bar.appendChild(a);
   });
