@@ -56,7 +56,9 @@ cbfchurch/
 │   └── style.css                  # Single stylesheet: public + admin + dark mode
 ├── js/
 │   ├── common.js                  # Shared: API_BASE, nav toggle, theme toggle,
-│   │                              #   formatDate, apiFetch, legal modals (privacy/terms)
+│   │                              #   formatDate, apiFetch, legal modals (privacy/terms),
+│   │                              #   AND all mobile app chrome injection (tab bar,
+│   │                              #   "More" sheet, mobile wordmark, sidebar accordion)
 │   ├── blog.js                    # Fetch/render blog posts on home page
 │   ├── post.js                    # Fetch/render single post
 │   ├── archives.js                # Fetch/render archive listing
@@ -65,7 +67,9 @@ cbfchurch/
 │                                  #   gallery CRUD, user management
 ├── images/
 │   ├── logo.svg
-│   ├── wordmark.svg
+│   ├── wordmark.svg                # Wide single-line wordmark (desktop header)
+│   ├── wordmark-mobile.svg         # Stacked two-line wordmark (mobile header, bigger text)
+│   ├── church-logo-photo.jpg       # Round church-building accent (desktop header only)
 │   ├── pwa-icon.svg
 │   └── gallery/                   # ~60 static gallery photos (committed to git)
 ├── api/                           # Backend (deployed separately to Render)
@@ -192,6 +196,9 @@ Flow:
 - CSS custom properties on `:root[data-theme="dark"]` and `@media (prefers-color-scheme: dark)`
 - Theme stored in `localStorage` as `cbf-theme` (`'dark'` or `'light'`)
 - Public pages: `.theme-toggle` button in nav, logic in `js/common.js`
+- On mobile the nav is hidden, so the theme toggle lives in the "More" bottom sheet
+  (`.tab-sheet-theme`); it simply forwards a click to the hidden `.theme-toggle` so
+  there is one source of truth for the theme logic
 - Admin pages: `#admin-theme-toggle` button in `.admin-header`, logic in `js/admin.js`
 - `login.html` has inline theme JS since it doesn't load `admin.js` at parse time
 - Both use the same `cbf-theme` key so preference syncs across public and admin pages
@@ -202,6 +209,60 @@ Flow:
 - `js/common.js` detects these IDs on load, injects a modal into `document.body`, and wires up open/close
 - Modal closes on X button, overlay click, or Escape key
 - Content is defined inline in `common.js` — edit there to update policy text
+
+## Mobile App Experience (mobile-only, ≤768px)
+
+**Philosophy:** on phones the site should feel like a **native app**, not a shrunk-down
+desktop page. The desktop layout is considered "done" and must stay pixel-identical — every
+mobile change is scoped to `@media (max-width: 768px)` and, where DOM is transformed, guarded
+so desktop is never affected.
+
+**Where it lives:** there is no HTML template — the nav/header/sidebar markup is hand-copied
+into all 14 public pages. So rather than edit every file, **all mobile chrome is injected at
+runtime by `js/common.js`** (same pattern as the legal modal). Each injector is a self-invoking
+function guarded to run once. This means: to change the mobile app, edit `js/common.js` +
+`css/style.css` only — never the individual HTML pages.
+
+The mobile pieces (all in `common.js`, all mirrored by CSS sections in `style.css`):
+
+1. **Compact top app bar** — the tall desktop banner (`.site-header`) becomes a slim sticky bar
+   on mobile; the whole top nav (`.site-nav`) is hidden. Pure CSS (no injection).
+2. **Mobile wordmark** — the wide `images/wordmark.svg` shrinks to unreadable text in the slim
+   bar, so `addMobileWordmark()` injects `images/wordmark-mobile.svg` (church name stacked on two
+   lines, same colors/fonts). CSS shows `.header-wordmark-mobile` and hides `.header-wordmark`
+   only ≤768px (and vice-versa).
+3. **Bottom tab bar** (`.tab-bar`) — fixed, thumb-reachable: **Home · Beliefs · Times · Gallery ·
+   More**. Built by `initMobileTabBar()`. Active tab is derived from `currentPage`; any page not
+   in the four primary tabs marks **More** active. `body` gets `padding-bottom` to clear it.
+4. **"More" bottom sheet** (`.tab-sheet-overlay` / `.tab-sheet`) — slide-up sheet with the
+   overflow links (Mission Statement, CBF History, Learn the Truth, Article Archives, Video
+   Archive, Contact, Donate, Admin Login) + the dark-mode toggle. Opens from the More tab; closes
+   on backdrop tap / Escape. To add/remove a mobile nav destination, edit the `tabs` / `moreLinks`
+   arrays in `initMobileTabBar()`.
+5. **Sidebar accordion** — `initSidebarAccordion()` turns the right-hand `.sidebar` (6
+   `.sidebar-section` cards: Learn the Truth, Service Times, Location, Archives & Videos, Follow
+   Us, Ministries) into collapsible accordion rows. Each `<h3>` becomes the trigger (`role=button`,
+   Enter/Space), content moves into a `.sidebar-acc-body`; open state is a `.open` class (no inline
+   styles, so it survives resize).
+
+The `.site-footer` is `position: fixed` on desktop but **unpinned (static)** on mobile with larger
+tap targets, since the bottom tab bar now owns the fixed bottom area.
+
+**Desktop-safety rules (important for future edits):**
+- Every mobile style is under `@media (max-width: 768px)`.
+- Injectors that transform the DOM (`initSidebarAccordion`) are **`matchMedia('(max-width:768px)')`
+  gated** — they never build on a real desktop.
+- The tab bar / sheet / sidebar-accordion each have a `@media (min-width: 769px)` **safety net**
+  that force-hides or force-expands them, so even if an injector runs at a transient desktop width
+  the desktop render stays correct.
+- The mobile nav toggle (`.nav-toggle`) toggles **all** `.nav-links` rows (the markup has a primary
+  and a secondary `<ul>`); toggling only the first was a bug that hid Contact/Donate/Admin.
+
+**Testing locally:** `python3 -m http.server 8099` from repo root, then a browser at
+`http://localhost:8099`. Resize to ≤768px (e.g. 390px) for the app view; ≥769px for desktop.
+Note: `innerWidth` can momentarily read `0` right after navigation in some embedded browsers,
+which transiently matches the mobile query — the `min-width:769px` safety nets exist partly for
+this.
 
 ## Gallery Storage
 
@@ -258,13 +319,20 @@ npx serve .
 5. Load `js/common.js` at the bottom of `<body>`
 6. Add the page to `sitemap.xml`
 
+The **mobile app chrome is automatic** — as long as the page loads `js/common.js` and keeps the
+standard markup hooks (`.header-logo-link` in the header, `.site-nav`, and — if it has one — an
+`<aside class="sidebar">` of `.sidebar-section` cards), `common.js` injects the compact header,
+bottom tab bar, "More" sheet, and sidebar accordion for you. If the new page should appear as a
+tab or in the "More" sheet, add it to the `tabs`/`moreLinks` arrays in `initMobileTabBar()`.
+
 ## Key Files to Know
 
 | File | Purpose |
 |------|---------|
 | `js/admin.js` | All admin logic: `authFetch()`, theme toggle, auth check, dashboard, editor, gallery CRUD, user management |
-| `js/common.js` | Public pages: `API_BASE`, nav toggle, theme toggle, `formatDate()`, `apiFetch()`, legal modals |
-| `css/style.css` | Single stylesheet: public site, admin panel, dark mode, responsive (breakpoints: 768px, 1024px) |
+| `js/common.js` | Public pages: `API_BASE`, nav toggle, theme toggle, `formatDate()`, `apiFetch()`, legal modals, **mobile app chrome** (`addMobileWordmark`, `initMobileTabBar`, `initSidebarAccordion`) |
+| `css/style.css` | Single stylesheet: public site, admin panel, dark mode, **mobile app bar/sheet/accordion**, responsive (breakpoints: 768px, 1024px) |
+| `images/wordmark-mobile.svg` | Stacked two-line wordmark shown only in the mobile header |
 | `api/server.js` | Express app: CORS (multi-origin), cookie-parser, route mounting |
 | `api/utils/auth.js` | `createToken()`, `verifyToken()`, `requireAuth`, `requireSuperAdmin` |
 | `api/utils/db.js` | PostgreSQL pool + `run()`, `get()`, `all()`, `exec()` helpers |
@@ -286,6 +354,9 @@ npx serve .
 7. Admin panel (`.admin-header`, `.posts-table`, `.editor-container`, gallery admin)
 8. Dark mode overrides for admin elements and Quill editor
 9. Responsive breakpoints (768px, 1024px)
+10. Mobile app chrome — `.tab-bar`, `.tab-sheet*`, sidebar accordion (`.sidebar-accordion`,
+    `.sidebar-acc-*`), compact header, mobile wordmark. All under `@media (max-width: 768px)`
+    with `@media (min-width: 769px)` safety nets. See "Mobile App Experience" above.
 
 All colors use CSS custom properties — never use hardcoded hex values in new rules.
 
@@ -293,7 +364,8 @@ All colors use CSS custom properties — never use hardcoded hex values in new r
 
 - The `api/.env` file contains database credentials and is gitignored. Never commit it.
 - Render free tier has no shell access and ephemeral filesystem — use S3 for gallery storage and local scripts for DB maintenance.
-- All 12 public HTML pages share the same nav structure — any nav changes must be made in every file.
+- All public HTML pages share the same hand-coded nav structure — any **desktop** nav change must be made in every file. **Mobile** nav is generated once in `js/common.js`, so mobile changes are made there only.
+- Desktop is intentionally frozen: keep all mobile work inside `@media (max-width: 768px)` and never let a mobile-only DOM injection alter the ≥769px render (matchMedia-gate the build and/or add a `min-width: 769px` safety net). See "Mobile App Experience".
 - SQL uses `$1`, `$2` parameterized queries (PostgreSQL style, not `?`).
 - CORS accepts only origins in `ALLOWED_ORIGIN` env var (comma-separated).
 - The Quill.js editor is loaded from CDN — do not try to install it locally.
