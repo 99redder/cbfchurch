@@ -691,6 +691,19 @@ p {
   color: #111;
 }
 
+/* Mobile-only "Learn the Truth" card in the main column (home page).
+   Hidden on desktop, where the sidebar copy is used instead. */
+.learn-truth-main {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .learn-truth-main {
+    display: block;
+    margin-bottom: 1.5rem;
+  }
+}
+
 /* Sidebar as a collapsible accordion on mobile (built by common.js).
    Each section becomes a tappable card that expands its content. */
 @media (max-width: 768px) {
