@@ -1626,6 +1626,25 @@ p {
   border: 1px solid #c3e6cb;
 }
 
+/* Attention pulse — draws the eye to a freshly-shown status message
+   (e.g. the mobile donation cancel confirmation). */
+@keyframes cbfAttentionPulse {
+  0%   { transform: scale(1);    box-shadow: 0 0 0 0 rgba(220, 53, 69, 0.55); }
+  30%  { transform: scale(1.03); }
+  70%  { box-shadow: 0 0 0 14px rgba(220, 53, 69, 0); }
+  100% { transform: scale(1);    box-shadow: 0 0 0 0 rgba(220, 53, 69, 0); }
+}
+
+.attention-pulse {
+  animation: cbfAttentionPulse 0.9s ease-out 2;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .attention-pulse {
+    animation: none;
+  }
+}
+
 :root[data-theme="dark"] .alert-error {
   background: #2a1215;
   color: #f87171;

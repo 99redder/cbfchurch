@@ -61,16 +61,36 @@
     resultOverlay.style.display = 'flex';
   }
 
+  // On pages without the result modal (the mobile home giving widget), scroll
+  // the status message into view and pulse it so the user clearly sees that
+  // the checkout was canceled / completed.
+  function drawAttentionToStatus() {
+    if (!statusEl) return;
+    // Let layout settle, then pulse the message and bring it into view.
+    setTimeout(() => {
+      statusEl.classList.remove('attention-pulse');
+      void statusEl.offsetWidth; // force reflow so the animation restarts
+      statusEl.classList.add('attention-pulse');
+      try {
+        statusEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      } catch (e) {
+        statusEl.scrollIntoView();
+      }
+    }, 80);
+  }
+
   const params = new URLSearchParams(window.location.search);
   if (params.get('paid') === '1') {
     setStatus('Thank you! Your donation was successful.', 'success');
     showResult('paid');
+    if (!resultOverlay) drawAttentionToStatus();
     params.delete('paid');
     const clean = `${window.location.pathname}${params.toString() ? `?${params.toString()}` : ''}`;
     window.history.replaceState({}, '', clean);
   } else if (params.get('canceled') === '1') {
-    setStatus('Donation checkout canceled. You can try again any time.');
+    setStatus('Donation checkout canceled — no charge was made. You can try again below.');
     showResult('canceled');
+    if (!resultOverlay) drawAttentionToStatus();
     params.delete('canceled');
     const clean = `${window.location.pathname}${params.toString() ? `?${params.toString()}` : ''}`;
     window.history.replaceState({}, '', clean);

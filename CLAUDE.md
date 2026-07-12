@@ -264,7 +264,9 @@ loads `js/donate.js` for the widget; on desktop the hidden form is inert. The wi
 `data-source="home"`, which `donate.js` forwards as `source` to the API; when the API sees
 `source=home` it points Stripe's **cancel** URL back to `index.html?canceled=1#donate` (the widget)
 instead of the full donate page. Success still returns to `donate.html?paid=1` (its thank-you
-overlay). `#donate` has `scroll-margin-top` so the return clears the sticky header.
+overlay). `#donate` has `scroll-margin-top` so the return clears the sticky header. On that return
+`donate.js` (`drawAttentionToStatus`) scrolls the status message into view and pulses it
+(`.attention-pulse`, respects `prefers-reduced-motion`) so the user sees that no charge was made.
 
 **Desktop-safety rules (important for future edits):**
 - Every mobile style is under `@media (max-width: 768px)`.
