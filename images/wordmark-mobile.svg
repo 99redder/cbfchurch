@@ -1,28 +1,28 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 820 240" role="img" aria-labelledby="cbfWordmarkMobileTitle cbfWordmarkMobileDesc" preserveAspectRatio="xMidYMid meet">
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 228" role="img" aria-labelledby="cbfWordmarkMobileTitle cbfWordmarkMobileDesc" preserveAspectRatio="xMidYMid meet">
   <title id="cbfWordmarkMobileTitle">Christian Believers Fellowship</title>
   <desc id="cbfWordmarkMobileDesc">Wordmark logo with the church name and address, stacked for small screens.</desc>
 
   <!-- Primary name, stacked on two lines so the text stays large on mobile -->
-  <text x="410" y="74" fill="#ffffff" text-anchor="middle"
+  <text x="400" y="76" fill="#ffffff" text-anchor="middle"
         font-family="'Garamond', 'Times New Roman', serif"
         font-size="66" letter-spacing="1.1">
     CHRISTIAN BELIEVERS
   </text>
-  <text x="410" y="140" fill="#ffffff" text-anchor="middle"
+  <text x="400" y="142" fill="#ffffff" text-anchor="middle"
         font-family="'Garamond', 'Times New Roman', serif"
         font-size="66" letter-spacing="1.1">
     FELLOWSHIP
   </text>
 
   <!-- Gold accent divider with center mark (echoes the desktop wordmark) -->
-  <line x1="240" y1="164" x2="580" y2="164" stroke="#d4a843" stroke-width="2" opacity="0.85" />
-  <circle cx="410" cy="164" r="5" fill="#d4a843" />
-  <rect x="408" y="150" width="4" height="16" rx="2" fill="#ffffff" />
+  <line x1="250" y1="166" x2="550" y2="166" stroke="#d4a843" stroke-width="2" opacity="0.85" />
+  <circle cx="400" cy="166" r="5" fill="#d4a843" />
+  <rect x="398" y="152" width="4" height="16" rx="2" fill="#ffffff" />
 
-  <!-- Address (enlarged for readability) -->
-  <text x="410" y="215" fill="#e9f1fb" text-anchor="middle"
+  <!-- Address, sized to match the width of the name line above it -->
+  <text x="400" y="210" fill="#e9f1fb" text-anchor="middle"
         font-family="'Georgia', 'Times New Roman', serif"
-        font-size="34" letter-spacing="0.5">
+        font-size="28" letter-spacing="0.5">
     32 CHAPEL LANE · SOMERSWORTH · NEW HAMPSHIRE
   </text>
 </svg>
