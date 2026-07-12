@@ -255,6 +255,13 @@ On mobile the `.site-footer` is **unpinned (static)** and keeps only the copyrig
 Contact / Privacy / Terms links (`.footer-links`) are hidden and live in the accordion instead.
 On desktop the footer is `position: fixed` with its links, unchanged.
 
+**Home-page-only mobile cards** — `index.html` has two extra cards in the main column, above the
+blog list, that are `display: none` on desktop and shown only ≤768px (plain HTML + CSS, no
+injection): `.learn-truth-main` (a copy of the Learn the Truth links) and `.donate-mobile` (a
+streamlined giving widget — frequency + amount + custom + Stripe, reusing `js/donate.js`; the
+name/email fields and info card from the full `donate.html` are intentionally dropped). `index.html`
+loads `js/donate.js` for the widget; on desktop the hidden form is inert.
+
 **Desktop-safety rules (important for future edits):**
 - Every mobile style is under `@media (max-width: 768px)`.
 - Injectors that transform the DOM (`initSidebarAccordion`) are **`matchMedia('(max-width:768px)')`

@@ -704,6 +704,140 @@ p {
   }
 }
 
+/* Mobile-only streamlined giving widget (home main column, above blogs).
+   Hidden on desktop, where the full donate.html page is used. */
+.donate-mobile {
+  display: none;
+}
+
+@media (max-width: 768px) {
+  .donate-mobile {
+    display: block;
+    margin-bottom: 1.5rem;
+  }
+
+  .donate-mobile h2 {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1.3rem;
+    margin-bottom: 0.35rem;
+  }
+
+  .donate-mobile-sub {
+    color: var(--color-text-light);
+    font-size: 0.92rem;
+    margin-bottom: 1.1rem;
+  }
+
+  .donate-mobile-form {
+    margin: 0;
+  }
+
+  /* Frequency segmented control */
+  .donate-seg {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.5rem;
+    margin-bottom: 0.9rem;
+  }
+
+  /* Quick amounts */
+  .donate-amounts {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 0.5rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .donate-seg .btn,
+  .donate-amounts .btn {
+    width: 100%;
+    padding: 0.85rem 0.5rem;
+    font-size: 1rem;
+    border-radius: 12px;
+    border-width: 1.5px;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  .donate-amounts .amount-btn {
+    font-size: 1.15rem;
+    font-weight: 700;
+  }
+
+  /* Selected frequency / amount fills in (donate.js toggles .active). */
+  .donate-mobile .freq-btn.active,
+  .donate-mobile .amount-btn.active {
+    background: var(--color-primary);
+    border-color: var(--color-primary);
+    color: #fff;
+  }
+
+  /* Custom amount with a $ prefix */
+  .donate-custom {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    border: 1.5px solid var(--color-border);
+    border-radius: 12px;
+    padding: 0 0.9rem;
+    margin-bottom: 1rem;
+    background: var(--color-bg);
+    transition: border-color var(--transition);
+  }
+
+  .donate-custom:focus-within {
+    border-color: var(--color-primary);
+  }
+
+  .donate-custom span {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--color-text-light);
+  }
+
+  .donate-custom input {
+    flex: 1;
+    min-width: 0;
+    border: none;
+    background: transparent;
+    color: var(--color-text);
+    font-size: 1.1rem;
+    padding: 0.8rem 0;
+    outline: none;
+    -moz-appearance: textfield;
+  }
+
+  .donate-custom input::-webkit-outer-spin-button,
+  .donate-custom input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+    margin: 0;
+  }
+
+  /* Submit */
+  .donate-submit {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.5rem;
+    padding: 1rem;
+    font-size: 1.05rem;
+    border-radius: 12px;
+    margin-top: 0.25rem;
+  }
+
+  .donate-mobile-note {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.35rem;
+    text-align: center;
+    font-size: 0.8rem;
+    color: var(--color-text-muted);
+    margin: 0.65rem 0 0;
+  }
+}
+
 /* Sidebar as a collapsible accordion on mobile (built by common.js).
    Each section becomes a tappable card that expands its content. */
 @media (max-width: 768px) {
