@@ -128,7 +128,10 @@
           amountCents,
           frequency,
           name: (nameEl?.value || '').trim(),
-          email: (emailEl?.value || '').trim()
+          email: (emailEl?.value || '').trim(),
+          // e.g. "home" for the mobile home-page widget, so the server can
+          // return a cancel to that widget instead of the full donate page.
+          source: form.dataset.source || ''
         })
       });
 

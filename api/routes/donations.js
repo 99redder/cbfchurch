@@ -43,8 +43,15 @@ router.post('/checkout-session', donationLimiter, async (req, res) => {
     }
 
     const siteOrigin = String(process.env.DONATION_SITE_ORIGIN || '').trim() || getOrigin(req) || 'https://www.cbfchurch.com';
+    // The mobile home page has its own optimized giving widget. When the
+    // request comes from there (source=home), send a cancel back to that
+    // widget instead of the full donate page. `source` only selects between
+    // hardcoded same-origin paths, so it can't be used for open redirects.
+    const fromHome = String(req.body?.source || '').trim() === 'home';
     const successUrl = `${siteOrigin}/donate.html?paid=1`;
-    const cancelUrl = `${siteOrigin}/donate.html?canceled=1`;
+    const cancelUrl = fromHome
+      ? `${siteOrigin}/index.html?canceled=1#donate`
+      : `${siteOrigin}/donate.html?canceled=1`;
 
     const body = new URLSearchParams({
       mode: frequency === 'one_time' ? 'payment' : 'subscription',

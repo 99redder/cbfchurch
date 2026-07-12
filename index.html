@@ -100,11 +100,11 @@
            desktop (the full donate.html page is used there). Reuses donate.js
            (frequency + amount + Stripe checkout); the name/email fields and
            info card from the full page are dropped to keep it low-friction. -->
-      <section class="card donate-mobile" aria-labelledby="donate-mobile-title">
+      <section class="card donate-mobile" id="donate" aria-labelledby="donate-mobile-title">
         <h2 id="donate-mobile-title"><i class="fas fa-hand-holding-heart" aria-hidden="true"></i> Support Our Ministry</h2>
         <p class="donate-mobile-sub">Your gift supports ministry, outreach, and church operations.</p>
 
-        <form id="donation-form" class="donate-mobile-form">
+        <form id="donation-form" class="donate-mobile-form" data-source="home">
           <div class="donate-seg" role="group" aria-label="Donation frequency">
             <button type="button" class="btn btn-outline freq-btn active" data-frequency="one_time">One-time</button>
             <button type="button" class="btn btn-outline freq-btn" data-frequency="monthly">Monthly</button>

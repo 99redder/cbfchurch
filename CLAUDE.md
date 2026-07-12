@@ -260,7 +260,11 @@ blog list, that are `display: none` on desktop and shown only ≤768px (plain HT
 injection): `.learn-truth-main` (a copy of the Learn the Truth links) and `.donate-mobile` (a
 streamlined giving widget — frequency + amount + custom + Stripe, reusing `js/donate.js`; the
 name/email fields and info card from the full `donate.html` are intentionally dropped). `index.html`
-loads `js/donate.js` for the widget; on desktop the hidden form is inert.
+loads `js/donate.js` for the widget; on desktop the hidden form is inert. The widget's form carries
+`data-source="home"`, which `donate.js` forwards as `source` to the API; when the API sees
+`source=home` it points Stripe's **cancel** URL back to `index.html?canceled=1#donate` (the widget)
+instead of the full donate page. Success still returns to `donate.html?paid=1` (its thank-you
+overlay). `#donate` has `scroll-margin-top` so the return clears the sticky header.
 
 **Desktop-safety rules (important for future edits):**
 - Every mobile style is under `@media (max-width: 768px)`.

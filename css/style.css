@@ -714,6 +714,8 @@ p {
   .donate-mobile {
     display: block;
     margin-bottom: 1.5rem;
+    /* Cancelling checkout returns to #donate; clear the sticky header. */
+    scroll-margin-top: 84px;
   }
 
   .donate-mobile h2 {
