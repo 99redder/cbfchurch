@@ -912,13 +912,19 @@ p {
 }
 
 /* Safety net: if the accordion was built and the window is later widened
-   to desktop, show every section fully and drop the chevrons. */
+   to desktop, show every original section fully, drop the chevrons, and
+   hide the injected footer dropdowns (Contact/Privacy/Terms) so the desktop
+   sidebar matches its default. */
 @media (min-width: 769px) {
   .sidebar-accordion .sidebar-acc-body {
     max-height: none;
   }
 
   .sidebar-accordion .sidebar-acc-icon {
+    display: none;
+  }
+
+  .sidebar-accordion .sidebar-acc-extra {
     display: none;
   }
 }

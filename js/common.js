@@ -252,7 +252,10 @@ let cbfLegalContent = { privacy: '', terms: '' };
     ];
     extras.forEach((x) => {
       const sec = document.createElement('div');
-      sec.className = 'sidebar-section' + (x.doc ? ' sidebar-acc-doc' : '');
+      // sidebar-acc-extra marks the injected footer dropdowns so the desktop
+      // safety net can hide them if the accordion was built then the window
+      // is widened back to desktop.
+      sec.className = 'sidebar-section sidebar-acc-extra' + (x.doc ? ' sidebar-acc-doc' : '');
       sec.innerHTML = '<h3>' + x.title + '</h3>' + x.html;
       sidebar.appendChild(sec);
     });
