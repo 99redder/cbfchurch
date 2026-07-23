@@ -1,0 +1,302 @@
+# CBF Church Website
+
+## Overview
+
+Website for Christian Believers Fellowship (CBF), a church at 32 Chapel Lane, Somersworth, NH 03878. The project is split into two deployments:
+
+- **Frontend (GitHub Pages):** Static HTML/CSS/JS site at `https://www.cbfchurch.com` (repo: 99redder/cbfchurch)
+- **Backend API (Render.com free tier):** Node.js/Express API at `https://cbfchurch.onrender.com`
+- **Database (Neon.tech):** PostgreSQL — the `DATABASE_URL` env var points here
+
+The admin panel is part of the static site but communicates with the API for authentication, blog CRUD, gallery management, and user management.
+
+## Tech Stack
+
+| Component | Technology |
+|-----------|-----------|
+| Frontend | HTML, CSS, vanilla JS (no build step) |
+| Styling | Custom CSS with CSS custom properties, Grid + Flexbox |
+| Backend API | Node.js + Express |
+| Database | PostgreSQL on Neon.tech (`pg` library) |
+| Auth | bcryptjs + JWT (localStorage + Bearer token) |
+| Blog Editor | Quill.js (CDN `cdn.quilljs.com/1.3.7`) |
+| Photo Gallery | CSS Grid + vanilla JS lightbox |
+| PWA | Service worker + manifest.json |
+| Gallery Storage | AWS S3 (via `aws-sdk`) or Render filesystem fallback |
+| Fonts | Google Fonts — Inter |
+| Icons | Font Awesome 6.5.1 (CDN) |
+
+## Project Structure
+
+```
+cbfchurch/
+├── index.html                     # Home page (blog listing)
+├── our-beliefs.html
+├── mission-statement.html
+├── cbf-history.html
+├── contact.html
+├── photo-gallery.html
+├── service-times.html
+├── recent-videos.html
+├── article-archives.html
+├── video-archive.html
+├── learn-the-truth.html
+├── post.html                      # Single blog post view
+├── manifest.json                  # PWA manifest
+├── sw.js                          # Service worker
+├── sitemap.xml                    # SEO sitemap
+├── robots.txt                     # Search crawler rules
+├── CNAME                          # GitHub Pages custom domain (www.cbfchurch.com)
+├── admin/
+│   ├── login.html                 # Admin login (has inline theme + auth JS)
+│   ├── dashboard.html             # Post list + gallery upload
+│   ├── editor.html                # Quill.js post editor (create/edit)
+│   └── users.html                 # Superadmin only: manage admin accounts
+├── css/
+│   └── style.css                  # Single stylesheet: public + admin + dark mode
+├── js/
+│   ├── common.js                  # Shared: API_BASE, nav toggle, theme toggle,
+│   │                              #   formatDate, apiFetch, legal modals (privacy/terms)
+│   ├── blog.js                    # Fetch/render blog posts on home page
+│   ├── post.js                    # Fetch/render single post
+│   ├── archives.js                # Fetch/render archive listing
+│   ├── gallery.js                 # Lightbox functionality
+│   └── admin.js                   # Auth check, authFetch, theme toggle, dashboard,
+│                                  #   gallery CRUD, user management
+├── images/
+│   ├── logo.svg
+│   ├── wordmark.svg
+│   ├── pwa-icon.svg
+│   └── gallery/                   # ~60 static gallery photos (committed to git)
+├── api/                           # Backend (deployed separately to Render)
+│   ├── server.js                  # Express entry point, CORS config, route mounting
+│   ├── package.json               # Dependencies: express, pg, bcryptjs, cors,
+│   │                              #   cookie-parser, dotenv, jsonwebtoken, aws-sdk
+│   ├── .env                       # Local env (gitignored)
+│   ├── .env.example
+│   ├── database/
+│   │   ├── init.js                # CREATE TABLE + all migrations (runs on server start)
+│   │   └── seed.js                # Create initial superadmin: node seed.js <user> <pass>
+│   ├── routes/
+│   │   ├── auth.js                # POST /login (returns JWT), /logout, /register, GET /me
+│   │   ├── posts.js               # Public GET endpoints for blog
+│   │   ├── admin.js               # Protected CRUD: posts, gallery, users
+│   │   └── gallery.js             # Public GET endpoint for gallery
+│   ├── utils/
+│   │   ├── db.js                  # PostgreSQL pool + run/get/all/exec helpers
+│   │   ├── auth.js                # JWT helpers, requireAuth, requireSuperAdmin
+│   │   └── storage.js             # saveGalleryImage, deleteGalleryImage, attachPublicUrl
+│   └── uploads/
+│       └── gallery/               # Gallery photos if not using S3
+└── scripts/
+    ├── import-blogger.js          # One-time: import Blogger XML export
+    └── download-gallery.js        # One-time: pull gallery photos
+```
+
+## Database Schema (PostgreSQL on Neon)
+
+```sql
+CREATE TABLE users (
+    id SERIAL PRIMARY KEY,
+    username TEXT UNIQUE NOT NULL,
+    password_hash TEXT NOT NULL,
+    role TEXT NOT NULL DEFAULT 'admin',    -- 'admin' or 'superadmin'
+    created_at TIMESTAMP DEFAULT NOW()
+);
+
+CREATE TABLE posts (
+    id SERIAL PRIMARY KEY,
+    title TEXT NOT NULL,
+    content TEXT NOT NULL,
+    author TEXT NOT NULL,
+    slug TEXT UNIQUE NOT NULL,
+    created_at TIMESTAMP DEFAULT NOW(),
+    updated_at TIMESTAMP DEFAULT NOW()
+);
+
+CREATE TABLE gallery_photos (
+    id SERIAL PRIMARY KEY,
+    filename TEXT NOT NULL,
+    position BIGINT DEFAULT 0,
+    storage_key TEXT,              -- S3 key if using AWS, null if filesystem
+    url TEXT,                      -- Public URL if using S3, null if filesystem
+    alt TEXT,
+    created_at TIMESTAMP DEFAULT NOW()
+);
+```
+
+**Migrations** are handled automatically in `api/database/init.js` on every server start using `ALTER TABLE ... ADD COLUMN IF NOT EXISTS` pattern with try/catch blocks.
+
+## API Endpoints
+
+### Public (no auth)
+- `GET /api/posts?page=1&limit=5` — Paginated blog posts
+- `GET /api/posts/:slug` — Single post by slug
+- `GET /api/posts/archives` — Posts grouped by year/month
+- `GET /api/gallery` — All gallery photos ordered by position
+- `GET /api/health` — Health check
+
+### Auth
+- `POST /api/auth/login` — Returns `{ token, username, message }` + sets httpOnly cookie
+- `POST /api/auth/logout` — Clears cookie
+- `POST /api/auth/register` — Create admin account (superadmin only)
+- `GET /api/auth/me` — Check auth status, returns `{ username, role }`
+
+### Admin (JWT required via Bearer token)
+- `GET /api/admin/posts` — All posts for dashboard
+- `GET /api/admin/posts/:id` — Single post for editing
+- `POST /api/admin/posts` — Create post
+- `PUT /api/admin/posts/:id` — Update post
+- `DELETE /api/admin/posts/:id` — Delete post
+- `GET /api/admin/users` — List users (superadmin only)
+- `DELETE /api/admin/users/:id` — Delete user (superadmin only, can't delete self)
+- `GET /api/admin/gallery` — List gallery photos
+- `POST /api/admin/gallery` — Upload photo (base64 in JSON body, max 4MB)
+- `PUT /api/admin/gallery/reorder` — Reorder gallery photos
+- `DELETE /api/admin/gallery/:id` — Delete gallery photo
+
+## Authentication Architecture
+
+**Cross-origin setup:** Frontend on `www.cbfchurch.com` (GitHub Pages), API on `cbfchurch.onrender.com` (Render). Modern browsers block third-party cookies between different origins, so auth uses **localStorage + Authorization Bearer header**.
+
+Flow:
+1. Login POST returns `{ token, username, message }` — token also set as httpOnly cookie (fallback)
+2. Frontend stores token in `localStorage` as `cbf_token`
+3. All admin requests use `authFetch()` in `js/admin.js` which attaches `Authorization: Bearer <token>`
+4. `requireAuth` middleware checks cookie first, then falls back to Bearer header
+5. Logout: `POST /api/auth/logout` + `localStorage.removeItem('cbf_token')`
+
+**Role system:**
+- `superadmin` — Can manage users, posts, and gallery
+- `admin` — Can manage posts and gallery only
+- User with id=1 is auto-promoted to superadmin by `init.js`
+
+**Important:** Do NOT switch back to cookie-only auth. The cross-origin setup requires the Bearer token approach.
+
+## Environment Variables
+
+### Render (production)
+- `DATABASE_URL` — Neon PostgreSQL connection string
+- `SESSION_SECRET` — JWT signing secret
+- `NODE_ENV` — Must be `production`
+- `ALLOWED_ORIGIN` — Comma-separated: `https://www.cbfchurch.com,https://99redder.github.io`
+
+### Local (`api/.env`, gitignored)
+- `PORT=3000`
+- `DATABASE_URL=postgresql://...` (Neon connection string)
+- `SESSION_SECRET=cbf-dev-secret-change-in-production`
+- `ALLOWED_ORIGIN=http://localhost:8080`
+
+## Dark Mode
+
+- CSS custom properties on `:root[data-theme="dark"]` and `@media (prefers-color-scheme: dark)`
+- Theme stored in `localStorage` as `cbf-theme` (`'dark'` or `'light'`)
+- Public pages: `.theme-toggle` button in nav, logic in `js/common.js`
+- Admin pages: `#admin-theme-toggle` button in `.admin-header`, logic in `js/admin.js`
+- `login.html` has inline theme JS since it doesn't load `admin.js` at parse time
+- Both use the same `cbf-theme` key so preference syncs across public and admin pages
+
+## Legal Modals (Privacy Policy & Terms of Use)
+
+- Links are in the footer of all 12 public pages: `id="privacy-link"` and `id="terms-link"`
+- `js/common.js` detects these IDs on load, injects a modal into `document.body`, and wires up open/close
+- Modal closes on X button, overlay click, or Escape key
+- Content is defined inline in `common.js` — edit there to update policy text
+
+## Gallery Storage
+
+`api/utils/storage.js` abstracts gallery photo storage:
+- If `AWS_ACCESS_KEY_ID` is set in env → stores to S3, saves `storage_key` and `url` in DB
+- Otherwise → saves to local filesystem at `api/uploads/gallery/`
+- `attachPublicUrl(photo)` normalizes the photo object for API responses
+
+**Warning:** Render free tier has ephemeral filesystem — local uploads will be lost on redeploy. Use S3 for persistent gallery uploads in production.
+
+## Common Tasks
+
+### Run API locally
+```bash
+cd api && npm install && node server.js
+```
+
+### Seed initial admin account
+```bash
+cd api && node database/seed.js <username> <password>
+```
+
+### Reset a user's password
+Run from `api/` directory (uses local `.env` to connect to Neon directly):
+```bash
+node -e "
+require('dotenv').config();
+const bcrypt = require('bcryptjs');
+const { Client } = require('pg');
+const client = new Client({ connectionString: process.env.DATABASE_URL, ssl: { rejectUnauthorized: false } });
+(async () => {
+  await client.connect();
+  const hash = bcrypt.hashSync('NEW_PASSWORD', 10);
+  await client.query('UPDATE users SET password_hash = \$1 WHERE username = \$2', [hash, 'USERNAME']);
+  console.log('Password updated');
+  await client.end();
+})();
+"
+```
+Note: Render free tier has no shell access. Always run DB maintenance scripts locally against Neon.
+
+### Serve frontend locally
+```bash
+npx serve .
+# Then visit http://localhost:3000 (or whatever port serve uses)
+# Make sure api/.env has ALLOWED_ORIGIN=http://localhost:3000
+```
+
+### Add a new public page
+1. Copy the structure from an existing simple page (e.g. `our-beliefs.html`)
+2. Update `<title>`, `<meta name="description">`, and canonical `<link rel="canonical">`
+3. Add Open Graph tags (`og:title`, `og:description`, `og:url`)
+4. Add the nav link in every page's `<nav>` (all nav bars are hand-coded — no template)
+5. Load `js/common.js` at the bottom of `<body>`
+6. Add the page to `sitemap.xml`
+
+## Key Files to Know
+
+| File | Purpose |
+|------|---------|
+| `js/admin.js` | All admin logic: `authFetch()`, theme toggle, auth check, dashboard, editor, gallery CRUD, user management |
+| `js/common.js` | Public pages: `API_BASE`, nav toggle, theme toggle, `formatDate()`, `apiFetch()`, legal modals |
+| `css/style.css` | Single stylesheet: public site, admin panel, dark mode, responsive (breakpoints: 768px, 1024px) |
+| `api/server.js` | Express app: CORS (multi-origin), cookie-parser, route mounting |
+| `api/utils/auth.js` | `createToken()`, `verifyToken()`, `requireAuth`, `requireSuperAdmin` |
+| `api/utils/db.js` | PostgreSQL pool + `run()`, `get()`, `all()`, `exec()` helpers |
+| `api/utils/storage.js` | `saveGalleryImage()`, `deleteGalleryImage()`, `attachPublicUrl()` |
+| `api/database/init.js` | Table creation + all column migrations (idempotent, runs on every start) |
+| `api/routes/admin.js` | Protected CRUD: posts, gallery, users |
+| `sitemap.xml` | All public page URLs for search engines |
+| `robots.txt` | Allows all crawlers, points to sitemap, blocks `/admin/` |
+
+## CSS Architecture Notes
+
+`css/style.css` is organized in sections (use comments to navigate):
+1. CSS custom properties (`:root`) — colors, fonts, spacing, shadows
+2. Dark mode overrides (`[data-theme="dark"]` + `@media prefers-color-scheme`)
+3. Reset / base styles
+4. Layout (header, nav, main, footer)
+5. Components (cards, buttons, forms, alerts, badges)
+6. Page-specific (blog, gallery, archives, contact, video)
+7. Admin panel (`.admin-header`, `.posts-table`, `.editor-container`, gallery admin)
+8. Dark mode overrides for admin elements and Quill editor
+9. Responsive breakpoints (768px, 1024px)
+
+All colors use CSS custom properties — never use hardcoded hex values in new rules.
+
+## Important Notes
+
+- The `api/.env` file contains database credentials and is gitignored. Never commit it.
+- Render free tier has no shell access and ephemeral filesystem — use S3 for gallery storage and local scripts for DB maintenance.
+- All 12 public HTML pages share the same nav structure — any nav changes must be made in every file.
+- SQL uses `$1`, `$2` parameterized queries (PostgreSQL style, not `?`).
+- CORS accepts only origins in `ALLOWED_ORIGIN` env var (comma-separated).
+- The Quill.js editor is loaded from CDN — do not try to install it locally.
+- `post.html` uses URL query param `?slug=` to fetch a single post dynamically.
+- Blog posts were originally imported from Blogger via `scripts/import-blogger.js`.
+- Static gallery photos in `images/gallery/` are served from GitHub Pages (git-committed). Admin-uploaded photos are served from Render/S3.
