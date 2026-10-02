@@ -79,14 +79,75 @@ function formatDate(dateStr) {
 }
 
 // Utility: fetch from API with error handling
+// The API runs on a free tier that sleeps when idle, so the first request
+// after a quiet spell can fail (network error / 5xx) while it wakes up.
+// Retry those a few times before giving up; 4xx responses fail immediately.
 async function apiFetch(endpoint) {
-  const res = await fetch(`${API_BASE}${endpoint}`, { credentials: 'include' });
-  if (!res.ok) {
-    const err = await res.json().catch(() => ({ error: 'Request failed' }));
-    throw new Error(err.error || 'Request failed');
+  const retryDelays = [2000, 5000, 10000];
+  for (let attempt = 0; ; attempt++) {
+    let res;
+    try {
+      res = await fetch(`${API_BASE}${endpoint}`, { credentials: 'include' });
+    } catch (err) {
+      if (attempt >= retryDelays.length) throw err;
+    }
+    if (res) {
+      if (res.ok) return res.json();
+      if (res.status < 500 || attempt >= retryDelays.length) {
+        const err = await res.json().catch(() => ({ error: 'Request failed' }));
+        throw new Error(err.error || 'Request failed');
+      }
+    }
+    await new Promise(resolve => setTimeout(resolve, retryDelays[attempt]));
   }
-  return res.json();
 }
+
+// Recent-service video: the embed plays the channel's uploads newest-first.
+// If the newest upload can't be played (e.g. blocked by a copyright claim),
+// YouTube shows "Video unavailable" — step to the next upload instead.
+(function initLatestVideo() {
+  const frame = document.getElementById('latest-video');
+  if (!frame) return;
+
+  const UPLOADS_PLAYLIST = 'UUJQMXhX_PLUuaf2VIwIMqWw';
+  const MAX_SKIPS = 5;
+  let index = 0;
+  let lastSkip = 0;
+
+  // When the first video is unplayable the player never loads the playlist,
+  // so re-cue it by id at the next position rather than calling nextVideo().
+  function skip(player) {
+    // onReady and onError both report the same blocked video; skip it once.
+    const now = Date.now();
+    if (index >= MAX_SKIPS || now - lastSkip < 1500) return;
+    lastSkip = now;
+    index++;
+    player.cuePlaylist({ list: UPLOADS_PLAYLIST, listType: 'playlist', index: index });
+  }
+
+  function build() {
+    new YT.Player(frame, {
+      events: {
+        // A video blocked at load reports through getVideoData(), not onError.
+        onReady: function (e) {
+          const data = e.target.getVideoData ? e.target.getVideoData() : null;
+          if (data && data.errorCode) skip(e.target);
+        },
+        onError: function (e) { skip(e.target); }
+      }
+    });
+  }
+
+  if (window.YT && window.YT.Player) return build();
+  const prev = window.onYouTubeIframeAPIReady;
+  window.onYouTubeIframeAPIReady = function () {
+    if (prev) prev();
+    build();
+  };
+  const tag = document.createElement('script');
+  tag.src = 'https://www.youtube.com/iframe_api';
+  document.head.appendChild(tag);
+})();
 
 // Shared legal copy — used by the desktop modals (below) and the mobile
 // footer dropdowns in the sidebar accordion (initSidebarAccordion).
