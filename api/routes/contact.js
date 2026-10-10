@@ -1,5 +1,4 @@
 const express = require('express');
-const crypto = require('crypto');
 const router = express.Router();
 
 const RESEND_API_KEY = process.env.RESEND_API_KEY || '';
@@ -35,61 +34,37 @@ function isEmail(v) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
 }
 
-// "Are you a human?" check. The challenge is stateless: the token is signed with
-// the answer mixed in, so the server only has to remember which tokens were used.
-const HUMAN_SECRET = process.env.SESSION_SECRET || crypto.randomBytes(32).toString('hex');
-const HUMAN_MIN_AGE_MS = 2 * 1000; // bots submit instantly; people don't
-const HUMAN_MAX_AGE_MS = 60 * 60 * 1000; // 1 hour
-const usedChallenges = new Map(); // nonce -> expiresAt
+// "Are you a human?" check: Cloudflare Turnstile. The browser gets a one-time
+// token from the widget and we confirm it with Cloudflare before sending.
+const TURNSTILE_SECRET = process.env.TURNSTILE_SECRET || '';
+const TURNSTILE_ACTION = 'contact';
+const TURNSTILE_HOSTNAMES = new Set(
+  (process.env.TURNSTILE_HOSTNAMES || 'www.cbfchurch.com,cbfchurch.com')
+    .split(',')
+    .map(h => h.trim().toLowerCase())
+    .filter(Boolean)
+);
 
-function signChallenge(body, answer) {
-  return crypto.createHmac('sha256', HUMAN_SECRET).update(`${body}|${answer}`).digest('base64url');
-}
-
-function createChallenge() {
-  const a = crypto.randomInt(1, 10);
-  const b = crypto.randomInt(1, 10);
-  const body = Buffer.from(JSON.stringify({
-    iat: Date.now(),
-    n: crypto.randomBytes(9).toString('base64url')
-  })).toString('base64url');
-  return { question: `${a} + ${b}`, token: `${body}.${signChallenge(body, a + b)}` };
-}
-
-// Returns null when the check passes, otherwise the error to show. Each token
-// gets a single guess, so a wrong answer burns it and the page asks a new one.
-function checkHuman(token, answer) {
-  const failed = 'Please answer the "are you a human" question and try again.';
-  const [body, sig] = String(token || '').split('.');
-  const guess = String(answer ?? '').trim();
-  if (!body || !sig || !/^\d{1,2}$/.test(guess)) return failed;
-
-  let data;
+// Fails closed: any problem reaching or reading siteverify counts as not human.
+async function isHuman(token, ip) {
+  if (!TURNSTILE_SECRET || typeof token !== 'string' || !token || token.length > 2048) return false;
   try {
-    data = JSON.parse(Buffer.from(body, 'base64url').toString('utf8'));
+    const r = await fetch('https://challenges.cloudflare.com/turnstile/v0/siteverify', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      signal: AbortSignal.timeout(10000),
+      body: new URLSearchParams({ secret: TURNSTILE_SECRET, response: token, remoteip: ip })
+    });
+    if (!r.ok) throw new Error(`siteverify ${r.status}`);
+    const result = await r.json();
+    if (!result.success) console.warn('Turnstile rejected token:', result['error-codes']);
+    return result.success === true &&
+      result.action === TURNSTILE_ACTION &&
+      TURNSTILE_HOSTNAMES.has(String(result.hostname || '').toLowerCase());
   } catch (err) {
-    return failed;
+    console.error('Turnstile siteverify error:', err);
+    return false;
   }
-  if (!data || typeof data.iat !== 'number' || typeof data.n !== 'string') return failed;
-
-  const now = Date.now();
-  const age = now - data.iat;
-  if (age > HUMAN_MAX_AGE_MS || usedChallenges.has(data.n)) {
-    return 'That "are you a human" question expired. Please answer the new one.';
-  }
-  if (age < HUMAN_MIN_AGE_MS) return 'Please wait a moment and try again.';
-
-  for (const [nonce, expiresAt] of usedChallenges) {
-    if (now > expiresAt) usedChallenges.delete(nonce);
-  }
-  usedChallenges.set(data.n, data.iat + HUMAN_MAX_AGE_MS);
-
-  const expected = Buffer.from(signChallenge(body, Number(guess)));
-  const given = Buffer.from(sig);
-  if (expected.length !== given.length || !crypto.timingSafeEqual(expected, given)) {
-    return 'That answer was not correct. Please try the new question.';
-  }
-  return null;
 }
 
 function isRateLimited(ip) {
@@ -103,11 +78,6 @@ function isRateLimited(ip) {
   ipHits.set(ip, row);
   return row.count > RATE_LIMIT_MAX;
 }
-
-router.get('/challenge', (req, res) => {
-  res.set('Cache-Control', 'no-store');
-  res.json(createChallenge());
-});
 
 router.post('/quick-message', async (req, res) => {
   try {
@@ -151,9 +121,8 @@ router.post('/quick-message', async (req, res) => {
       return res.status(400).json({ error: 'Selected recipient is not allowed.' });
     }
 
-    const humanError = checkHuman(req.body?.humanToken, req.body?.humanAnswer);
-    if (humanError) {
-      return res.status(400).json({ error: humanError, newChallenge: true });
+    if (!(await isHuman(req.body?.turnstileToken, String(ip)))) {
+      return res.status(403).json({ error: 'We could not confirm you are human. Please complete the check above the Send button and try again.' });
     }
 
     const replyToList = [replyToInput];

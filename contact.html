@@ -178,9 +178,7 @@
               </div>
 
               <div class="form-row quick-human-row">
-                <label for="quick-human">Are you a human? What is <span id="quick-human-question">&hellip;</span> ?</label>
-                <input id="quick-human" name="humanAnswer" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="2" autocomplete="off" required placeholder="Type the answer">
-                <small class="field-help">This quick check keeps automated spam out of our inboxes.</small>
+                <div id="quick-turnstile"></div>
               </div>
 
               <div class="quick-message-actions">
@@ -336,6 +334,7 @@
   </footer>
 
   <script src="js/common.js"></script>
+  <script src="https://challenges.cloudflare.com/turnstile/v0/api.js?render=explicit" async defer></script>
 
   <script>
     (function initQuickMessageModal() {
@@ -349,25 +348,24 @@
       const ccAddBtn = document.getElementById('quick-cc-add');
       const ccListEl = document.getElementById('quick-cc-list');
       const selectedCc = new Set();
-      const humanQuestionEl = document.getElementById('quick-human-question');
-      const humanInput = document.getElementById('quick-human');
-      let humanToken = '';
+      const TURNSTILE_SITEKEY = '0x4AAAAAAFTHKLEBYowCKGhj';
+      let turnstileId = null;
       if (!modal || !openBtn || !closeBtn || !form) return;
 
-      // Fetch a fresh "are you a human" question from the API.
-      async function loadHumanCheck() {
-        humanToken = '';
-        if (humanInput) humanInput.value = '';
-        if (humanQuestionEl) humanQuestionEl.textContent = '…';
-        try {
-          const res = await fetch(`${API_BASE}/api/contact/challenge`, { cache: 'no-store' });
-          if (!res.ok) throw new Error('challenge failed');
-          const data = await res.json();
-          humanToken = data.token;
-          if (humanQuestionEl) humanQuestionEl.textContent = data.question;
-        } catch (err) {
-          statusEl.textContent = 'Could not load the human check. Please close this window and try again in a moment.';
-        }
+      // Cloudflare Turnstile "are you a human" check. Rendered the first time the
+      // modal opens; tokens are single-use, so it is reset after every send attempt.
+      function renderHumanCheck() {
+        if (turnstileId !== null || !window.turnstile) return;
+        const theme = document.documentElement.getAttribute('data-theme');
+        turnstileId = window.turnstile.render('#quick-turnstile', {
+          sitekey: TURNSTILE_SITEKEY,
+          action: 'contact',
+          theme: theme === 'dark' || theme === 'light' ? theme : 'auto'
+        });
+      }
+
+      function resetHumanCheck() {
+        if (turnstileId !== null && window.turnstile) window.turnstile.reset(turnstileId);
       }
 
       function renderCcList() {
@@ -400,7 +398,7 @@
         modal.classList.add('active');
         modal.setAttribute('aria-hidden', 'false');
         document.body.style.overflow = 'hidden';
-        if (!humanToken) loadHumanCheck();
+        renderHumanCheck();
       };
 
       const closeModal = () => {
@@ -431,8 +429,7 @@
           subject: (fd.get('subject') || '').trim(),
           message: (fd.get('message') || '').trim(),
           website: fd.get('website') || '',
-          humanToken: humanToken,
-          humanAnswer: (fd.get('humanAnswer') || '').trim(),
+          turnstileToken: (turnstileId !== null && window.turnstile && window.turnstile.getResponse(turnstileId)) || '',
           source: 'cbfchurch-contact-quick-message'
         };
 
@@ -441,9 +438,9 @@
           return;
         }
 
-        if (!humanToken) {
-          await loadHumanCheck();
-          if (humanToken) statusEl.textContent = 'Please answer the "are you a human" question, then press Send.';
+        if (!payload.turnstileToken) {
+          renderHumanCheck();
+          statusEl.textContent = 'Please complete the "verify you are human" check above, then press Send.';
           return;
         }
 
@@ -459,21 +456,17 @@
           });
 
           const data = await res.json().catch(() => ({}));
-          if (!res.ok) {
-            if (data.newChallenge) await loadHumanCheck();
-            throw new Error(data.error || 'Unable to send message right now.');
-          }
+          if (!res.ok) throw new Error(data.error || 'Unable to send message right now.');
 
           statusEl.textContent = 'Message sent successfully.';
           form.reset();
           selectedCc.clear();
           renderCcList();
-          humanToken = '';
-          if (humanQuestionEl) humanQuestionEl.textContent = '…';
           setTimeout(closeModal, 700);
         } catch (err) {
           statusEl.textContent = err.message || 'Unable to send message right now.';
         } finally {
+          resetHumanCheck();
           sendBtn.disabled = false;
           sendBtn.textContent = 'Send';
         }
