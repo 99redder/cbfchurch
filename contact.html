@@ -171,6 +171,18 @@
                 <textarea id="quick-message" name="message" rows="5" required placeholder="Write your message here..."></textarea>
               </div>
 
+              <!-- Honeypot: inline style so a stale cached stylesheet can never reveal it -->
+              <div class="quick-hp" aria-hidden="true" style="position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden;">
+                <label for="quick-website">Website (leave this blank)</label>
+                <input id="quick-website" name="website" type="text" tabindex="-1" autocomplete="off">
+              </div>
+
+              <div class="form-row quick-human-row">
+                <label for="quick-human">Are you a human? What is <span id="quick-human-question">&hellip;</span> ?</label>
+                <input id="quick-human" name="humanAnswer" type="text" inputmode="numeric" pattern="[0-9]*" maxlength="2" autocomplete="off" required placeholder="Type the answer">
+                <small class="field-help">This quick check keeps automated spam out of our inboxes.</small>
+              </div>
+
               <div class="quick-message-actions">
                 <button type="submit" class="btn btn-primary" id="quick-send-btn">Send</button>
               </div>
@@ -337,7 +349,26 @@
       const ccAddBtn = document.getElementById('quick-cc-add');
       const ccListEl = document.getElementById('quick-cc-list');
       const selectedCc = new Set();
+      const humanQuestionEl = document.getElementById('quick-human-question');
+      const humanInput = document.getElementById('quick-human');
+      let humanToken = '';
       if (!modal || !openBtn || !closeBtn || !form) return;
+
+      // Fetch a fresh "are you a human" question from the API.
+      async function loadHumanCheck() {
+        humanToken = '';
+        if (humanInput) humanInput.value = '';
+        if (humanQuestionEl) humanQuestionEl.textContent = '…';
+        try {
+          const res = await fetch(`${API_BASE}/api/contact/challenge`, { cache: 'no-store' });
+          if (!res.ok) throw new Error('challenge failed');
+          const data = await res.json();
+          humanToken = data.token;
+          if (humanQuestionEl) humanQuestionEl.textContent = data.question;
+        } catch (err) {
+          statusEl.textContent = 'Could not load the human check. Please close this window and try again in a moment.';
+        }
+      }
 
       function renderCcList() {
         if (!ccListEl) return;
@@ -369,6 +400,7 @@
         modal.classList.add('active');
         modal.setAttribute('aria-hidden', 'false');
         document.body.style.overflow = 'hidden';
+        if (!humanToken) loadHumanCheck();
       };
 
       const closeModal = () => {
@@ -398,11 +430,20 @@
           cc: Array.from(selectedCc),
           subject: (fd.get('subject') || '').trim(),
           message: (fd.get('message') || '').trim(),
+          website: fd.get('website') || '',
+          humanToken: humanToken,
+          humanAnswer: (fd.get('humanAnswer') || '').trim(),
           source: 'cbfchurch-contact-quick-message'
         };
 
         if (!payload.fromName || !payload.replyTo || !payload.to || !payload.subject || !payload.message) {
           statusEl.textContent = 'Please fill out Your Name, Your Email Address, To, Subject, and Message.';
+          return;
+        }
+
+        if (!humanToken) {
+          await loadHumanCheck();
+          if (humanToken) statusEl.textContent = 'Please answer the "are you a human" question, then press Send.';
           return;
         }
 
@@ -418,12 +459,17 @@
           });
 
           const data = await res.json().catch(() => ({}));
-          if (!res.ok) throw new Error(data.error || 'Unable to send message right now.');
+          if (!res.ok) {
+            if (data.newChallenge) await loadHumanCheck();
+            throw new Error(data.error || 'Unable to send message right now.');
+          }
 
           statusEl.textContent = 'Message sent successfully.';
           form.reset();
           selectedCc.clear();
           renderCcList();
+          humanToken = '';
+          if (humanQuestionEl) humanQuestionEl.textContent = '…';
           setTimeout(closeModal, 700);
         } catch (err) {
           statusEl.textContent = err.message || 'Unable to send message right now.';
