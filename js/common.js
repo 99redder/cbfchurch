@@ -157,21 +157,44 @@ let cbfLegalContent = { privacy: '', terms: '' };
 (function initLegalModals() {
   const privacyContent = `
     <h3>Privacy Policy</h3>
-    <p><strong>Last updated:</strong> February 2026</p>
-    <p>Christian Believers Fellowship ("CBF," "we," "us," or "our") operates the website www.cbfchurch.com. This Privacy Policy explains how we handle information when you visit our site.</p>
+    <p><strong>Last updated:</strong> October 2026</p>
+    <p>Christian Believers Fellowship ("CBF," "we," "us," or "our") operates the website www.cbfchurch.com. This Privacy Policy explains what information the site handles, why, and who else is involved in providing it.</p>
 
     <h3>Information We Collect</h3>
-    <p>Our website is primarily a static informational site. We do not collect personal information from general visitors. We do not use tracking cookies, analytics services, or advertising networks.</p>
-    <p>If you contact us via the information provided on our Contact page, any information you share (such as your name or email address) is used solely to respond to your inquiry.</p>
+    <p>You can read the site without giving us any personal information. We do not use analytics, advertising networks, or tracking cookies, and we do not sell, rent, or trade anyone's information.</p>
+    <p>We only receive personal information when you choose to send it:</p>
+    <ul>
+      <li><strong>Quick message form:</strong> when you send a message from our Contact page, we collect your name, email address, optional phone number, subject, message, and the church contact(s) you choose. The message is emailed directly to those contacts so they can reply to you. We do not store messages in a database or add you to any mailing list.</li>
+      <li><strong>Donations:</strong> if you give online, you may enter your name and email address, and you choose an amount and frequency. Payment card details are entered on Stripe's secure checkout page and are never seen or stored by CBF.</li>
+      <li><strong>Contacting us directly:</strong> if you email or call someone listed on our Contact page, what you share is used only to respond to you.</li>
+    </ul>
+
+    <h3>Spam Protection &amp; Security</h3>
+    <p>To keep the quick message form free of spam, it uses Cloudflare Turnstile, which checks that a real person is submitting the form. Turnstile may process technical information such as your IP address and browser characteristics. Our server also briefly uses IP addresses in memory to limit repeated requests, and our hosting providers may keep standard technical logs for security and reliability.</p>
 
     <h3>Cookies &amp; Local Storage</h3>
-    <p>Our site uses browser local storage only to remember your light/dark theme preference. This data stays on your device and is never transmitted to any server.</p>
+    <p>For visitors, the site uses your browser's local storage only to remember your light/dark theme preference. This stays on your device and is never sent to us.</p>
+    <p>The site can also be installed as an app on your phone or computer. It uses a service worker for this, which does not collect or transmit personal information.</p>
+    <p>Church staff who sign in to the site's administration area receive a login token stored in their browser (and a login cookie) to keep them signed in. This does not apply to regular visitors.</p>
 
     <h3>Third-Party Services</h3>
-    <p>Our site may embed videos from YouTube. When you view a page containing an embedded video, YouTube may collect information according to their own privacy policy. We encourage you to review YouTube's privacy practices.</p>
+    <p>We rely on a few trusted services to run the site. Each handles information under its own privacy policy:</p>
+    <ul>
+      <li><strong>Stripe</strong> processes online donations, including payment details, receipts, and recurring gifts.</li>
+      <li><strong>Resend</strong> delivers quick-message emails to our church contacts.</li>
+      <li><strong>Cloudflare</strong> hosts our website services and photo gallery, and provides the Turnstile spam check.</li>
+      <li><strong>Neon</strong> hosts the database that stores our blog posts, photo gallery details, and staff accounts. It does not store visitor information.</li>
+      <li><strong>YouTube</strong> provides embedded service videos. YouTube may set cookies or collect information when a page with a video is viewed.</li>
+      <li><strong>Google Maps</strong> provides the embedded map on our Service Times page. Google may collect information when the map loads.</li>
+      <li><strong>cdnjs (Cloudflare)</strong> delivers the icon set used across the site and may log standard request information.</li>
+    </ul>
+    <p>We encourage you to review these services' privacy practices.</p>
 
     <h3>Children's Privacy</h3>
-    <p>Our website is not directed at children under 13, and we do not knowingly collect personal information from children.</p>
+    <p>Our website is not directed at children under 13, and we do not knowingly collect personal information from children. If you believe a child has sent us personal information, please contact us and we will delete it.</p>
+
+    <h3>Your Choices</h3>
+    <p>You are never required to send us personal information. To ask about information you've shared with us, or to change or cancel a recurring donation, please contact us using the details below.</p>
 
     <h3>Changes to This Policy</h3>
     <p>We may update this Privacy Policy from time to time. Any changes will be reflected on this page with an updated revision date.</p>
@@ -182,7 +205,7 @@ let cbfLegalContent = { privacy: '', terms: '' };
 
   const termsContent = `
     <h3>Terms of Use</h3>
-    <p><strong>Last updated:</strong> February 2026</p>
+    <p><strong>Last updated:</strong> October 2026</p>
     <p>Welcome to the Christian Believers Fellowship website. By accessing and using this website, you agree to the following terms.</p>
 
     <h3>Use of Content</h3>
@@ -191,11 +214,20 @@ let cbfLegalContent = { privacy: '', terms: '' };
     <h3>Blog &amp; Articles</h3>
     <p>Blog posts and articles published on this site represent the views of their respective authors. They are intended for spiritual edification and biblical teaching.</p>
 
+    <h3>Online Donations</h3>
+    <p>Donations made through this site are voluntary gifts to support the ministry of Christian Believers Fellowship. Payments are processed securely by Stripe and are subject to Stripe's terms. If you set up a monthly or yearly donation, it continues until you ask us to change or cancel it. If you believe a donation was made in error, please contact us promptly.</p>
+
+    <h3>Quick Message Form</h3>
+    <p>The quick message form on our Contact page is for genuine questions and communication with church contacts. Please do not use it to send spam, advertising, or abusive, threatening, or unlawful content. We may block messages that misuse the form or that fail our spam check.</p>
+
+    <h3>Administration Area</h3>
+    <p>The administration area of this site is for authorized church staff only. Attempting to access it without permission, or otherwise interfering with the site's operation or security, is prohibited.</p>
+
     <h3>Accuracy of Information</h3>
     <p>We strive to keep the information on our website current and accurate, including service times, contact details, and event information. However, we recommend confirming details directly with the church for time-sensitive matters.</p>
 
-    <h3>External Links</h3>
-    <p>Our website may contain links to external sites. We are not responsible for the content or privacy practices of those sites.</p>
+    <h3>External Links &amp; Embedded Content</h3>
+    <p>Our website contains links to external sites and embedded content from services such as YouTube and Google Maps. Your use of that content is subject to those providers' terms. We are not responsible for the content or privacy practices of external sites.</p>
 
     <h3>Limitation of Liability</h3>
     <p>This website is provided "as is" without warranties of any kind. Christian Believers Fellowship shall not be liable for any damages arising from the use of this website.</p>

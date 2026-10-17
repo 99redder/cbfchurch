@@ -909,6 +909,18 @@ p {
   .sidebar-accordion .sidebar-acc-doc .sidebar-acc-body-inner h3:first-child {
     margin-top: 0;
   }
+
+  /* Legal text has bulleted lists; .sidebar-section ul strips bullets */
+  .sidebar-accordion .sidebar-acc-doc .sidebar-acc-body-inner ul {
+    list-style: disc;
+    padding-left: 1.1rem;
+    margin: 0.35rem 0 0.75rem;
+  }
+
+  .sidebar-accordion .sidebar-acc-doc .sidebar-acc-body-inner li {
+    padding: 0;
+    margin-bottom: 0.35rem;
+  }
 }
 
 /* Safety net: if the accordion was built and the window is later widened
@@ -1397,6 +1409,16 @@ p {
 
 .legal-modal-body p {
   margin-bottom: 0.75rem;
+}
+
+.legal-modal-body ul {
+  list-style: disc;
+  padding-left: 1.25rem;
+  margin-bottom: 0.75rem;
+}
+
+.legal-modal-body li {
+  margin-bottom: 0.4rem;
 }
 
 /* ===========================
