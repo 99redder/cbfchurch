@@ -1,0 +1,23 @@
+{
+  "name": "cbfchurch-api-worker",
+  "version": "1.0.0",
+  "description": "CBF church API on Cloudflare Workers (port of ../api)",
+  "scripts": {
+    "dev": "wrangler dev",
+    "deploy": "wrangler deploy",
+    "tail": "wrangler tail",
+    "backup": "node scripts/backup-db.mjs"
+  },
+  "dependencies": {
+    "@neondatabase/serverless": "^1.2.0",
+    "bcryptjs": "^2.4.3",
+    "hono": "^4.13.13",
+    "jose": "^6.2.12",
+    "sanitize-html": "^2.18.1"
+  },
+  "devDependencies": {
+    "wrangler": "^4.151.1"
+  },
+  "type": "module",
+  "private": true
+}

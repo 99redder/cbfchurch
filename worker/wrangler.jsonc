@@ -1,0 +1,23 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "cbfchurch-api",
+  "main": "src/index.js",
+  "compatibility_date": "2026-10-17",
+  // sanitize-html (via postcss) and bcryptjs expect a few Node built-ins
+  "compatibility_flags": ["nodejs_compat"],
+  "workers_dev": true,
+  "observability": { "enabled": true },
+  "r2_buckets": [
+    { "binding": "GALLERY", "bucket_name": "cbfchurch" }
+  ],
+  // Non-secret settings. Secrets (DATABASE_URL, SESSION_SECRET, STRIPE_SECRET_KEY,
+  // RESEND_API_KEY, TURNSTILE_SECRET) are set with `wrangler secret put`, or in
+  // .dev.vars for local development.
+  "vars": {
+    "ALLOWED_ORIGIN": "https://www.cbfchurch.com,https://cbfchurch.com,https://99redder.github.io",
+    "R2_PUBLIC_BASE_URL": "https://pub-e409614e4a1644eb9ce4b383c89aae6d.r2.dev",
+    "DONATION_SITE_ORIGIN": "https://www.cbfchurch.com",
+    "QUICK_MESSAGE_FROM": "noreply@cbfchurch.com",
+    "TURNSTILE_HOSTNAMES": "www.cbfchurch.com,cbfchurch.com"
+  }
+}

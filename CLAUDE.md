@@ -5,10 +5,38 @@
 Website for Christian Believers Fellowship (CBF), a church at 32 Chapel Lane, Somersworth, NH 03878. The project is split into two deployments:
 
 - **Frontend (GitHub Pages):** Static HTML/CSS/JS site at `https://www.cbfchurch.com` (repo: 99redder/cbfchurch)
-- **Backend API (Render.com free tier):** Node.js/Express API at `https://cbfchurch.onrender.com`
+- **Backend API (Cloudflare Workers, free plan):** `worker/` (Hono) at `https://cbfchurch-api.99redder.workers.dev`. The old Node/Express API in `api/` (Render, `https://cbfchurch.onrender.com`) is kept only as a rollback — see "Backend hosting" below
 - **Database (Neon.tech):** PostgreSQL — the `DATABASE_URL` env var points here
 
 The admin panel is part of the static site but communicates with the API for authentication, blog CRUD, gallery management, and user management.
+
+## Backend hosting (Cloudflare Worker) — read this before touching the API
+
+As of 2026-10-17 the live API is the Cloudflare Worker in `worker/`, a route-for-route port of
+`api/` (same endpoints, same JSON, same Neon database, same `cbfchurch` R2 bucket). `api/` is the
+**rollback copy** for Render; it is no longer what the site calls. Make API changes in
+`worker/src/index.js` (plus `worker/src/auth.js`, `worker/src/db.js`).
+
+- **Config:** `worker/wrangler.jsonc` holds the non-secret vars (`ALLOWED_ORIGIN`,
+  `R2_PUBLIC_BASE_URL`, `DONATION_SITE_ORIGIN`, `QUICK_MESSAGE_FROM`, `TURNSTILE_HOSTNAMES`) and
+  the R2 binding `GALLERY`. Secrets are set with `npx wrangler secret put <NAME>`:
+  `DATABASE_URL`, `SESSION_SECRET`, `STRIPE_SECRET_KEY`, `RESEND_API_KEY`, `TURNSTILE_SECRET`.
+- **Deploy:** `cd worker && npm run deploy`. Logs: `npm run tail`. Local: `npm run dev`
+  (reads `worker/.dev.vars`, gitignored).
+- **Database:** Neon serverless driver over HTTPS (no pool). There are no startup migrations on
+  the Worker — run schema changes locally against Neon. `npm run backup` dumps all tables to
+  `worker/backups/` (gitignored; contains password hashes).
+- **Passwords** stay bcrypt and the JWT is HS256 with the same `SESSION_SECRET`, so accounts and
+  login tokens work on both the Worker and the old Render API. Login fits the free plan's CPU
+  limit (tested); if it ever starts failing with error 1102, the fix is Workers Paid ($5/mo).
+- **Rate limits** are best-effort per-isolate counters (not shared across Cloudflare locations).
+- **Frontend API address** is hard-coded in 3 places: `js/common.js`, `js/admin.js`,
+  `admin/login.html` (`API_BASE`).
+
+**Rollback to Render:** set `API_BASE` back to `https://cbfchurch.onrender.com` in those 3 files
+(or `git revert` the switch-over commit) and push; GitHub Pages redeploys in ~1 minute. Both APIs
+share one database, so no data moves either way. This only works while the Render service still
+exists — once it's deleted, rolling back means redeploying `api/` somewhere.
 
 ## Tech Stack
 
