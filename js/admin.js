@@ -1,5 +1,5 @@
 // Admin panel JavaScript
-const API_BASE = 'https://cbfchurch.onrender.com';
+const API_BASE = 'https://cbfchurch-api.99redder.workers.dev';
 
 // Theme: restore saved preference
 const storedTheme = localStorage.getItem('cbf-theme');

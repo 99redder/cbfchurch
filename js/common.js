@@ -1,6 +1,6 @@
 // API Configuration
 // Change this to your Render.com URL in production
-const API_BASE = 'https://cbfchurch.onrender.com';
+const API_BASE = 'https://cbfchurch-api.99redder.workers.dev';
 
 // Set footer year
 const yearEl = document.getElementById('footer-year');
@@ -79,7 +79,7 @@ function formatDate(dateStr) {
 }
 
 // Utility: fetch from API with error handling
-// The API runs on a free tier that sleeps when idle, so the first request
+// The database (Neon free tier) suspends when idle, so the first request
 // after a quiet spell can fail (network error / 5xx) while it wakes up.
 // Retry those a few times before giving up; 4xx responses fail immediately.
 async function apiFetch(endpoint) {
