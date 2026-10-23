@@ -5,7 +5,7 @@
 Website for Christian Believers Fellowship (CBF), a church at 32 Chapel Lane, Somersworth, NH 03878. The project is split into two deployments:
 
 - **Frontend (GitHub Pages):** Static HTML/CSS/JS site at `https://www.cbfchurch.com` (repo: 99redder/cbfchurch)
-- **Backend API (Cloudflare Workers, free plan):** `worker/` (Hono) at `https://cbfchurch-api.99redder.workers.dev`. The old Node/Express API in `api/` (Render, `https://cbfchurch.onrender.com`) is kept only as a rollback — see "Backend hosting" below
+- **Backend API (Cloudflare Workers, Workers Paid account):** `worker/` (Hono) at `https://cbfchurch-api.99redder.workers.dev`. The old Node/Express API in `api/` (Render, `https://cbfchurch.onrender.com`) is kept only as a rollback — see "Backend hosting" below
 - **Database (Neon.tech):** PostgreSQL — the `DATABASE_URL` env var points here
 
 The admin panel is part of the static site but communicates with the API for authentication, blog CRUD, gallery management, and user management.
@@ -27,8 +27,9 @@ As of 2026-10-17 the live API is the Cloudflare Worker in `worker/`, a route-for
   the Worker — run schema changes locally against Neon. `npm run backup` dumps all tables to
   `worker/backups/` (gitignored; contains password hashes).
 - **Passwords** stay bcrypt and the JWT is HS256 with the same `SESSION_SECRET`, so accounts and
-  login tokens work on both the Worker and the old Render API. Login fits the free plan's CPU
-  limit (tested); if it ever starts failing with error 1102, the fix is Workers Paid ($5/mo).
+  login tokens work on both the Worker and the old Render API. The account is on Workers
+  Paid (since Oct 23, 2026), so bcrypt login has 30 s of CPU per request instead of the Free
+  plan's 10 ms.
 - **Rate limits** are best-effort per-isolate counters (not shared across Cloudflare locations).
 - **Frontend API address** is hard-coded in 3 places: `js/common.js`, `js/admin.js`,
   `admin/login.html` (`API_BASE`).

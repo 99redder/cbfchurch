@@ -5,7 +5,7 @@
 Website for Christian Believers Fellowship (CBF), a church at 32 Chapel Lane, Somersworth, NH 03878. The project is split into two deployments:
 
 - **Frontend (GitHub Pages):** Static HTML/CSS/JS site at `https://www.cbfchurch.com` (repo: 99redder/cbfchurch)
-- **Backend API (Cloudflare Workers, free plan):** `worker/` (Hono) at `https://cbfchurch-api.99redder.workers.dev`. The old Node/Express API in `api/` (Render, `https://cbfchurch.onrender.com`) is kept only as a rollback — see "Backend hosting" in CLAUDE.md
+- **Backend API (Cloudflare Workers, Workers Paid account):** `worker/` (Hono) at `https://cbfchurch-api.99redder.workers.dev`. The old Node/Express API in `api/` (Render, `https://cbfchurch.onrender.com`) is kept only as a rollback — see "Backend hosting" in CLAUDE.md
 - **Database (Neon.tech):** PostgreSQL — the `DATABASE_URL` env var points here
 
 The admin panel is part of the static site but communicates with the API for authentication, blog CRUD, gallery management, and user management.
