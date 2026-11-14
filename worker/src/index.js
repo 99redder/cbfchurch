@@ -8,6 +8,7 @@ import { getCookie, setCookie, deleteCookie } from 'hono/cookie';
 import sanitizeHtml from 'sanitize-html';
 import { createDb } from './db.js';
 import { hashPassword, verifyPassword, createToken, verifyToken } from './auth.js';
+import { parseSyncReport, buildSyncReportEmail } from './sync-report.js';
 
 const app = new Hono();
 
@@ -719,6 +720,59 @@ app.post('/api/contact/quick-message', contactLimiter, async c => {
     return c.json({ message: 'Message sent.', id: data?.id || null });
   } catch (err) {
     console.error('Quick message send error:', err);
+    return c.json({ error: 'Internal server error.' }, 500);
+  }
+});
+
+// ---------------------------------------------------------------------------
+// Weekly page-text sync report (posted by the GitHub Action, emailed out)
+// ---------------------------------------------------------------------------
+
+// Constant-time string comparison for the shared secret.
+function safeEqual(a, b) {
+  const x = new TextEncoder().encode(String(a));
+  const y = new TextEncoder().encode(String(b));
+  if (x.length !== y.length) return false;
+  let diff = 0;
+  for (let i = 0; i < x.length; i++) diff |= x[i] ^ y[i];
+  return diff === 0;
+}
+
+app.post('/api/internal/sync-report', async c => {
+  const secret = c.env.SYNC_REPORT_SECRET || '';
+  if (!secret || !safeEqual(c.req.header('authorization') || '', `Bearer ${secret}`)) {
+    return c.json({ error: 'Unauthorized' }, 401);
+  }
+  const report = parseSyncReport(await readJson(c));
+  if (!report) return c.json({ error: 'Invalid report' }, 400);
+
+  const resendKey = c.env.RESEND_API_KEY || '';
+  const to = normalizeEmail(c.env.SYNC_REPORT_TO);
+  if (!resendKey || !isEmail(to)) {
+    return c.json({ error: 'Email is not configured on the server.' }, 500);
+  }
+
+  const { subject, text } = buildSyncReportEmail(report);
+  try {
+    const resendRes = await fetch('https://api.resend.com/emails', {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${resendKey}`, 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        from: `CBF Website <${c.env.QUICK_MESSAGE_FROM || 'noreply@cbfchurch.com'}>`,
+        to: [to],
+        subject,
+        text,
+        headers: { 'X-Source': 'cbfchurch-sync-report' }
+      })
+    });
+    const data = await resendRes.json().catch(() => ({}));
+    if (!resendRes.ok) {
+      console.error('Sync report email error:', resendRes.status, data);
+      return c.json({ error: 'Email provider rejected the report.' }, 502);
+    }
+    return c.json({ message: 'Report emailed.', id: data?.id || null });
+  } catch (err) {
+    console.error('Sync report email error:', err);
     return c.json({ error: 'Internal server error.' }, 500);
   }
 });

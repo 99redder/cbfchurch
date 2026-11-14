@@ -11,13 +11,15 @@
     { "binding": "GALLERY", "bucket_name": "cbfchurch" }
   ],
   // Non-secret settings. Secrets (DATABASE_URL, SESSION_SECRET, STRIPE_SECRET_KEY,
-  // RESEND_API_KEY, TURNSTILE_SECRET) are set with `wrangler secret put`, or in
-  // .dev.vars for local development.
+  // RESEND_API_KEY, TURNSTILE_SECRET, SYNC_REPORT_SECRET) are set with
+  // `wrangler secret put`, or in .dev.vars for local development.
   "vars": {
     "ALLOWED_ORIGIN": "https://www.cbfchurch.com,https://cbfchurch.com,https://99redder.github.io",
     "R2_PUBLIC_BASE_URL": "https://pub-e409614e4a1644eb9ce4b383c89aae6d.r2.dev",
     "DONATION_SITE_ORIGIN": "https://www.cbfchurch.com",
     "QUICK_MESSAGE_FROM": "noreply@cbfchurch.com",
-    "TURNSTILE_HOSTNAMES": "www.cbfchurch.com,cbfchurch.com"
+    "TURNSTILE_HOSTNAMES": "www.cbfchurch.com,cbfchurch.com",
+    // Who gets the weekly page-text sync report (POST /api/internal/sync-report)
+    "SYNC_REPORT_TO": "support@easternshore.ai"
   }
 }
