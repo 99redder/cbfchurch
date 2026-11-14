@@ -1,0 +1,43 @@
+name: Sync admin-edited page text
+
+# Weekly: copy History/Beliefs text that admins edited on the site into the
+# HTML files, so search engines see the current text without running
+# JavaScript (see scripts/sync-editable-content.mjs). Commits only when
+# something changed. Can also be run by hand: Actions tab > this workflow >
+# "Run workflow".
+on:
+  schedule:
+    - cron: '0 10 * * 1'   # Mondays 10:00 UTC (5-6 AM in New Hampshire)
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pages: write
+
+concurrency:
+  group: sync-editable-content
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Pull saved text from the API into the HTML
+        run: node scripts/sync-editable-content.mjs
+
+      - name: Commit and publish if anything changed
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if git diff --quiet; then
+            echo "No edits to sync."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898333+github-actions[bot]@users.noreply.github.com"
+          git commit -am "Sync admin-edited page text into HTML"
+          git push
+          # Ask GitHub Pages to rebuild for this bot commit.
+          gh api -X POST "repos/${GITHUB_REPOSITORY}/pages/builds" || true

@@ -127,10 +127,13 @@
     }
   }
 
+  // Snapshot the markup (not just the text) so Cancel restores multi-paragraph
+  // fields as separate <p>s. Restoring textContent flattened them into one
+  // block, and a later Save then stored that section as a single paragraph.
   toggleBtn.addEventListener('click', () => {
     fields.forEach(el => {
       const key = el.getAttribute('data-content-field');
-      if (key) originalValues[key] = el.textContent;
+      if (key) originalValues[key] = el.innerHTML;
     });
     setEditing(true);
   });
@@ -139,7 +142,7 @@
     fields.forEach(el => {
       const key = el.getAttribute('data-content-field');
       if (key && Object.prototype.hasOwnProperty.call(originalValues, key)) {
-        el.textContent = originalValues[key];
+        el.innerHTML = originalValues[key];
       }
     });
     setEditing(false);
