@@ -241,6 +241,39 @@ app.get('/api/posts/:slug', async c => {
   }
 });
 
+// Sitemap of every blog post, for search engines. It lives here (not on GitHub
+// Pages) so new posts appear automatically; robots.txt on www.cbfchurch.com
+// points at it, which is how a sitemap on another host is accepted.
+const POST_SITE_URL = 'https://www.cbfchurch.com/';
+
+function xmlEscape(s) {
+  return String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+    .replace(/"/g, '&quot;').replace(/'/g, '&apos;');
+}
+
+app.get('/sitemap-posts.xml', async c => {
+  try {
+    const posts = await c.get('db').all(
+      'SELECT slug, created_at, updated_at FROM posts ORDER BY created_at DESC'
+    );
+    const urls = posts.map(p => {
+      const loc = `${POST_SITE_URL}post.html?slug=${encodeURIComponent(p.slug)}`;
+      const lastmod = new Date(p.updated_at || p.created_at).toISOString().slice(0, 10);
+      return `  <url>\n    <loc>${xmlEscape(loc)}</loc>\n    <lastmod>${lastmod}</lastmod>\n  </url>`;
+    });
+    const xml = '<?xml version="1.0" encoding="UTF-8"?>\n'
+      + '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
+      + urls.join('\n') + '\n</urlset>\n';
+    return c.body(xml, 200, {
+      'Content-Type': 'application/xml; charset=utf-8',
+      'Cache-Control': 'public, max-age=3600'
+    });
+  } catch (err) {
+    console.error('Sitemap error:', err);
+    return c.text('Sitemap temporarily unavailable', 500);
+  }
+});
+
 // ---------------------------------------------------------------------------
 // Gallery (public) + R2 storage
 // ---------------------------------------------------------------------------

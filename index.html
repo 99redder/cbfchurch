@@ -11,13 +11,19 @@
   <meta property="og:title" content="Christian Believers Fellowship | Church in Somersworth, NH">
   <meta property="og:description" content="A Bible-based church in Somersworth, New Hampshire. Sunday Worship 10:30am, Tuesday Bible Study 6:30pm. Serving the Seacoast and Southern NH area.">
   <meta property="og:url" content="https://www.cbfchurch.com/">
-  <meta property="og:image" content="https://www.cbfchurch.com/images/wordmark.svg">
-  <meta name="twitter:card" content="summary">
+  <meta property="og:image" content="https://www.cbfchurch.com/images/share.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Christian Believers Fellowship chapel at 32 Chapel Lane, Somersworth, NH">
+  <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Christian Believers Fellowship | Church in Somersworth, NH">
   <meta name="twitter:description" content="A Bible-based church in Somersworth, New Hampshire. Sunday Worship 10:30am, Tuesday Bible Study 6:30pm. Serving the Seacoast and Southern NH area.">
+  <meta name="twitter:image" content="https://www.cbfchurch.com/images/share.jpg">
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#365d8a">
-  <link rel="icon" href="images/logo.svg" type="image/svg+xml">
+  <link rel="icon" href="favicon.ico" sizes="48x48">
+  <link rel="icon" href="images/pwa-icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="images/icons/apple-touch-icon.png">
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
   <link rel="stylesheet" href="css/style.css">
 </head>
@@ -67,8 +73,9 @@
   <!-- Main Content -->
   <div class="page-wrapper">
     <main id="main" class="main-content">
+      <h1 class="visually-hidden">Christian Believers Fellowship — a Bible-based church in Somersworth, NH</h1>
       <section class="card">
-        <h1>Most Recent Service Video</h1>
+        <h2 class="h1-size">Most Recent Service Video</h2>
         <p class="mt-2">For our full video archive, visit our <a href="https://www.youtube.com/user/captaintal55" target="_blank" rel="noopener">YouTube Channel &rarr;</a></p>
         <div class="mt-3" style="display:grid; gap:1.5rem;">
           <div style="position:relative;padding-bottom:56.25%;height:0;overflow:hidden;border-radius:var(--radius);">
@@ -215,56 +222,77 @@
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
-    "@type": "Church",
-    "name": "Christian Believers Fellowship",
-    "alternateName": "CBF",
-    "url": "https://www.cbfchurch.com",
-    "logo": "https://www.cbfchurch.com/images/logo.svg",
-    "image": "https://www.cbfchurch.com/images/wordmark.svg",
-    "description": "A Bible-based church in Somersworth, New Hampshire serving the Seacoast and Southern NH area.",
-    "address": {
-      "@type": "PostalAddress",
-      "streetAddress": "32 Chapel Lane",
-      "addressLocality": "Somersworth",
-      "addressRegion": "NH",
-      "postalCode": "03878",
-      "addressCountry": "US"
-    },
-    "geo": {
-      "@type": "GeoCoordinates",
-      "latitude": 43.2509,
-      "longitude": -70.8745
-    },
-    "openingHours": [
-      "Su 10:30-12:00",
-      "Tu 18:30-20:00"
-    ],
-    "openingHoursSpecification": [
+    "@graph": [
       {
-        "@type": "OpeningHoursSpecification",
-        "dayOfWeek": "Sunday",
-        "name": "Sunday Worship Service",
-        "opens": "10:30",
-        "closes": "12:00"
+        "@type": "WebSite",
+        "@id": "https://www.cbfchurch.com/#website",
+        "name": "Christian Believers Fellowship",
+        "alternateName": ["CBF", "CBF Church"],
+        "url": "https://www.cbfchurch.com/",
+        "publisher": { "@id": "https://www.cbfchurch.com/#church" }
       },
       {
-        "@type": "OpeningHoursSpecification",
-        "dayOfWeek": "Tuesday",
-        "name": "Bible Study",
-        "opens": "18:30",
-        "closes": "20:00"
+        "@type": "Church",
+        "@id": "https://www.cbfchurch.com/#church",
+        "name": "Christian Believers Fellowship",
+        "alternateName": "CBF",
+        "url": "https://www.cbfchurch.com/",
+        "logo": "https://www.cbfchurch.com/images/icons/icon-512.png",
+        "image": [
+          "https://www.cbfchurch.com/images/church-logo-photo.jpg",
+          "https://www.cbfchurch.com/images/share.jpg"
+        ],
+        "description": "A Bible-based church in Somersworth, New Hampshire serving the Seacoast and Southern NH area.",
+        "telephone": "+1-603-692-9320",
+        "address": {
+          "@type": "PostalAddress",
+          "streetAddress": "32 Chapel Lane",
+          "addressLocality": "Somersworth",
+          "addressRegion": "NH",
+          "postalCode": "03878",
+          "addressCountry": "US"
+        },
+        "geo": {
+          "@type": "GeoCoordinates",
+          "latitude": 43.2509,
+          "longitude": -70.8745
+        },
+        "hasMap": "https://maps.google.com/?q=32+Chapel+Lane+Somersworth+NH+03878",
+        "openingHoursSpecification": [
+          {
+            "@type": "OpeningHoursSpecification",
+            "dayOfWeek": "Sunday",
+            "name": "Sunday Worship Service",
+            "opens": "10:30",
+            "closes": "11:30"
+          },
+          {
+            "@type": "OpeningHoursSpecification",
+            "dayOfWeek": "Tuesday",
+            "name": "Bible Study",
+            "opens": "18:30",
+            "closes": "19:30"
+          }
+        ],
+        "publicAccess": true,
+        "isAccessibleForFree": true,
+        "amenityFeature": [
+          { "@type": "LocationFeatureSpecification", "name": "Free on-site parking", "value": true },
+          { "@type": "LocationFeatureSpecification", "name": "Wheelchair accessible", "value": true }
+        ],
+        "sameAs": [
+          "https://www.youtube.com/@captaintal55",
+          "https://twitter.com/CBF_Somersworth"
+        ],
+        "areaServed": [
+          "Somersworth, NH",
+          "Dover, NH",
+          "Rochester, NH",
+          "Portsmouth, NH",
+          "Southern New Hampshire",
+          "Seacoast New Hampshire"
+        ]
       }
-    ],
-    "sameAs": [
-      "https://www.youtube.com/@cbfchurch"
-    ],
-    "areaServed": [
-      "Somersworth, NH",
-      "Dover, NH",
-      "Rochester, NH",
-      "Portsmouth, NH",
-      "Southern New Hampshire",
-      "Seacoast New Hampshire"
     ]
   }
   </script>
