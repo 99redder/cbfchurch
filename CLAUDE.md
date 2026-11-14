@@ -465,6 +465,16 @@ All colors use CSS custom properties — never use hardcoded hex values in new r
 
 ## Important Notes
 
+- **Start every editing session with `git pull --rebase`.** A weekly GitHub Action (Mondays,
+  see "SEO setup") can commit admin-edited page text to `main` on GitHub, so the local copy may
+  be behind. Pulling first avoids a rejected push; if a push is rejected anyway, `git pull
+  --rebase` and push again. (Admin edits are infrequent, so this is rare.)
+- **Don't hand-edit the text inside `data-content-field` elements** in `cbf-history.html` or
+  `our-beliefs.html`. The saved version in the database (`site_content`) is the source of truth:
+  the page replaces that HTML text on load, and the weekly sync overwrites it. Change that text
+  through the admin "Edit Content" button (or the database), then run
+  `node scripts/sync-editable-content.mjs` to copy it into the HTML. Markup outside those
+  elements (layout, new sections, head tags) is safe to edit normally.
 - The `api/.env` file contains database credentials and is gitignored. Never commit it.
 - Render free tier has no shell access and ephemeral filesystem — use S3 for gallery storage and local scripts for DB maintenance.
 - All public HTML pages share the same hand-coded nav structure — any **desktop** nav change must be made in every file. **Mobile** nav is generated once in `js/common.js`, so mobile changes are made there only.
