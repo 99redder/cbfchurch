@@ -313,6 +313,27 @@ Note: `innerWidth` can momentarily read `0` right after navigation in some embed
 which transiently matches the mobile query — the `min-width:769px` safety nets exist partly for
 this.
 
+## Old Blogger addresses (redirect pages)
+
+Until the 2026 redesign, `www.cbfchurch.com` pointed at Blogger, so search engines and old links
+know addresses like `/p/service-times.html` and `/2020/11/weekly-blog-solid-rock.html`. The
+`p/` and year folders (`2011/` … `2025/`) in the repo root are **generated redirect pages** for
+those addresses — don't delete them. Each is a tiny HTML page with an instant meta refresh
+(Google treats it as a permanent redirect) and a canonical tag pointing at the new page.
+
+- The old → new list is `scripts/blogger-redirects.json` (88 entries: 78 posts, 10 pages).
+- To change it, edit the JSON and run `node scripts/build-blogger-redirects.mjs` from the repo
+  root. The script only overwrites its own output (files marked `<!-- blogger-redirect -->`).
+- One untitled 2012 post (`/2012/05/childrens-children-are-crown-of-old-men.html`) was never
+  imported, so that old address has no redirect and returns 404.
+- The old Blogger blog (`cbfchurch.blogspot.com`) was permanently deleted on 2026-11-14. The
+  Google Takeout export in `Blogger backup/` is the only remaining copy of the original posts,
+  pages, and comments.
+
+Images inside imported blog posts used to load from `blogger.googleusercontent.com`. On
+2026-11-14 they were copied into the R2 bucket under `blog/` and the post HTML in the database
+was rewritten to point at `R2_PUBLIC_BASE_URL/blog/...`, so the posts no longer depend on Blogger.
+
 ## Gallery Storage
 
 `api/utils/storage.js` abstracts gallery photo storage:
@@ -418,6 +439,11 @@ All colors use CSS custom properties — never use hardcoded hex values in new r
 - SQL uses `$1`, `$2` parameterized queries (PostgreSQL style, not `?`).
 - CORS accepts only origins in `ALLOWED_ORIGIN` env var (comma-separated).
 - The Quill.js editor is loaded from CDN — do not try to install it locally.
-- `post.html` uses URL query param `?slug=` to fetch a single post dynamically.
+- `post.html` uses URL query param `?slug=` to fetch a single post dynamically. Because one file
+  serves every post, `post.html` must **not** have a static `<link rel="canonical">` or `og:url`
+  (a fixed one tells Google every post is a copy of `/post.html`). `js/post.js` adds the
+  per-post canonical (`https://www.cbfchurch.com/post.html?slug=<slug>`), meta description, and
+  `BlogPosting` JSON-LD after the post loads, and adds `noindex` only on a real 404 / missing slug
+  (`apiFetch` errors carry `err.status`), never on a temporary API failure.
 - Blog posts were originally imported from Blogger via `scripts/import-blogger.js`.
 - Static gallery photos in `images/gallery/` are served from GitHub Pages (git-committed). Admin-uploaded photos are served from Render/S3.

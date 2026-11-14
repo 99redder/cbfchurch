@@ -1,0 +1,354 @@
+{
+  "/2011/06/welcome-to-our-new-blog.html": {
+    "title": "Welcome to our new Blog!",
+    "to": "post.html?slug=welcome-to-our-new-blog"
+  },
+  "/2012/05/lord-reigns.html": {
+    "title": "The Lord Reigns",
+    "to": "post.html?slug=the-lord-reigns"
+  },
+  "/2012/06/fathers-day.html": {
+    "title": "Father's Day",
+    "to": "post.html?slug=fathers-day"
+  },
+  "/2012/06/golden-rule.html": {
+    "title": "The Golden Rule",
+    "to": "post.html?slug=the-golden-rule"
+  },
+  "/2012/06/your-word-is-lamp-to-my-feet-and-light.html": {
+    "title": "Thy Word",
+    "to": "post.html?slug=thy-word"
+  },
+  "/2012/07/selah.html": {
+    "title": "SELAH",
+    "to": "post.html?slug=selah"
+  },
+  "/2012/07/thou-wilt-keep-him-in-perfect-peace.html": {
+    "title": "Thou Wilt Keep Him in Perfect Peace",
+    "to": "post.html?slug=thou-wilt-keep-him-in-perfect-peace"
+  },
+  "/2012/07/would-jesus-marry-you.html": {
+    "title": "Would Jesus Marry You?",
+    "to": "post.html?slug=would-jesus-marry-you"
+  },
+  "/2012/08/count-your-blessings-one-by-one.html": {
+    "title": "Count Your Blessings One by One",
+    "to": "post.html?slug=count-your-blessings-one-by-one"
+  },
+  "/2012/08/no-worry-just-trust.html": {
+    "title": "No Worry, Just Trust",
+    "to": "post.html?slug=no-worry-just-trust"
+  },
+  "/2012/09/be-patient.html": {
+    "title": "Be Patient",
+    "to": "post.html?slug=be-patient"
+  },
+  "/2012/11/give-thanks-with-grateful-heart.html": {
+    "title": "Give Thanks with a Grateful Heart",
+    "to": "post.html?slug=give-thanks-with-a-grateful-heart"
+  },
+  "/2014/02/why-pray.html": {
+    "title": "Why Pray?",
+    "to": "post.html?slug=why-pray"
+  },
+  "/2019/12/do-you-have-2020-vision.html": {
+    "title": "Do you have 20/20 Vision?",
+    "to": "post.html?slug=do-you-have-2020-vision"
+  },
+  "/2019/12/praying-like-you-mean-it.html": {
+    "title": "Praying Like You Mean It",
+    "to": "post.html?slug=praying-like-you-mean-it"
+  },
+  "/2019/12/the-greatest-gift.html": {
+    "title": "The Greatest Gift",
+    "to": "post.html?slug=the-greatest-gift"
+  },
+  "/2020/01/weekly-blog-peace-day-by-day.html": {
+    "title": "Peace - Day by Day",
+    "to": "post.html?slug=peace-day-by-day"
+  },
+  "/2020/02/weekly-blog-may-god-fill-your-heart.html": {
+    "title": "May God fill your heart with laughter",
+    "to": "post.html?slug=may-god-fill-your-heart-with-laughter"
+  },
+  "/2020/02/weekly-blog-spring-has-sprung.html": {
+    "title": "Spring has sprung",
+    "to": "post.html?slug=spring-has-sprung"
+  },
+  "/2020/03/weekly-blog-our-god-is-forever-and-ever.html": {
+    "title": "Our God is forever and ever!",
+    "to": "post.html?slug=our-god-is-forever-and-ever"
+  },
+  "/2020/04/weekly-blog-anchor.html": {
+    "title": "The Anchor",
+    "to": "post.html?slug=the-anchor"
+  },
+  "/2020/04/weekly-blog-do-your-job.html": {
+    "title": "Do your job!",
+    "to": "post.html?slug=do-your-job"
+  },
+  "/2020/04/weekly-blog-truth-about-good-friday.html": {
+    "title": "The Truth about Good Friday",
+    "to": "post.html?slug=the-truth-about-good-friday"
+  },
+  "/2020/04/weekly-blog-we-are-gods-people.html": {
+    "title": "We are God's People",
+    "to": "post.html?slug=we-are-gods-people"
+  },
+  "/2020/05/psalm-23.html": {
+    "title": "Psalm 23",
+    "to": "post.html?slug=psalm-23"
+  },
+  "/2020/05/weekly-blog-heart-for-god.html": {
+    "title": "A New Heart from God",
+    "to": "post.html?slug=a-new-heart-from-god"
+  },
+  "/2020/05/weekly-blog-love-peace.html": {
+    "title": "Love & Peace",
+    "to": "post.html?slug=love-peace"
+  },
+  "/2020/05/weekly-blog-pleasing-god-not-people.html": {
+    "title": "Pleasing God, Not People",
+    "to": "post.html?slug=pleasing-god-not-people"
+  },
+  "/2020/05/weekly-blog-thank-god-for-persistent.html": {
+    "title": "Thank God for Persistent Moms",
+    "to": "post.html?slug=thank-god-for-persistent-moms"
+  },
+  "/2020/06/weekly-blog-being-child-of-almighty.html": {
+    "title": "Being a Child of the Almighty",
+    "to": "post.html?slug=being-a-child-of-the-almighty"
+  },
+  "/2020/06/weekly-blog-home-improvements-and.html": {
+    "title": "Home Improvements and Renovations",
+    "to": "post.html?slug=home-improvements-and-renovations"
+  },
+  "/2020/06/weekly-blog-if-he-promised-he-will.html": {
+    "title": "If He promised, He will deliver!",
+    "to": "post.html?slug=if-he-promised-he-will-deliver"
+  },
+  "/2020/06/weekly-blog-pastors-being-well-prepared.html": {
+    "title": "Pastors - Being Well-Prepared",
+    "to": "post.html?slug=pastors-being-well-prepared"
+  },
+  "/2020/07/happy-are-people.html": {
+    "title": "Happy are the people!",
+    "to": "post.html?slug=happy-are-the-people"
+  },
+  "/2020/08/i-know-therefore-that-lord-your-god-is.html": {
+    "title": "I Know Therefore That the Lord Your God Is God",
+    "to": "post.html?slug=untitled-2"
+  },
+  "/2020/08/our-calling-what-we-fight-for.html": {
+    "title": "Our Calling: What We Fight For",
+    "to": "post.html?slug=our-calling-what-we-fight-for"
+  },
+  "/2020/09/a-final-priority.html": {
+    "title": "A Final Priority",
+    "to": "post.html?slug=a-final-priority"
+  },
+  "/2020/10/rewriting-history.html": {
+    "title": "Rewriting History",
+    "to": "post.html?slug=rewriting-history"
+  },
+  "/2020/10/weekly-blog-make-time-for-solitude.html": {
+    "title": "Make the Time for Solitude",
+    "to": "post.html?slug=make-the-time-for-solitude"
+  },
+  "/2020/11/psalm-327.html": {
+    "title": "Psalm 32:7",
+    "to": "post.html?slug=psalm-327"
+  },
+  "/2020/11/weekly-blog-solid-rock.html": {
+    "title": "The Solid Rock",
+    "to": "post.html?slug=the-solid-rock"
+  },
+  "/2020/12/weekly-blog-be-good-communicator.html": {
+    "title": "Be a Good Communicator",
+    "to": "post.html?slug=be-a-good-communicator"
+  },
+  "/2020/12/weekly-blog-for-unto-us-child-is-born.html": {
+    "title": "For Unto Us A Child is Born",
+    "to": "post.html?slug=for-unto-us-a-child-is-born"
+  },
+  "/2021/01/weekly-blog-jesus-and-money-changers.html": {
+    "title": "Jesus and the money changers",
+    "to": "post.html?slug=jesus-and-the-money-changers"
+  },
+  "/2021/01/weekly-blog-joy-to-all-people.html": {
+    "title": "JOY TO ALL PEOPLE?",
+    "to": "post.html?slug=joy-to-all-people"
+  },
+  "/2021/01/weekly-blog-praying-and-preaching.html": {
+    "title": "Praying and Preaching",
+    "to": "post.html?slug=praying-and-preaching"
+  },
+  "/2021/02/weekly-blog-embracing-where-god-has.html": {
+    "title": "Embracing Where God Has Placed You",
+    "to": "post.html?slug=embracing-where-god-has-placed-you"
+  },
+  "/2021/03/weekly-blog-pastors-relationships.html": {
+    "title": "The Pastor's Relationships - The Congregation",
+    "to": "post.html?slug=the-pastors-relationships-the-congregation"
+  },
+  "/2021/04/weekly-blog-doing-lords-work-lords-way.html": {
+    "title": "Doing the Lord's Work the Lord's Way",
+    "to": "post.html?slug=doing-the-lords-work-the-lords-way"
+  },
+  "/2021/04/weekly-blog-honest-and-transparent-look.html": {
+    "title": "An Honest and Transparent look at \"Easter\"",
+    "to": "post.html?slug=an-honest-and-transparent-look-at-easter"
+  },
+  "/2021/05/weekly-blog-reaching-out-and-taking.html": {
+    "title": "Reaching Out and Taking Risks",
+    "to": "post.html?slug=reaching-out-and-taking-risks"
+  },
+  "/2021/06/the-lord-is-everlasting-god-creator.html": {
+    "title": "Jesus is at the Center of Our Lives",
+    "to": "post.html?slug=jesus-is-at-the-center-of-our-lives"
+  },
+  "/2021/08/g-ood-leaders-have-affection-for-people.html": {
+    "title": "Affectionate Words of Intimacy",
+    "to": "post.html?slug=affectionate-words-of-intimacy"
+  },
+  "/2021/10/weekly-blog-beheaded-for-christ.html": {
+    "title": "Beheaded for Christ",
+    "to": "post.html?slug=beheaded-for-christ"
+  },
+  "/2021/10/weekly-blog-directions-to-fathers-house.html": {
+    "title": "Directions to the Father's House",
+    "to": "post.html?slug=directions-to-the-fathers-house"
+  },
+  "/2021/12/welcome-to-year-2022.html": {
+    "title": "Welcome to the year 2022",
+    "to": "post.html?slug=welcome-to-the-year-2022"
+  },
+  "/2022/01/weekly-blog-principles-all-churches.html": {
+    "title": "\"Principles All Churches Should Examine and Apply\"",
+    "to": "post.html?slug=principles-all-churches-should-examine-and-apply"
+  },
+  "/2022/03/hope-dionne-warwick-told-us-back-in.html": {
+    "title": "Hope",
+    "to": "post.html?slug=hope"
+  },
+  "/2022/05/weekly-blog-no-hooks.html": {
+    "title": "No Hooks",
+    "to": "post.html?slug=no-hooks"
+  },
+  "/2022/06/weekly-blog-standing-firm-as-soldier-of.html": {
+    "title": "Standing Firm as a Soldier of Christ",
+    "to": "post.html?slug=standing-firm-as-a-soldier-of-christ"
+  },
+  "/2022/08/monthly-blog-remember-your-roots.html": {
+    "title": "Remember Your Roots",
+    "to": "post.html?slug=remember-your-roots"
+  },
+  "/2022/10/monthly-blog-hammer-of-god.html": {
+    "title": "The Hammer of God",
+    "to": "post.html?slug=the-hammer-of-god"
+  },
+  "/2022/11/monthly-blog-cultivating-tender-heart.html": {
+    "title": "\"Cultivating a Tender Heart and a Tough Hide\"",
+    "to": "post.html?slug=cultivating-a-tender-heart-and-a-tough-hide"
+  },
+  "/2022/12/monthly-blog-for-this-god-is-our-god.html": {
+    "title": "FOR THIS GOD IS OUR GOD FOREVER AND EVER",
+    "to": "post.html?slug=for-this-god-is-our-god-forever-and-ever"
+  },
+  "/2023/04/monthly-blog-answer-charge.html": {
+    "title": "Answer the Charge",
+    "to": "post.html?slug=answer-the-charge"
+  },
+  "/2023/05/monthly-blog-squirrels-in-church.html": {
+    "title": "Squirrels in the Church",
+    "to": "post.html?slug=squirrels-in-the-church"
+  },
+  "/2023/07/the-has-finally-come-you-have-been.html": {
+    "title": "Trash Day",
+    "to": "post.html?slug=trash-day"
+  },
+  "/2023/08/monthly-blog-embracing-where-god-has.html": {
+    "title": "Embracing Where God Has Placed You",
+    "to": "post.html?slug=embracing-where-god-has-placed-you-2"
+  },
+  "/2023/10/monthly-blog-freedom-from-anger.html": {
+    "title": "Freedom from Anger",
+    "to": "post.html?slug=freedom-from-anger"
+  },
+  "/2024/01/monthly-blog-promises-made-promises-kept.html": {
+    "title": "Promises Made; Promises Kept",
+    "to": "post.html?slug=promises-made-promises-kept"
+  },
+  "/2024/07/why-we-must-choose-unpopular-path.html": {
+    "title": "Committing to Excellence",
+    "to": "post.html?slug=committing-to-excellence"
+  },
+  "/2024/09/monthly-blog-not-ashamed-of-gospel.html": {
+    "title": "Not ashamed of the Gospel",
+    "to": "post.html?slug=not-ashamed-of-the-gospel"
+  },
+  "/2024/12/monthly-blog-he-has-caused-his-wonders.html": {
+    "title": "HE HAS CAUSED HIS WONDERS TO BE REMEMBERED",
+    "to": "post.html?slug=he-has-caused-his-wonders-to-be-remembered"
+  },
+  "/2025/01/monthly-blog-hopes-and-fears-of-all.html": {
+    "title": "Hopes and Fears of all the Years",
+    "to": "post.html?slug=hopes-and-fears-of-all-the-years"
+  },
+  "/2025/02/christian-believers-fellowship-100-year.html": {
+    "title": "Christian Believers Fellowship 100 Year Celebration",
+    "to": "post.html?slug=christian-believers-fellowship-100-year-celebration"
+  },
+  "/2025/07/what-battle-are-you-fighting-matthew.html": {
+    "title": "WHAT BATTLE ARE YOU FIGHTING?",
+    "to": "post.html?slug=what-battle-are-you-fighting"
+  },
+  "/2025/10/why-does-god-permit-evil-to-exist.html": {
+    "title": "Why Does God Permit Evil to Exist?",
+    "to": "post.html?slug=why-does-god-permit-evil-to-exist"
+  },
+  "/2025/12/monthly-blog-practical-atheism.html": {
+    "title": "Practical Atheism",
+    "to": "post.html?slug=practical-atheism"
+  },
+  "/p/article-archives.html": {
+    "title": "Article Archives",
+    "to": "article-archives.html"
+  },
+  "/p/cbf-history.html": {
+    "title": "CBF History",
+    "to": "cbf-history.html"
+  },
+  "/p/detailed-contact-list.html": {
+    "title": "Detailed Contact List",
+    "to": "contact.html"
+  },
+  "/p/learn-truth-about-truth.html": {
+    "title": "Learn the Truth about the Truth",
+    "to": "learn-the-truth.html"
+  },
+  "/p/mission-statement.html": {
+    "title": "Mission Statement",
+    "to": "mission-statement.html"
+  },
+  "/p/our-beliefs.html": {
+    "title": "Our Beliefs",
+    "to": "our-beliefs.html"
+  },
+  "/p/photo-gallery.html": {
+    "title": "Photo Gallery",
+    "to": "photo-gallery.html"
+  },
+  "/p/sermon-archive.html": {
+    "title": "Sermon Archive",
+    "to": "video-archive.html"
+  },
+  "/p/service-times.html": {
+    "title": "Service Times",
+    "to": "service-times.html"
+  },
+  "/p/video-links.html": {
+    "title": "Recent Videos",
+    "to": "recent-videos.html"
+  }
+}

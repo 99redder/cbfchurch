@@ -94,8 +94,10 @@ async function apiFetch(endpoint) {
     if (res) {
       if (res.ok) return res.json();
       if (res.status < 500 || attempt >= retryDelays.length) {
-        const err = await res.json().catch(() => ({ error: 'Request failed' }));
-        throw new Error(err.error || 'Request failed');
+        const body = await res.json().catch(() => ({ error: 'Request failed' }));
+        const err = new Error(body.error || 'Request failed');
+        err.status = res.status;
+        throw err;
       }
     }
     await new Promise(resolve => setTimeout(resolve, retryDelays[attempt]));
