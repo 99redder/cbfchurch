@@ -20,9 +20,20 @@ const MARKER = '<!-- blogger-redirect -->';
 const esc = s => String(s)
   .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 
+// Blogger also had year and month archive pages (/2020/ and /2020/11/). They
+// map to the Article Archives page, which lists posts by year and month. Every
+// archive month had at least one post, so the post list gives the full set.
+const archives = {};
+for (const oldPath of Object.keys(redirects)) {
+  const m = oldPath.match(/^\/(\d{4})\/(\d{2})\//);
+  if (!m) continue;
+  archives[`/${m[1]}/index.html`] = { title: `${m[1]} Archive`, to: 'article-archives.html' };
+  archives[`/${m[1]}/${m[2]}/index.html`] = { title: `${m[1]}/${m[2]} Archive`, to: 'article-archives.html' };
+}
+
 let written = 0;
-for (const [oldPath, { title, to }] of Object.entries(redirects)) {
-  if (!/^\/(p|\d{4}\/\d{2})\/[a-z0-9-]+\.html$/.test(oldPath)) {
+for (const [oldPath, { title, to }] of Object.entries({ ...redirects, ...archives })) {
+  if (!/^\/((p|\d{4}\/\d{2})\/[a-z0-9-]+\.html|\d{4}(\/\d{2})?\/index\.html)$/.test(oldPath)) {
     throw new Error(`Unexpected old path: ${oldPath}`);
   }
   const file = join(root, oldPath);

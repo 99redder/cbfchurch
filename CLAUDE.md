@@ -365,8 +365,14 @@ those addresses — don't delete them. Each is a tiny HTML page with an instant 
 (Google treats it as a permanent redirect) and a canonical tag pointing at the new page.
 
 - The old → new list is `scripts/blogger-redirects.json` (88 entries: 78 posts, 10 pages).
+- The script also writes `index.html` redirects for Blogger's year and month archive pages
+  (`/2020/`, `/2020/11/`, 62 in all) that point to `article-archives.html`. It works out the
+  set from the post paths in the JSON, so there is nothing to edit for these.
 - To change it, edit the JSON and run `node scripts/build-blogger-redirects.mjs` from the repo
   root. The script only overwrites its own output (files marked `<!-- blogger-redirect -->`).
+- Blogger's label pages (`/search/label/...`), "older posts" pages (`/search?...`) and feeds
+  (`/feeds/...`) are deliberately left as 404s: there are dozens of one-off labels and no
+  matching page, and Google treats a redirect to an unrelated page as a 404 anyway.
 - One untitled 2012 post (`/2012/05/childrens-children-are-crown-of-old-men.html`) was never
   imported, so that old address has no redirect and returns 404.
 - The old Blogger blog (`cbfchurch.blogspot.com`) was permanently deleted on 2026-11-14. The
@@ -487,6 +493,10 @@ All colors use CSS custom properties — never use hardcoded hex values in new r
   `node scripts/sync-editable-content.mjs` to copy it into the HTML. Markup outside those
   elements (layout, new sections, head tags) is safe to edit normally.
 - The `api/.env` file contains database credentials and is gitignored. Never commit it.
+- GitHub Pages publishes **every committed file** and runs Jekyll, which turns `.md` files into
+  web pages. `_config.yml` excludes `CLAUDE.md`, `AGENTS.md`, `api/`, `worker/`, `scripts/` and
+  the old image/backup folders from the public site. Add any new non-site folder or `.md` file
+  to its `exclude` list.
 - Render free tier has no shell access and ephemeral filesystem — use S3 for gallery storage and local scripts for DB maintenance.
 - All public HTML pages share the same hand-coded nav structure — any **desktop** nav change must be made in every file. **Mobile** nav is generated once in `js/common.js`, so mobile changes are made there only.
 - Desktop is intentionally frozen: keep all mobile work inside `@media (max-width: 768px)` and never let a mobile-only DOM injection alter the ≥769px render (matchMedia-gate the build and/or add a `min-width: 769px` safety net). See "Mobile App Experience".

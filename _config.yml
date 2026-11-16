@@ -1,0 +1,12 @@
+# GitHub Pages builds this repo with Jekyll, which turns every .md file into a
+# public web page (CLAUDE.md became www.cbfchurch.com/CLAUDE.html) and serves
+# every other file too. Keep the project notes, server code and scripts off the
+# public site; the site itself uses none of these.
+exclude:
+  - CLAUDE.md
+  - AGENTS.md
+  - api/
+  - worker/
+  - scripts/
+  - "old images/"
+  - "Blogger backup/"
