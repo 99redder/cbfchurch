@@ -242,9 +242,10 @@ app.get('/api/posts/:slug', async c => {
   }
 });
 
-// Sitemap of every blog post, for search engines. It lives here (not on GitHub
-// Pages) so new posts appear automatically; robots.txt on www.cbfchurch.com
-// points at it, which is how a sitemap on another host is accepted.
+// Sitemap of every blog post, for search engines. It is built here from the
+// database; a daily GitHub Action (.github/workflows/sync-posts-sitemap.yml)
+// copies it to www.cbfchurch.com/sitemap-posts.xml, which is the address in
+// robots.txt and Search Console (it can't accept a sitemap on this host).
 const POST_SITE_URL = 'https://www.cbfchurch.com/';
 
 function xmlEscape(s) {

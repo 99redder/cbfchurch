@@ -1,0 +1,56 @@
+name: Sync blog post sitemap
+
+# Daily: copy the Worker's list of blog posts (/sitemap-posts.xml) into the
+# repo as sitemap-posts.xml, so it is served from www.cbfchurch.com. Search
+# Console only accepts sitemaps on the site's own domain, not on the
+# workers.dev host. Commits only when a post was added, edited, or deleted.
+# Can also be run by hand: Actions tab > this workflow > "Run workflow".
+on:
+  schedule:
+    - cron: '30 10 * * *'   # daily 10:30 UTC (5:30-6:30 AM in New Hampshire)
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pages: write
+
+concurrency:
+  group: sync-posts-sitemap
+  cancel-in-progress: false
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Download the post sitemap from the Worker
+        run: |
+          tmp="$RUNNER_TEMP/sitemap-posts.xml"
+          curl -fsS --retry 3 --retry-delay 10 -o "$tmp" \
+            https://cbfchurch-api.99redder.workers.dev/sitemap-posts.xml
+          # Only accept a real sitemap with posts in it, so an API problem can
+          # never replace the file with an error page or an empty list.
+          head -c 5 "$tmp" | grep -q '^<?xml'
+          grep -q '<urlset' "$tmp"
+          count=$(grep -c '<loc>' "$tmp" || true)
+          echo "Posts in sitemap: $count"
+          if [ "$count" -lt 1 ]; then echo "No posts in the sitemap; not updating."; exit 1; fi
+          cp "$tmp" sitemap-posts.xml
+
+      - name: Commit and publish if it changed
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if git diff --quiet -- sitemap-posts.xml; then
+            echo "Post sitemap unchanged."
+            exit 0
+          fi
+          git config user.name "github-actions[bot]"
+          git config user.email "41898333+github-actions[bot]@users.noreply.github.com"
+          git add sitemap-posts.xml
+          git commit -m "Update blog post sitemap"
+          git pull --rebase
+          git push
+          # Ask GitHub Pages to rebuild for this bot commit.
+          gh api -X POST "repos/${GITHUB_REPOSITORY}/pages/builds" || true

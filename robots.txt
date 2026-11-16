@@ -4,4 +4,4 @@ Allow: /
 Disallow: /admin/
 
 Sitemap: https://www.cbfchurch.com/sitemap.xml
-Sitemap: https://cbfchurch-api.99redder.workers.dev/sitemap-posts.xml
+Sitemap: https://www.cbfchurch.com/sitemap-posts.xml
