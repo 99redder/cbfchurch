@@ -68,7 +68,6 @@ cbfchurch/
 ├── contact.html
 ├── photo-gallery.html
 ├── service-times.html
-├── recent-videos.html
 ├── article-archives.html
 ├── video-archive.html
 ├── learn-the-truth.html
@@ -370,17 +369,21 @@ know addresses like `/p/service-times.html` and `/2020/11/weekly-blog-solid-rock
 those addresses — don't delete them. Each is a tiny HTML page with an instant meta refresh
 (Google treats it as a permanent redirect) and a canonical tag pointing at the new page.
 
-- The old → new list is `scripts/blogger-redirects.json` (88 entries: 78 posts, 10 pages).
+- The old → new list is `scripts/blogger-redirects.json` (87 entries: 78 posts, 9 pages).
 - The script also writes `index.html` redirects for Blogger's year and month archive pages
   (`/2020/`, `/2020/11/`, 62 in all) that point to `article-archives.html`. It works out the
   set from the post paths in the JSON, so there is nothing to edit for these.
 - To change it, edit the JSON and run `node scripts/build-blogger-redirects.mjs` from the repo
   root. The script only overwrites its own output (files marked `<!-- blogger-redirect -->`).
+  It never deletes anything, so when you remove an entry from the JSON, also delete its file.
 - Blogger's label pages (`/search/label/...`), "older posts" pages (`/search?...`) and feeds
   (`/feeds/...`) are deliberately left as 404s: there are dozens of one-off labels and no
   matching page, and Google treats a redirect to an unrelated page as a 404 anyway.
 - One untitled 2012 post (`/2012/05/childrens-children-are-crown-of-old-men.html`) was never
   imported, so that old address has no redirect and returns 404.
+- `/p/video-links.html` (Blogger's "Recent Videos" page) also returns 404 on purpose. Its
+  redirect pointed at `recent-videos.html`, and both were deleted on 2026-11-21: nothing on the
+  site linked to that page, and the home page already shows the same YouTube player.
 - The old Blogger blog (`cbfchurch.blogspot.com`) was permanently deleted on 2026-11-14. The
   Google Takeout export in `Blogger backup/` is the only remaining copy of the original posts,
   pages, and comments.

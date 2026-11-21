@@ -346,9 +346,5 @@
   "/p/service-times.html": {
     "title": "Service Times",
     "to": "service-times.html"
-  },
-  "/p/video-links.html": {
-    "title": "Recent Videos",
-    "to": "recent-videos.html"
   }
 }

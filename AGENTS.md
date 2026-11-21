@@ -37,7 +37,6 @@ cbfchurch/
 ├── contact.html
 ├── photo-gallery.html
 ├── service-times.html
-├── recent-videos.html
 ├── article-archives.html
 ├── video-archive.html
 ├── learn-the-truth.html
