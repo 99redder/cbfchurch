@@ -38,7 +38,6 @@ cbfchurch/
 ├── photo-gallery.html
 ├── service-times.html
 ├── article-archives.html
-├── video-archive.html
 ├── learn-the-truth.html
 ├── post.html                      # Single blog post view
 ├── manifest.json                  # PWA manifest

@@ -69,7 +69,6 @@ cbfchurch/
 ├── photo-gallery.html
 ├── service-times.html
 ├── article-archives.html
-├── video-archive.html
 ├── learn-the-truth.html
 ├── post.html                      # Single blog post view
 ├── manifest.json                  # PWA manifest
@@ -276,6 +275,8 @@ The mobile pieces (all in `common.js`, all mirrored by CSS sections in `style.cs
    Archives, Video Archive, Contact, Donate, Admin Login) + the dark-mode toggle. Opens from the
    More tab; closes on backdrop tap / Escape. To add/remove a mobile nav destination or move one
    between the bar and the sheet, edit the `tabs` / `moreLinks` arrays in `initMobileTabBar()`.
+   `moreLinks` entries can be `external: true` too (opens in a new tab); Video Archive uses
+   this to go straight to the YouTube channel.
 5. **Sidebar accordion** — `initSidebarAccordion()` turns the right-hand `.sidebar` (6
    `.sidebar-section` cards: Learn the Truth, Service Times, Location, Archives & Videos, Follow
    Us, Ministries) into collapsible accordion rows. Each `<h3>` becomes the trigger (`role=button`,
@@ -369,7 +370,7 @@ know addresses like `/p/service-times.html` and `/2020/11/weekly-blog-solid-rock
 those addresses — don't delete them. Each is a tiny HTML page with an instant meta refresh
 (Google treats it as a permanent redirect) and a canonical tag pointing at the new page.
 
-- The old → new list is `scripts/blogger-redirects.json` (87 entries: 78 posts, 9 pages).
+- The old → new list is `scripts/blogger-redirects.json` (86 entries: 78 posts, 8 pages).
 - The script also writes `index.html` redirects for Blogger's year and month archive pages
   (`/2020/`, `/2020/11/`, 62 in all) that point to `article-archives.html`. It works out the
   set from the post paths in the JSON, so there is nothing to edit for these.
@@ -381,9 +382,12 @@ those addresses — don't delete them. Each is a tiny HTML page with an instant 
   matching page, and Google treats a redirect to an unrelated page as a 404 anyway.
 - One untitled 2012 post (`/2012/05/childrens-children-are-crown-of-old-men.html`) was never
   imported, so that old address has no redirect and returns 404.
-- `/p/video-links.html` (Blogger's "Recent Videos" page) also returns 404 on purpose. Its
-  redirect pointed at `recent-videos.html`, and both were deleted on 2026-11-21: nothing on the
-  site linked to that page, and the home page already shows the same YouTube player.
+- `/p/video-links.html` (Blogger's "Recent Videos" page) and `/p/sermon-archive.html`
+  ("Sermon Archive") also return 404 on purpose. Their redirects pointed at
+  `recent-videos.html` and `video-archive.html`, and all four were deleted on 2026-11-21:
+  the home page already shows the same YouTube player, and `video-archive.html` was only a
+  button to the YouTube channel, which the desktop sidebar and the mobile "More" sheet now
+  link to directly.
 - The old Blogger blog (`cbfchurch.blogspot.com`) was permanently deleted on 2026-11-14. The
   Google Takeout export in `Blogger backup/` is the only remaining copy of the original posts,
   pages, and comments.

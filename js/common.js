@@ -424,7 +424,7 @@ let cbfLegalContent = { privacy: '', terms: '' };
     { href: 'cbf-history.html', icon: 'fa-landmark', label: 'CBF History' },
     { href: 'learn-the-truth.html', icon: 'fa-book-open', label: 'Learn the Truth' },
     { href: 'article-archives.html', icon: 'fa-newspaper', label: 'Article Archives' },
-    { href: 'video-archive.html', icon: 'fa-video', label: 'Video Archive' },
+    { href: 'https://www.youtube.com/user/captaintal55', icon: 'fa-video', label: 'Video Archive', external: true },
     { href: 'contact.html', icon: 'fa-address-book', label: 'Contact Us' },
     { href: 'donate.html', icon: 'fa-hand-holding-heart', label: 'Donate' },
     { href: 'admin/login.html', icon: 'fa-lock', label: 'Admin Login' }
@@ -464,7 +464,8 @@ let cbfLegalContent = { privacy: '', terms: '' };
   const sheetOverlay = document.createElement('div');
   sheetOverlay.className = 'tab-sheet-overlay';
   const linksHtml = moreLinks.map(l =>
-    `<a href="${l.href}" class="${l.href === page ? 'active' : ''}">` +
+    `<a href="${l.href}" class="${l.href === page ? 'active' : ''}"` +
+    (l.external ? ' target="_blank" rel="noopener"' : '') + '>' +
     `<i class="fas ${l.icon}" aria-hidden="true"></i>${l.label}</a>`
   ).join('');
   sheetOverlay.innerHTML = `
