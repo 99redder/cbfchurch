@@ -515,5 +515,9 @@ All colors use CSS custom properties — never use hardcoded hex values in new r
   per-post canonical (`https://www.cbfchurch.com/post.html?slug=<slug>`), meta description, and
   `BlogPosting` JSON-LD after the post loads, and adds `noindex` only on a real 404 / missing slug
   (`apiFetch` errors carry `err.status`), never on a temporary API failure.
+  `post.html` loads `js/common.js?v=…` and `js/post.js?v=…`: Google's renderer keeps old copies
+  of script files and can ignore cache headers, and in Nov 2026 it rendered posts with the
+  pre-fix `post.js` (no canonical), so Search Console flagged them "Duplicate without
+  user-selected canonical". **Bump the `?v=` date in `post.html` whenever you change either file.**
 - Blog posts were originally imported from Blogger via `scripts/import-blogger.js`.
 - Static gallery photos in `images/gallery/` are served from GitHub Pages (git-committed). Admin-uploaded photos are served from Render/S3.
