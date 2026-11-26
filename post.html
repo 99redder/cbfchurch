@@ -5,9 +5,25 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="description" content="Blog post from Christian Believers Fellowship, Somersworth, NH — Biblical teachings and church news.">
   <title>Blog Post | Christian Believers Fellowship</title>
+  <!-- post-redirect:start -->
+  <!-- Every post has its own static page, posts/<slug>.html (built by
+       scripts/build-post-pages.mjs), so the old post.html?slug=... address just
+       forwards there. If that page does not exist yet (a post published since
+       the last daily build), 404.html sends the visitor back here with &live=1
+       and js/post.js loads the post from the API instead. -->
+  <script>
+    (function () {
+      var params = new URLSearchParams(location.search);
+      var slug = params.get('slug');
+      if (slug && /^[a-z0-9-]+$/.test(slug) && !params.has('live')) {
+        location.replace('posts/' + slug + '.html');
+      }
+    })();
+  </script>
+  <!-- post-redirect:end -->
   <!-- No static canonical or og:url here: every post shares this file, so a fixed
        canonical would tell Google all posts are copies of /post.html. js/post.js
-       adds the per-post canonical (post.html?slug=...) once the post loads. -->
+       adds the per-post canonical (posts/<slug>.html) once the post loads. -->
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="Christian Believers Fellowship">
   <meta property="og:title" content="Christian Believers Fellowship Blog">
@@ -141,7 +157,7 @@
     </div>
   </footer>
 
-  <script src="js/common.js?v=20261121b"></script>
-  <script src="js/post.js?v=20261121"></script>
+  <script src="js/common.js?v=20261126"></script>
+  <script src="js/post.js?v=20261126"></script>
 </body>
 </html>

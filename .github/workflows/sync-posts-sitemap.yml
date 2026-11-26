@@ -1,9 +1,14 @@
-name: Sync blog post sitemap
+name: Sync blog post pages and sitemap
 
 # Daily: copy the Worker's list of blog posts (/sitemap-posts.xml) into the
 # repo as sitemap-posts.xml, so it is served from www.cbfchurch.com. Search
 # Console only accepts sitemaps on the site's own domain, not on the
 # workers.dev host. Commits only when a post was added, edited, or deleted.
+#
+# It also rebuilds the static page for every post (posts/<slug>.html) with
+# scripts/build-post-pages.mjs. Google cannot load posts from the API, so
+# these pages are what it indexes; a post published today gets its page on
+# the next run (until then it is served through post.html, see 404.html).
 # Can also be run by hand: Actions tab > this workflow > "Run workflow".
 on:
   schedule:
@@ -38,18 +43,21 @@ jobs:
           if [ "$count" -lt 1 ]; then echo "No posts in the sitemap; not updating."; exit 1; fi
           cp "$tmp" sitemap-posts.xml
 
+      - name: Build the static post pages
+        run: node scripts/build-post-pages.mjs
+
       - name: Commit and publish if it changed
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          if git diff --quiet -- sitemap-posts.xml; then
-            echo "Post sitemap unchanged."
+          git add -A sitemap-posts.xml posts
+          if git diff --cached --quiet; then
+            echo "Post pages and sitemap unchanged."
             exit 0
           fi
           git config user.name "github-actions[bot]"
           git config user.email "41898333+github-actions[bot]@users.noreply.github.com"
-          git add sitemap-posts.xml
-          git commit -m "Update blog post sitemap"
+          git commit -m "Update blog post pages and sitemap"
           git pull --rebase
           git push
           # Ask GitHub Pages to rebuild for this bot commit.

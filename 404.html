@@ -7,6 +7,15 @@
   <title>Page Not Found | Christian Believers Fellowship — Somersworth, NH</title>
   <link rel="canonical" href="https://www.cbfchurch.com/404.html">
   <meta name="robots" content="noindex">
+  <!-- A blog post published since the last daily build has no static page in
+       /posts/ yet. Send that address to post.html, which loads the post from
+       the API (and shows "Post not found" if there is no such post). -->
+  <script>
+    (function () {
+      var m = location.pathname.match(/^\/posts\/([a-z0-9-]+)\.html$/);
+      if (m) location.replace('/post.html?slug=' + m[1] + '&live=1');
+    })();
+  </script>
   <link rel="manifest" href="manifest.json">
   <meta name="theme-color" content="#365d8a">
   <link rel="icon" href="favicon.ico" sizes="48x48">

@@ -70,7 +70,8 @@ cbfchurch/
 ├── service-times.html
 ├── article-archives.html
 ├── learn-the-truth.html
-├── post.html                      # Single blog post view
+├── post.html                      # Template for posts/ + fallback loader for brand-new posts
+├── posts/                         # Generated: one static page per blog post (don't hand-edit)
 ├── manifest.json                  # PWA manifest
 ├── sw.js                          # Service worker
 ├── sitemap.xml                    # SEO sitemap
@@ -332,7 +333,8 @@ this.
 - **Structured data** lives in `index.html` only: a `WebSite` node (controls the site name Google
   shows above results) and a `Church` node (address, phone, hours, parking/accessibility,
   YouTube @captaintal55 and X @CBF_Somersworth). Keep its hours in sync with
-  `service-times.html`. Blog posts get `BlogPosting` data from `js/post.js`.
+  `service-times.html`. Blog posts get `BlogPosting` data written into their static pages by
+  `scripts/build-post-pages.mjs`.
 - **Home page heading:** the `<h1>` is visually hidden (`.visually-hidden`); the visible "Most
   Recent Service Video" is an `<h2 class="h1-size">` that renders exactly like an h1, so desktop
   stays pixel-identical.
@@ -351,10 +353,12 @@ this.
   secrets; to rotate it, set a new value in both places. If the report step itself fails, the run
   shows as failed and GitHub sends its own failure notice.
 - **Sitemaps:** `sitemap.xml` lists the main pages with `lastmod` (update the date when a page's
-  content changes). Blog posts are in `sitemap-posts.xml` (repo root). The Worker builds it from
+  content changes). Blog posts are in `sitemap-posts.xml` (repo root), listed by their static
+  address `posts/<slug>.html`. The Worker builds it from
   the database at `/sitemap-posts.xml`, and a GitHub Action
   (`.github/workflows/sync-posts-sitemap.yml`, daily 10:30 UTC, or "Run workflow" by hand)
-  copies it into the repo and commits only when a post was added, edited or deleted. Don't
+  copies it into the repo, rebuilds the static post pages (see "Important Notes"), and commits
+  only when a post was added, edited or deleted. Don't
   hand-edit the file; the next run overwrites it. It has to be on `www.cbfchurch.com` because
   Search Console won't accept a sitemap on the `workers.dev` host. Both sitemaps are listed in
   `robots.txt` and submitted in Search Console. This Action also commits to `main`, which is
@@ -516,15 +520,31 @@ All colors use CSS custom properties — never use hardcoded hex values in new r
 - SQL uses `$1`, `$2` parameterized queries (PostgreSQL style, not `?`).
 - CORS accepts only origins in `ALLOWED_ORIGIN` env var (comma-separated).
 - The Quill.js editor is loaded from CDN — do not try to install it locally.
-- `post.html` uses URL query param `?slug=` to fetch a single post dynamically. Because one file
-  serves every post, `post.html` must **not** have a static `<link rel="canonical">` or `og:url`
-  (a fixed one tells Google every post is a copy of `/post.html`). `js/post.js` adds the
-  per-post canonical (`https://www.cbfchurch.com/post.html?slug=<slug>`), meta description, and
-  `BlogPosting` JSON-LD after the post loads, and adds `noindex` only on a real 404 / missing slug
-  (`apiFetch` errors carry `err.status`), never on a temporary API failure.
-  `post.html` loads `js/common.js?v=…` and `js/post.js?v=…`: Google's renderer keeps old copies
-  of script files and can ignore cache headers, and in Nov 2026 it rendered posts with the
-  pre-fix `post.js` (no canonical), so Search Console flagged them "Duplicate without
-  user-selected canonical". **Bump the `?v=` date in `post.html` whenever you change either file.**
+- **Blog posts are static pages: `posts/<slug>.html`** (one per post, generated; don't hand-edit).
+  Google's renderer gets no answer from the API (Search Console live test, 2026-11-26: the
+  `/api/posts/<slug>` call fails with "Other error" and the page stays on "Loading post"; the
+  indexed home page likewise still says "Loading posts"). With the old `post.html?slug=` pages
+  every post therefore looked like the same empty page, and Search Console reported them as
+  "Duplicate without user-selected canonical". An earlier theory that Google was using an old
+  cached `post.js` was wrong. **Anything Google must read has to be in the HTML file itself, not
+  loaded from the API.**
+  - `scripts/build-post-pages.mjs` builds the pages from the API's post list, using `post.html`
+    as the template (so header/nav/sidebar edits to `post.html` carry over on the next run). Each
+    page has the post text, canonical, description and `BlogPosting` JSON-LD written in, plus
+    `<base href="/">` so the site's root-relative links still work from `/posts/`. It only
+    touches files marked `<!-- generated-post-page -->` and removes pages of deleted posts.
+  - The daily Action (`sync-posts-sitemap.yml`) runs it, so a new or edited post gets its page
+    within a day. To publish sooner, run the Action by hand or run the script and push.
+  - Until then a new post still works: `js/blog.js` links to `posts/<slug>.html`, GitHub Pages
+    serves `404.html`, whose head script forwards `/posts/<slug>.html` to
+    `post.html?slug=<slug>&live=1`, and `js/post.js` loads it from the API (and adds `noindex`
+    only on a real 404).
+  - `post.html?slug=<slug>` (the old address, without `&live=1`) forwards to the static page
+    from an inline script in its head. That script sits between `post-redirect:start/end`
+    comments, which the build script strips. If you change `post.html`'s head tags or the
+    `#post-content` block, run the build script: it stops with an error if it can't find a part
+    of the template it expects.
+  - `post.html` loads `js/common.js?v=…` and `js/post.js?v=…`; bump the `?v=` date when you
+    change either file.
 - Blog posts were originally imported from Blogger via `scripts/import-blogger.js`.
 - Static gallery photos in `images/gallery/` are served from GitHub Pages (git-committed). Admin-uploaded photos are served from Render/S3.

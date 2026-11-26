@@ -259,7 +259,7 @@ app.get('/sitemap-posts.xml', async c => {
       'SELECT slug, created_at, updated_at FROM posts ORDER BY created_at DESC'
     );
     const urls = posts.map(p => {
-      const loc = `${POST_SITE_URL}post.html?slug=${encodeURIComponent(p.slug)}`;
+      const loc = `${POST_SITE_URL}posts/${encodeURIComponent(p.slug)}.html`;
       const lastmod = new Date(p.updated_at || p.created_at).toISOString().slice(0, 10);
       return `  <url>\n    <loc>${xmlEscape(loc)}</loc>\n    <lastmod>${lastmod}</lastmod>\n  </url>`;
     });

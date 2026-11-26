@@ -1,8 +1,11 @@
 // Single blog post loader
 //
-// post.html is one file shared by every post (?slug=...), so the per-post SEO
-// tags are added here once the post loads: canonical URL, meta description and
-// BlogPosting structured data. post.html deliberately has no static canonical.
+// Posts normally live on their own static pages, posts/<slug>.html (built by
+// scripts/build-post-pages.mjs), and post.html?slug=... forwards there. This
+// loader only runs as the fallback for a post that has no static page yet
+// (post.html?slug=...&live=1, reached through 404.html). It adds the per-post
+// SEO tags once the post loads, with the canonical pointing at the static
+// address the post will have after the next daily build.
 const POST_SITE_URL = 'https://www.cbfchurch.com/';
 
 (async function () {
@@ -55,7 +58,7 @@ function showNotFound(container, definitelyMissing) {
 }
 
 function applyPostSeo(post) {
-  const url = `${POST_SITE_URL}post.html?slug=${encodeURIComponent(post.slug)}`;
+  const url = `${POST_SITE_URL}posts/${encodeURIComponent(post.slug)}.html`;
   // Parse into an inert document so reading the text doesn't load images or run handlers.
   const doc = new DOMParser().parseFromString(post.content || '', 'text/html');
   const text = (doc.body.textContent || '').replace(/\s+/g, ' ').trim();

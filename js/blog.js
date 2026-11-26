@@ -21,13 +21,13 @@
 
     container.innerHTML = data.posts.map(post => `
       <article class="post-card">
-        <h2><a href="post.html?slug=${encodeURIComponent(post.slug)}">${escapeHtml(post.title)}</a></h2>
+        <h2><a href="posts/${encodeURIComponent(post.slug)}.html">${escapeHtml(post.title)}</a></h2>
         <div class="post-meta">
           <span>${formatDate(post.created_at)}</span>
           <span>${escapeHtml(post.author)}</span>
         </div>
         <p class="post-preview">${escapeHtml(post.preview)}...</p>
-        <a href="post.html?slug=${encodeURIComponent(post.slug)}" class="read-more">Read More &rarr;</a>
+        <a href="posts/${encodeURIComponent(post.slug)}.html" class="read-more">Read More &rarr;</a>
       </article>
     `).join('');
 
